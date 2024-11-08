@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import * as lucide from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -10,29 +9,12 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import Notification from "@/components/header/Notification";
 import Cart from "@/components/header/Cart";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
-
-const { ShoppingCart, User, Bell, CreditCard, LifeBuoy, LogOut, Settings } =
-  lucide;
-
-const menuItems = [
-  { name: "Profile", group: "user", link: "/profile", icon: <User /> },
-  { name: "Billing", group: "user", link: "/billing", icon: <CreditCard /> },
-  { name: "Setting", group: "help", link: "/settings", icon: <Settings /> },
-  { name: "Help Center", group: "help", link: "/help", icon: <LifeBuoy /> },
-  { name: "Log out", group: "logout", link: "/logout", icon: <LogOut /> },
-  { name: "Create", group: "create", link: "/create", icon: <User /> },
-  {
-    name: "Marketplace",
-    group: "create",
-    link: "/marketplace",
-    icon: <ShoppingCart />,
-  },
-];
+import menuItems from "@/config/Links"
+import { User } from "lucide-react";
 
 const renderMenuItems = (group, pathname) =>
   menuItems
@@ -87,7 +69,7 @@ function Header() {
       <div className="container mx-auto px-2">
         <div className="h-16 flex items-center justify-between">
           <div className="flex items-center justify-start gap-4">
-            <Link to="/" className="flex-shrink-0">
+            <Link to="/home" className="flex-shrink-0">
               Logo
             </Link>
             <Separator orientation="vertical" className="h-7 w-0.5" />
@@ -115,9 +97,9 @@ function Header() {
               <input
                 type="text"
                 placeholder="Search items, collections..."
-                className="w-[320px] h-10 pl-4 pr-10 rounded-3xl bg-[var(--muted)] border border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-[320px] h-10 pl-4 pr-10 rounded-3xl bg-muted border border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]">
+              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -138,22 +120,8 @@ function Header() {
 
           <div className="flex items-center gap-6">
             <DropdownMenuComponent />
-            <Sheet>
-              <SheetTrigger>
-                <div className="flex items-center justify-center p-3 rounded-lg border border-[var(--border)] transition-all transform hover:scale-105 cursor-pointer hover:bg-primary hover:text-primary-foreground">
-                  <Bell size={20} />
-                </div>
-              </SheetTrigger>
-              <Notification />
-            </Sheet>
-            <Sheet>
-              <SheetTrigger>
-                <div className="flex items-center justify-center p-3 rounded-lg border border-[var(--border)] transition-all transform hover:scale-105 cursor-pointer hover:bg-primary hover:text-primary-foreground">
-                  <ShoppingCart size={20} />
-                </div>
-              </SheetTrigger>
-              <Cart />
-            </Sheet>
+            <Notification />
+            <Cart />
           </div>
         </div>
       </div>

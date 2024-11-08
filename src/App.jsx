@@ -1,19 +1,8 @@
-import { BrowserRouter as Router } from "react-router-dom";
-import "./App.css";
-import Header from "@/components/header/Header";
+import { RouterProvider } from 'react-router-dom'
+import { router } from './routes'
 
 function App() {
-  return (
-    <Router>
-      <div className="min-h-screen bg-[var(--background)] flex flex-col">
-        <Header />
-        <main className="flex-1 mt-[60px]">
-          {" "}
-          <p>NFT marketplace</p>
-        </main>
-      </div>
-    </Router>
-  );
+  return <RouterProvider router={router} />
 }
 
-export default App;
+export default App
