@@ -13,23 +13,23 @@ export default function NftCard() {
     image:
       "https://i.etsystatic.com/27708971/r/il/1b55f0/2853845438/il_1588xN.2853845438_n8z5.jpg",
     owner_image:
-      "https://i.pinimg.com/originals/21/39/8d/21398d375e0e5977de20fe4c7e6e1e0c.jpg",
+      "https://i0.wp.com/thatnhucuocsong.com.vn/wp-content/uploads/2023/02/Hinh-anh-avatar-cute.jpg?ssl\u003d1",
   };
 
   return (
     <div
       className={`
-        w-[278px] h-96 p-[2px] rounded-xl transition-all duration-300 ease-in-out
+       w-[278px] h-96 p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
           isHovered
             ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"
-            : "bg-transparent"
+            : "bg-card"
         }
       `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="w-full h-full p-0 overflow-hidden bg-card">
+      <Card className="w-full h-full p-0 overflow-hidden bg-card border-2">
         <CardHeader
           className={`px-3 pt-3 pb-0 transition-all duration-300 ${
             isHovered ? "h-[255px]" : "h-[306px]"

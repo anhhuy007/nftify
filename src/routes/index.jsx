@@ -16,12 +16,12 @@ export const router = createBrowserRouter([
       })),
   },
   {
-    path: "/",
+    path: "/auth",
     element: <AuthLayout />,
     children: menuItems
       .filter((item) => item.layout === "AuthLayout")
       .map((item) => ({
-        path: item.link.replace(/^\/auth/, ""),
+        path: item.link.replace(/^\/auth\//, ""),
         element: item.element,
       })),
   },

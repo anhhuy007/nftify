@@ -24,16 +24,16 @@ export default function Banner() {
   ];
 
   return (
-    <div className="w-full py-16 px-4">
-      <Card className="max-w-6xl mx-auto border-gray-800">
+    <div className="py-16 px-4">
+      <Card className="max-w-6xl border-gray-800">
         <CardContent className="p-14">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             <span className="bg-gradient-to-r from-teal-400 via-white to-purple-400 text-transparent bg-clip-text">
               Create And Sell Your NFTs
             </span>
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-8 text-center">
+          <div className="grid md:grid-cols-3 gap-32 text-center">
             {steps.map((step, index) => (
               <div key={index} className="space-y-4">
                 <div className="w-16 h-16 mx-auto bg-gray-800/50 rounded-full flex items-center justify-center">
