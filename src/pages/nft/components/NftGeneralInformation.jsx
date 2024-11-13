@@ -6,10 +6,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Eye, Heart, Upload } from "lucide-react";
 
-export default function Component() {
+export default function NftGeneralInformation() {
   return (
-    <Card className="w-full p-6 max-w-lg mx-auto bg-transparent border-none">
-      <CardContent className="space-y-6">
+    <Card className="w-full max-w-md bg-transparent shadow-none mx-auto md:mx-0 border-none">
+      <CardContent className="">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src="/placeholder.svg" />
@@ -18,9 +18,9 @@ export default function Component() {
           <span className="font-medium">Collection Name</span>
         </div>
 
-        <h1 className="text-4xl font-bold">NFT Name</h1>
+        <h1 className="text-4xl font-bold my-6 md:my-10">NFT Name</h1>
 
-        <div className="flex gap-14">
+        <div className="flex gap-20">
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src="/placeholder.svg" />
@@ -44,7 +44,7 @@ export default function Component() {
           </div>
         </div>
 
-        <Separator className="bg-secondary" />
+        <Separator className="bg-secondary my-4 md:my-6" />
 
         <div className="flex gap-9">
           <button className="flex items-center gap-2  transition-colors">
@@ -61,7 +61,7 @@ export default function Component() {
           </button>
         </div>
 
-        <div className="space-y-4 border-2 rounded-lg p-2">
+        <div className="space-y-4 border-2 rounded-lg p-2 mt-5">
           <div className=" p-4 rounded-xl border-2">
             <p className=" mb-1">Price</p>
             <p className="text-2xl font-bold">0.1 ETH</p>
