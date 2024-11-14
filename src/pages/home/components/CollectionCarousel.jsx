@@ -11,7 +11,7 @@ import {
 function CollectionCarousel() {
   return (
     <>
-      <Carousel className="w-full max-w-[300px] xl:max-w-[800px]">
+      <Carousel className="w-full max-w-[380px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[1000px]">
         <CarouselContent className="">
           {Array.from({ length: 10 }).map((_, index) => (
             <CarouselItem key={index} className="pl-6">
@@ -21,8 +21,8 @@ function CollectionCarousel() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className="hidden md:inline-block md:p-2" />
+        <CarouselNext className="hidden md:inline-block md:p-2" />
       </Carousel>
     </>
   );
