@@ -19,10 +19,6 @@ function NftsMarketplace() {
       <div className="flex flex-col gap-10">
         <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
           <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
-            {/* <Button className="flex items-center py-7 justify-between px-4 whitespace-nowrap">
-              <SlidersHorizontal size={20} />
-              <p className="ml-3 text-base">Filters</p>
-            </Button> */}
             <Filter />
             <div className="flex-1">
               <SearchNfts />
