@@ -79,7 +79,7 @@ export function SmallNftCard() {
   return (
     <div
       className={`
-       w-[292px] h-[374px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
+       w-[275px] h-[374px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
           isHovered
             ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"
@@ -126,7 +126,7 @@ export function BigNftCard() {
   return (
     <div
       className={`
-       w-[360px] h-[485px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
+       w-[345px] h-[480px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
           isHovered
             ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"
@@ -139,7 +139,7 @@ export function BigNftCard() {
       <Card className="w-full h-full p-0 overflow-hidden bg-card border-2">
         <CardHeader
           className={`px-3 pt-3 pb-0 transition-all duration-300 ${
-            isHovered ? "h-[327px]" : "h-[368px]"
+            isHovered ? "h-[327px]" : "h-[390px]"
           }`}
         >
           <img
@@ -153,7 +153,7 @@ export function BigNftCard() {
             isHovered ? "h-[150px]" : "h-[90px]"
           }`}
         >
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center gap-4 mt-1">
             <img
               src={stamp.owner_image}
               alt={stamp.owner}
@@ -170,7 +170,7 @@ export function BigNftCard() {
             </div>
           </div>
           {isHovered && (
-            <button className="bg-zinc-500 text-primary-foreground px-6 py-4 mt-3 rounded-md w-full hover:bg-zinc-600 transition-colors duration-200">
+            <button className="bg-zinc-500 text-primary-foreground px-6 py-4 mt-2 rounded-md w-full hover:bg-zinc-600 transition-colors duration-200">
               Collect now!
             </button>
           )}
