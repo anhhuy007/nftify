@@ -7,7 +7,7 @@ export default function Banner() {
       icon: Wallet,
       title: "Set up your wallet",
       description:
-        "Once you've set up your wallet of choice, connect it to OpenSea by clicking the wallet icon in the top right corner. Learn about the wallets we support.",
+        "Once you've set up your wallet of choice, connect it to NFTify by clicking the wallet icon in the top right corner. Learn about the wallets we support.",
     },
     {
       icon: Upload,
@@ -28,7 +28,7 @@ export default function Banner() {
       <Card className="max-w-6xl border-gray-800">
         <CardContent className="p-14">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            <span className="bg-gradient-to-r from-teal-400 via-white to-purple-400 text-transparent bg-clip-text">
+            <span className="text-gradient">
               Create And Sell Your NFTs
             </span>
           </h2>

@@ -13,19 +13,19 @@ function Home() {
       </div>
       <div className="flex flex-col gap-32 items-center justify-center">
         <div className="flex flex-col justify-center items-center gap-10">
-          <span className="text-5xl leading-normal bg-gradient-to-r from-teal-400 via-purple-400 to-teal-400 text-transparent bg-clip-text">
+          <span className="text-5xl leading-normal font-bold text-gradient">
             Trending NFTs
           </span>
           <NftCarousel />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
-          <span className="text-5xl leading-normal bg-gradient-to-r from-teal-400 via-purple-400 to-teal-400 text-transparent bg-clip-text">
+          <span className="text-5xl leading-normal font-bold text-gradient">
             Top Collections
           </span>
           <CollectionCarousel />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
-          <span className="text-5xl leading-normal bg-gradient-to-r from-teal-400 via-purple-400 to-teal-400 text-transparent bg-clip-text">
+          <span className="text-5xl leading-normal font-bold text-gradient">
             Categories
           </span>
           <CategoryCarousel />

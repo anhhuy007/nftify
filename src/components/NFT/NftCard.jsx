@@ -53,7 +53,7 @@ export default function NftCard() {
               className="w-11 h-11 rounded-sm"
             />
             <div className="flex flex-col">
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+              <p className="text-xs text-zinc-400 dark:text-zinc-400">
                 {stamp.owner}
               </p>
               <p className="text-sm font-semibold">{stamp.name}</p>

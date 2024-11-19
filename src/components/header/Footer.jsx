@@ -4,13 +4,14 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Twitter, Instagram, Youtube } from "lucide-react";
+import Logo from "../../assets/logo.svg";
 
 export default function Footer() {
   return (
     <footer className="pt-12 pb-8 border-t-2 border-gray-800">
       {/* Newsletter Section */}
       <div className="container mx-auto px-4 mb-12 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold mb-2 text-white">
           Get More Updates
         </h2>
         <p className="text-gray-400 mb-6">
@@ -32,7 +33,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-8 border-b border-gray-800">
           {/* Marketplace Column */}
           <div className="text-center sm:text-left">
-            <h3 className="text-lg font-semibold mb-4">Marketplace</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">Marketplace</h3>
             <ul className="space-y-2">
               {["Explore", "Articles", "How it Works", "Help"].map((item) => (
                 <li key={item}>
@@ -49,7 +50,7 @@ export default function Footer() {
 
           {/* Links Column */}
           <div className="text-center sm:text-left">
-            <h3 className="text-lg font-semibold mb-4">Links</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">Links</h3>
             <ul className="space-y-2">
               {["Tokens", "API", "Big Bounty", "Become Partners"].map(
                 (item) => (
@@ -68,7 +69,9 @@ export default function Footer() {
 
           {/* Brand Column */}
           <div className="text-center lg:text-right">
-            <h3 className="text-2xl font-bold mb-4">NFTify</h3>
+          <div className="flex justify-center lg:justify-end gap-4 mb-4">
+              <img src={Logo} alt="Logo" className="w-24 h-auto" />
+            </div>
             <div className="flex justify-center lg:justify-end gap-4">
               <a
                 href="#"
