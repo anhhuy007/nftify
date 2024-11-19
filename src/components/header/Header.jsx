@@ -99,7 +99,7 @@ function Header() {
             </nav>
           </div>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 text-white">
             <div className="relative">
               <Input
                 type="text"
