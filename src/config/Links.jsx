@@ -18,6 +18,7 @@ import SignIn from "@/pages/auth/sign-in/SignIn";
 import SignUp from "@/pages/auth/sign-up/SignUp";
 import SignOut from "@/pages/auth/sign-out/SignOut";
 import Home from "@/pages/home/Home";
+import NftDetail from "@/pages/nft/NftDetail";
 
 const menuItems = [
   {
@@ -99,6 +100,13 @@ const menuItems = [
     link: "/",
     icon: <User />,
     element: <Home />,
+  },
+  {
+    name: "NFT Detail",
+    group: "nft",
+    link: "/nft/:nftId",
+    layout: "RootLayout",
+    element: <NftDetail />,
   },
 ];
 

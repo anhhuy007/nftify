@@ -11,7 +11,7 @@ import NftCard from "@/components/NFT/NftCard";
 function NftCarousel() {
   return (
     <>
-      <Carousel className="w-full md:max-w-[1000px] max-w-[290px] xl:max-w-[1500px]">
+      <Carousel className="w-full max-w-[290px] md:max-w-[1000px] xl:max-w-[1500px]">
         <CarouselContent className="-ml-2">
           {Array.from({ length: 10 }).map((_, index) => (
             <CarouselItem
