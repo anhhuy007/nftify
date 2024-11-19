@@ -6,6 +6,7 @@ import {
   LifeBuoy,
   LogOut,
   ShoppingCart,
+  Users,
 } from "lucide-react";
 
 import Billing from "@/pages/billing/Billing";
@@ -19,6 +20,9 @@ import SignUp from "@/pages/auth/sign-up/SignUp";
 import SignOut from "@/pages/auth/sign-out/SignOut";
 import Home from "@/pages/home/Home";
 import NftDetail from "@/pages/nft/NftDetail";
+import NftsMarketplace from "@/pages/marketplace/nfts/NftsMarketplace";
+import CollectionsMarketplace from "@/pages/marketplace/collections/CollectionsMarketplace";
+import UsersMarketplace from "@/pages/marketplace/users/UsersMarketplace";
 
 const menuItems = [
   {
@@ -88,10 +92,10 @@ const menuItems = [
   {
     name: "Marketplace",
     group: "create",
-    link: "/marketplace",
-    layout: "RootLayout",
+    link: "/marketplace/nfts",
+    layout: "MarketplaceLayout",
     icon: <ShoppingCart />,
-    element: <Marketplace />,
+    element: <NftsMarketplace />,
   },
   {
     name: "Home",
@@ -107,6 +111,27 @@ const menuItems = [
     link: "/nft/:nftId",
     layout: "RootLayout",
     element: <NftDetail />,
+  },
+  {
+    name: "NFTs",
+    group: "marketplace",
+    link: "/marketplace/nfts",
+    layout: "MarketplaceLayout",
+    element: <NftsMarketplace />,
+  },
+  {
+    name: "Collections",
+    group: "marketplace",
+    link: "/marketplace/collections",
+    layout: "MarketplaceLayout",
+    element: <CollectionsMarketplace />,
+  },
+  {
+    name: "Users",
+    group: "marketplace",
+    link: "/marketplace/users",
+    layout: "MarketplaceLayout",
+    element: <UsersMarketplace />,
   },
 ];
 
