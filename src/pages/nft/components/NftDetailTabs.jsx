@@ -29,8 +29,8 @@ export default function Component() {
         <div className="min-w-[350px] md:min-w-[400px] xl:min-w-[650px] flex flex-col">
           <TabsContent value="overview" className="flex-1">
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold">Description</h2>
-              <p className="text-lg leading-relaxed">
+              <h2 className="text-2xl font-semibold text-white">Description</h2>
+              <p className="text-lg leading-relaxed text-white">
                 In the digital world, where bytes collide, Glitch ghouls emerge,
                 a terrifying tide. Their forms corrupted, their power's might,
                 Byte beasts, a digital fright.
@@ -40,22 +40,22 @@ export default function Component() {
 
           <TabsContent value="bids" className="flex-1">
             <div className="space-y-6 h-full flex flex-col">
-              <h2 className="text-2xl font-semibold">Bids</h2>
+              <h2 className="text-2xl font-semibold text-white">Bids</h2>
               <div className="flex items-center justify-between p-4 rounded-2xl border">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>UN</AvatarFallback>
                   </Avatar>
-                  <span className="text-lg">user name</span>
+                  <span className="text-lg text-white">user name</span>
                 </div>
-                <span className="text-lg">~0.001 ETH</span>
+                <span className="text-lg text-white">~0.001 ETH</span>
               </div>
               <div className="flex-1" />
             </div>
           </TabsContent>
 
           <TabsContent value="activity" className="flex-1">
-            <div className="h-full flex items-center justify-center">
+            <div className="h-full flex items-center justify-left text-white">
               No activity to show
             </div>
           </TabsContent>

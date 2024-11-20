@@ -8,7 +8,7 @@ const ToggleSwitch = ({ isGrid, setIsGrid }) => {
 
   return (
     <button
-      className="relative bg-slate-800 rounded-lg p-2 w-24 h-14 flex items-center"
+      className="relative bg-white/20 rounded-lg p-2 w-24 h-14 flex items-center"
       onClick={() => toggleGrid()}
     >
       {/* Background icons */}

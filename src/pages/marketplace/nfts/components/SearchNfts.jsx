@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 function SearchNfts() {
   return (
     <>
-      <div className="flex-1 relative">
+      <div className="flex-1 relative text-white">
         <Input
           type="text"
           placeholder="Search items, collections..."

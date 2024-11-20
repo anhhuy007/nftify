@@ -11,7 +11,7 @@ const renderMarketplaceLinks = (pathname) =>
       <Link to={item.link} className="flex items-center">
         <p
           className={`text-2xl md:text-4xl font-bold ${
-            pathname === item.link ? "" : "text-gray-300"
+            pathname === item.link ? "text-white" : "text-gray-500"
           }`}
         >
           {item.name}

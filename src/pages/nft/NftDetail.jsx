@@ -9,7 +9,7 @@ function NftDetail() {
 
   return (
     <>
-      <div className="w-full flex flex-col my-20 p-0 md:px-32 items-center justify-center gap-32">
+      <div className="w-full flex flex-col my-20 p-0 md:px-32 items-center justify-center gap-10">
         <div className="w-full flex-1 flex flex-col justify-center md:flex-row gap-16 md:gap-10 xl:gap-28">
           <div className="flex-flex-col">
             <img
@@ -22,6 +22,9 @@ function NftDetail() {
 
           <NftGeneralInformation />
         </div>
+        <h2 className="text-gradient text-5xl font-bold text-center mt-10">
+          More from this collection
+        </h2>
         <NftCarousel />
       </div>
     </>

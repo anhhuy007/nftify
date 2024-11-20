@@ -15,9 +15,9 @@ export default function UserCard({
   const [isFollowing, setIsFollowing] = useState(false);
 
   return (
-    <Card className="relative overflow-hidden rounded-3xl group border-2 hover:border-red-600">
+    <Card className="relative overflow-hidden rounded-3xl group border-2 hover:border-red-600"> 
       {/* Banner Image */}
-      <div className="h-52 p-4 bg-[#C5C6FF]">
+      <div className="h-52 p-4 bg-[#797da0]">
         <img
           src={bannerUrl}
           alt=""
@@ -26,7 +26,7 @@ export default function UserCard({
       </div>
 
       {/* Profile Info Container */}
-      <div className="relative flex items-center gap-16 bg-[#C5C6FF] p-6">
+      <div className="relative flex items-center gap-16 bg-[#797da0] p-6">
         {/* Avatar - Positioned to overlap banner */}
         <Avatar className="absolute -top-12 left-8 h-16 w-16 rounded-full">
           <AvatarImage src={avatarUrl} alt={userName} />
@@ -38,7 +38,7 @@ export default function UserCard({
         {/* User Info */}
         <div className="flex flex-col">
           <h2 className="text-xl font-bold text-white">{userName}</h2>
-          <p className="text-lg text-gray-300">
+          <p className="text-lg font-semibold text-gray-300">
             {followers.toLocaleString()} Followers
           </p>
         </div>
