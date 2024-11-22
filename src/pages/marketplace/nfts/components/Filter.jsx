@@ -36,7 +36,7 @@ export default function Filter() {
         className="w-[400px] p-0 bg-[#1a1b3b] text-white flex flex-col"
       >
         <div className="flex flex-col flex-grow overflow-hidden">
-          <div className="flex-grow overflow-y-auto">
+          <div className="flex-grow">
             <div className="flex flex-col gap-10 p-6 pt-20">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

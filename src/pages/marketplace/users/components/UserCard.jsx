@@ -26,7 +26,7 @@ export default function UserCard({
       </div>
 
       {/* Profile Info Container */}
-      <div className="relative flex items-center gap-16 bg-[#C5C6FF] p-6">
+      <div className="relative flex items-center gap-12 bg-[#C5C6FF] p-6">
         {/* Avatar - Positioned to overlap banner */}
         <Avatar className="absolute -top-12 left-8 h-16 w-16 rounded-full">
           <AvatarImage src={avatarUrl} alt={userName} />

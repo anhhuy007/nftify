@@ -46,7 +46,7 @@ export default function NftCard() {
             isHovered ? "h-[150px]" : "h-[90px]"
           }`}
         >
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center gap-4 mt-1">
             <img
               src={stamp.owner_image}
               alt={stamp.owner}
@@ -63,7 +63,7 @@ export default function NftCard() {
             </div>
           </div>
           {isHovered && (
-            <button className="bg-zinc-500 text-primary-foreground px-4 py-2 mt-4 rounded-md w-full hover:bg-zinc-600 transition-colors duration-200">
+            <button className="bg-zinc-500 text-primary-foreground px-4 py-2 mt-3 rounded-md w-full hover:bg-zinc-600 transition-colors duration-200">
               Collect now!
             </button>
           )}
@@ -79,7 +79,7 @@ export function SmallNftCard() {
   return (
     <div
       className={`
-       w-[275px] h-[374px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
+       w-[260px] h-[374px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
           isHovered
             ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"
@@ -126,7 +126,7 @@ export function BigNftCard() {
   return (
     <div
       className={`
-       w-[345px] h-[480px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
+       w-[330px] h-[480px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
           isHovered
             ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"
@@ -153,11 +153,11 @@ export function BigNftCard() {
             isHovered ? "h-[150px]" : "h-[90px]"
           }`}
         >
-          <div className="flex items-center gap-4 mt-1">
+          <div className="flex items-center gap-3">
             <img
               src={stamp.owner_image}
               alt={stamp.owner}
-              className="w-14 h-14 rounded-sm border-2"
+              className="w-12 h-12 rounded-sm border-2"
             />
             <div className="flex flex-col">
               <p className="text-xl font-bold text-zinc-600 dark:text-zinc-400">
