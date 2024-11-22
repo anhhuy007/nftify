@@ -18,6 +18,7 @@ import { User } from "lucide-react";
 import { useState } from "react";
 import { Search, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import Logo from "../../assets/logo.svg";
 
 const renderMenuItems = (group, pathname) =>
   menuItems
@@ -31,7 +32,7 @@ const renderMenuItems = (group, pathname) =>
       >
         <Link to={item.link} className="flex items-center">
           <span className="text-xl mr-2">{item.icon}</span>
-          <p className="ml-2 text-base">{item.name}</p>
+          <p className="ml-2">{item.name}</p>
         </Link>
       </DropdownMenuItem>
     ));
@@ -41,8 +42,8 @@ const DropdownMenuComponent = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center justify-center p-3 rounded-lg border border-[var(--border)] transition-all transform hover:scale-105 cursor-pointer hover:bg-primary hover:text-primary-foreground">
-          <User size={20} />
+        <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
+          <User size={20}/>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-52">
@@ -74,9 +75,10 @@ function Header() {
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           <div className="flex items-center justify-start gap-4">
-            <Link href="/" className="flex-shrink-0">
-              Logo
+          <Link href="/" claName="flex-shrink-0">
+              <img src={Logo} alt="Logo" className="h-5" />
             </Link>
+
             <Separator
               orientation="vertical"
               className="h-7 w-0.5 hidden md:block"
@@ -88,24 +90,21 @@ function Header() {
                   <React.Fragment key={item.name}>
                     <Link
                       to={item.link}
-                      className="group relative transition-all duration-300 ease-in-out hover:scale-105 flex items-center gap-2 border-b-0 hover:border-b-2 border-transparent hover:border-primary"
+                      className="group relative transition-all duration-300 ease-in-out hover:scale-105 flex items-center gap-2 border-b-0 hover:border-b-2 border-transparent hover:border-primary text-foreground font-semibold"
                     >
                       {item.name}
                     </Link>
-                    {index < array.length - 1 && (
-                      <Separator orientation="vertical" className="h-7 w-0.5" />
-                    )}
                   </React.Fragment>
                 ))}
             </nav>
           </div>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 text-white">
             <div className="relative">
               <Input
                 type="text"
                 placeholder="Search items, collections..."
-                className="w-[320px] h-10 pl-4 pr-10 rounded-3xl"
+                className="w-[320px] h-10 pl-4 pr-10 rounded-xl"
               />
               <Button
                 size="icon"
@@ -159,7 +158,7 @@ function Header() {
               <Input
                 type="text"
                 placeholder="Search items, collections..."
-                className="w-full h-10 pl-4 pr-10 rounded-3xl"
+                className="w-full h-10 pl-4 pr-10 rounded-xl"
               />
             </div>
             <div className="mt-4 flex justify-between">

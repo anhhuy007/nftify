@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function UserCard({
-  userName = "User Name",
+  userName = "Nguyễn Lâm Anh Duy",
   followers = 0,
   avatarUrl = "/placeholder.svg?height=100&width=100",
   bannerUrl = "https://i.pinimg.com/originals/49/73/5b/49735b38c27ca67787e201a8f4b0fd6d.jpg",
@@ -15,9 +15,9 @@ export default function UserCard({
   const [isFollowing, setIsFollowing] = useState(false);
 
   return (
-    <Card className="relative overflow-hidden rounded-3xl group border-2 hover:border-red-600">
+    <Card className="relative w-[345px] overflow-hidden rounded-3xl group border-2 hover:border-red-600">
       {/* Banner Image */}
-      <div className="h-52 p-4 bg-[#C5C6FF]">
+      <div className="h-52 p-4 bg-[#797da0]">
         <img
           src={bannerUrl}
           alt=""
@@ -26,7 +26,7 @@ export default function UserCard({
       </div>
 
       {/* Profile Info Container */}
-      <div className="relative flex items-center gap-12 bg-[#C5C6FF] p-6">
+      <div className="relative flex items-center justify-between gap-6 bg-[#797da0] p-6">
         {/* Avatar - Positioned to overlap banner */}
         <Avatar className="absolute -top-12 left-8 h-16 w-16 rounded-full">
           <AvatarImage src={avatarUrl} alt={userName} />
@@ -36,9 +36,9 @@ export default function UserCard({
         </Avatar>
 
         {/* User Info */}
-        <div className="flex flex-col">
-          <h2 className="text-xl font-bold text-white">{userName}</h2>
-          <p className="text-lg text-gray-300">
+        <div className="flex flex-col max-w-[145px]">
+          <h2 className="text-lg font-bold text-white truncate">{userName}</h2>
+          <p className="text-sm font-semibold text-gray-300">
             {followers.toLocaleString()} Followers
           </p>
         </div>

@@ -11,7 +11,7 @@ function Introduction() {
             <br />
             Collect, & Sell
             <br />
-            <span className="bg-gradient-to-r from-teal-400 via-purple-400 to-teal-400 text-transparent bg-clip-text">
+            <span className="text-gradient">
               Extraordinary
             </span>
             <br />

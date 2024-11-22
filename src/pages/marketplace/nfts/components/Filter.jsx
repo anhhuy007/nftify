@@ -26,7 +26,7 @@ export default function Filter() {
   return (
     <Sheet>
       <SheetTrigger>
-        <Button className="flex items-center py-7 justify-between px-4 whitespace-nowrap">
+        <Button className="flex items-center py-7 justify-between px-4 whitespace-nowrap font-semibold bg-white/20 hover:bg-white/30">
           <SlidersHorizontal size={20} />
           <p className="ml-3 text-base">Filters</p>
         </Button>
@@ -85,7 +85,7 @@ export default function Filter() {
                       selectedStatus === "all"
                         ? "bg-white text-black"
                         : "bg-[#252850] text-white"
-                    }`}
+                    } hover:bg-[#2f3266]`}
                     size="xl"
                     onClick={() => setSelectedStatus("all")}
                   >
@@ -97,7 +97,7 @@ export default function Filter() {
                       selectedStatus === "buy"
                         ? "bg-white text-black"
                         : "bg-[#252850] text-white"
-                    }`}
+                    } hover:bg-[#2f3266]`}
                     onClick={() => setSelectedStatus("buy")}
                     size="xl"
                   >
@@ -111,7 +111,7 @@ export default function Filter() {
                       selectedStatus === "auction"
                         ? "bg-white text-black"
                         : "bg-[#252850] text-white"
-                    }`}
+                    } hover:bg-[#2f3266]`}
                     size="xl"
                     onClick={() => setSelectedStatus("auction")}
                   >
