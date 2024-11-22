@@ -50,7 +50,15 @@ export default function NftDetail() {
         </div>
         <NftGeneralInformation />
       </div>
-      <NftCarousel />
+      <div className="flex flex-col gap-10 items-center">
+        <h2 className="text-3xl text-primary-foreground font-bold">
+          More from this collection
+        </h2>
+        <NftCarousel />
+        <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
+          <p>View collection</p>
+        </div>
+      </div>
     </div>
   );
 }
