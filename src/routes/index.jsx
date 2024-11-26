@@ -14,6 +14,7 @@ export const router = createBrowserRouter([
         path: item.link.replace(/^\//, ""),
         element: item.element,
         index: item.link === "/",
+        key: item.link,
       })),
   },
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       .map((item) => ({
         path: item.link.replace(/^\/auth\//, ""),
         element: item.element,
+        key: item.link,
       })),
   },
   {
@@ -34,6 +36,7 @@ export const router = createBrowserRouter([
       .map((item) => ({
         path: item.link.replace(/^\/marketplace\//, ""),
         element: item.element,
+        key: item.link,
       })),
   },
 ]);

@@ -43,7 +43,7 @@ const DropdownMenuComponent = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
-          <User size={20}/>
+          <User size={20} />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-52">
@@ -75,7 +75,7 @@ function Header() {
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           <div className="flex items-center justify-start gap-4">
-          <Link href="/" claName="flex-shrink-0">
+            <Link to="/" className="flex-shrink-0">
               <img src={Logo} alt="Logo" className="h-5" />
             </Link>
 
