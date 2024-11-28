@@ -25,14 +25,23 @@ const sortOptions = [
   { value: "z-to-a", label: "Z to A", icon: ArrowUpAZ },
 ];
 
-function Sort() {
+function Sort({ sortOption, setSortOption }) {
+  const handleSortChange = (value) => {
+    setSortOption(value);
+  };
+
   return (
     <>
-      <Select className="flex-none">
+      <Select
+        // className="flex-none"
+        value={sortOption}
+        onValueChange={handleSortChange}
+        aria-label="Sort options"
+      >
         <SelectTrigger className="w-[170px] py-7 px-4 ">
           <SelectValue placeholder="Select a filter" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent side="bottom" align="start">
           <SelectGroup>
             {sortOptions.map(({ value, label, icon: Icon }) => (
               <SelectItem key={value} value={value}>

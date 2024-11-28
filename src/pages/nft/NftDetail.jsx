@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import NftGeneralInformation from "@/pages/nft/components/NftGeneralInformation";
 import NftDetailTabs from "@/pages/nft/components/NftDetailTabs";
 import NftCarousel from "@/components/NFT/NftCarousel";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 export default function NftDetail() {
   const { nftId } = useParams();
@@ -38,6 +39,7 @@ export default function NftDetail() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl p-2">
+                <DialogTitle></DialogTitle>
                 <img
                   src={imageUrl}
                   alt="Full size NFT"
