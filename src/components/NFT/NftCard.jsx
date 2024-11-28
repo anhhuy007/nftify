@@ -13,7 +13,7 @@ const stamp = {
     "https://i0.wp.com/thatnhucuocsong.com.vn/wp-content/uploads/2023/02/Hinh-anh-avatar-cute.jpg?ssl\u003d1",
 };
 
-export default function NftCard() {
+export default function NftCard({ item }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
