@@ -1,8 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Route } from "react-router-dom";
 import RootLayout from "@/layouts/RootLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import MarketplaceLayout from "@/layouts/MarketplaceLayout";
 import menuItems from "@/config/Links";
+import PrivateRoute from "@/routes/PrivateRoute"; // Import the PrivateRoute component
 
 export const router = createBrowserRouter([
   {
@@ -12,7 +13,11 @@ export const router = createBrowserRouter([
       .filter((item) => item.layout === "RootLayout")
       .map((item) => ({
         path: item.link.replace(/^\//, ""),
-        element: item.element,
+        element: item.isPrivate ? (
+          <PrivateRoute>{item.element}</PrivateRoute>
+        ) : (
+          item.element
+        ),
         index: item.link === "/",
         key: item.link,
       })),
@@ -35,7 +40,11 @@ export const router = createBrowserRouter([
       .filter((item) => item.layout === "MarketplaceLayout")
       .map((item) => ({
         path: item.link.replace(/^\/marketplace\//, ""),
-        element: item.element,
+        element: item.isPrivate ? (
+          <PrivateRoute>{item.element}</PrivateRoute>
+        ) : (
+          item.element
+        ),
         key: item.link,
       })),
   },

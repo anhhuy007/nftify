@@ -96,7 +96,7 @@ function NftsMarketplace() {
 
   // Update URL params whenever relevant states change
   useEffect(() => {
-    fetchData();
+    // fetchData();
     updateUrlParams();
   }, [searchValue, sortOption, currentPage, filter, isGrid, limitCard]);
 

@@ -61,7 +61,7 @@ function UsersMarketplace() {
       setTotalPages(Math.ceil(totalCount / limitCard));
     };
 
-    fetchData();
+    // fetchData();
     updateUrlParams();
   }, [searchValue, currentPage]);
 

@@ -59,7 +59,7 @@ function CollectionsMarketplace() {
       setTotalPages(Math.ceil(totalCount / limitCard));
     };
 
-    fetchData();
+    // fetchData();
     updateUrlParams();
   }, [searchValue, currentPage]);
 
