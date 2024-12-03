@@ -11,7 +11,7 @@ import { Search, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Logo from "../../assets/logo.svg";
 import { useAuth } from "@/context/AuthProvider";
-import LoginDialog  from "@/components/auth/LoginDialog";
+import LoginDialog from "@/components/auth/LoginDialog";
 import { User, ShoppingCart, Bell } from "lucide-react";
 
 function Header() {
@@ -76,30 +76,23 @@ function Header() {
               ) : (
                 <>
                   <LoginDialog>
-                  <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
-
-                    <User size={20} />
+                    <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
+                      <User size={20} />
                     </div>
-
                   </LoginDialog>
-                  
-                  <LoginDialog>
-                  <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
 
-                    <Bell size={20} />
+                  <LoginDialog>
+                    <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
+                      <Bell size={20} />
                     </div>
                   </LoginDialog>
                   <LoginDialog>
-                  <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
-
-                    <ShoppingCart size={20} />
+                    <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
+                      <ShoppingCart size={20} />
                     </div>
-
                   </LoginDialog>
                 </>
-               
               )}
-              
             </div>
             <Button
               variant="ghost"

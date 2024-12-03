@@ -11,16 +11,27 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: menuItems
       .filter((item) => item.layout === "RootLayout")
-      .map((item) => ({
-        path: item.link.replace(/^\//, ""),
-        element: item.isPrivate ? (
-          <PrivateRoute>{item.element}</PrivateRoute>
-        ) : (
-          item.element
-        ),
-        index: item.link === "/",
-        key: item.link,
-      })),
+      .map((item) => {
+        if (item.children) {
+          return {
+            path: item.link.replace(/^\//, ""),
+            element: item.element,
+            children: item.children.map((child) => ({
+              path: child.link,
+              element: child.element,
+            })),
+          };
+        } else {
+          return {
+            path: item.link.replace(/^\//, ""),
+            element: item.isPrivate ? (
+              <PrivateRoute>{item.element}</PrivateRoute>
+            ) : (
+              item.element
+            ),
+          };
+        }
+      }),
   },
   {
     path: "/auth",
@@ -30,7 +41,6 @@ export const router = createBrowserRouter([
       .map((item) => ({
         path: item.link.replace(/^\/auth\//, ""),
         element: item.element,
-        key: item.link,
       })),
   },
   {
@@ -45,7 +55,6 @@ export const router = createBrowserRouter([
         ) : (
           item.element
         ),
-        key: item.link,
       })),
   },
 ]);
