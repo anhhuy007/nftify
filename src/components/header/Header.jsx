@@ -75,6 +75,16 @@ function Header() {
                 </>
               ) : (
                 <>
+                  <Button
+                    variant="primary"
+                    className="bg-[hsl(214,84%,56%)] p-6"
+                  >
+                    <Link to="/auth/connect-wallet">
+                      <span className="text-primary-foreground">
+                        Connect Wallet
+                      </span>
+                    </Link>
+                  </Button>
                   <LoginDialog>
                     <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
                       <User size={20} />
