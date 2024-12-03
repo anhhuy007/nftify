@@ -14,14 +14,27 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 
-export default function Filter({ filter, setFilter }) {
-  const [tempFilter, setTempFilter] = useState({
-    lowestPrice: filter.lowestPrice || "",
-    highestPrice: filter.highestPrice || "",
-    status: filter.status || "all",
-    collection: filter.collection || "",
-    user: filter.user || "",
+export default function Filter({ filter, setFilter, disabledFields }) {
+  const [tempFilter, setTempFilter] = useState(() => {
+    const initialFilter = {
+      lowestPrice: filter.lowestPrice || "",
+      highestPrice: filter.highestPrice || "",
+      status: filter.status || "all",
+      user: filter.user || "",
+    };
+    if (!disabledFields || disabledFields.collection?.isDisabled !== true) {
+      initialFilter.collection = filter.collection || "";
+    }
+
+    if (!disabledFields || disabledFields.user?.isDisabled !== true) {
+      initialFilter.user = filter.user || "";
+    }
+
+    return initialFilter;
   });
+
+  console.log(disabledFields);
+  console.log(tempFilter);
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -138,18 +151,28 @@ export default function Filter({ filter, setFilter }) {
               </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  className="w-full bg-[#252850] border-0 pl-10 h-14"
-                  placeholder="Search by Collections"
-                  value={tempFilter.collection}
-                  onChange={(e) =>
-                    handleTempFilterChange("collection", e.target.value)
-                  }
-                />
+                {disabledFields?.collection?.isDisabled || false ? (
+                  <Input
+                    className="w-full bg-[#252850] border-0 pl-10 h-14"
+                    placeholder={`${
+                      disabledFields?.collection?.name || "Collection"
+                    }`}
+                    disabled
+                  />
+                ) : (
+                  <Input
+                    className="w-full bg-[#252850] border-0 pl-10 h-14"
+                    placeholder="Search by Collections"
+                    value={tempFilter.collection}
+                    onChange={(e) =>
+                      handleTempFilterChange("collection", e.target.value)
+                    }
+                  />
+                )}
               </div>
             </div>
 
-            {/* User filter */}
+            {/* User Filter */}
             <Separator className="bg-gray-700" />
 
             <div className="space-y-8">
@@ -159,14 +182,22 @@ export default function Filter({ filter, setFilter }) {
               </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  className="w-full bg-[#252850] border-0 pl-10 h-14"
-                  placeholder="Search by Users"
-                  value={tempFilter.user}
-                  onChange={(e) =>
-                    handleTempFilterChange("user", e.target.value)
-                  }
-                />
+                {disabledFields?.user?.isDisabled || false ? (
+                  <Input
+                    className="w-full bg-[#252850] border-0 pl-10 h-14"
+                    placeholder={`${disabledFields?.user?.name || "User"}`}
+                    disabled
+                  />
+                ) : (
+                  <Input
+                    className="w-full bg-[#252850] border-0 pl-10 h-14"
+                    placeholder="Search by User"
+                    value={tempFilter.user}
+                    onChange={(e) =>
+                      handleTempFilterChange("user", e.target.value)
+                    }
+                  />
+                )}
               </div>
             </div>
           </div>

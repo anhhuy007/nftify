@@ -23,6 +23,7 @@ import NftDetail from "@/pages/nft/NftDetail";
 import NftsMarketplace from "@/pages/marketplace/nfts/NftsMarketplace";
 import CollectionsMarketplace from "@/pages/marketplace/collections/CollectionsMarketplace";
 import UsersMarketplace from "@/pages/marketplace/users/UsersMarketplace";
+import CollectionDetail from "@/pages/collection/CollectionDetail";
 
 const menuItems = [
   {
@@ -147,7 +148,14 @@ const menuItems = [
     element: <UsersMarketplace />,
     isPrivate: false,
   },
+  {
+    name: "Collection Detail",
+    group: "collection",
+    link: "/collection/:collectionId",
+    layout: "RootLayout",
+    element: <CollectionDetail />,
+    isPrivate: false,
+  },
 ];
 
 export default menuItems;
-

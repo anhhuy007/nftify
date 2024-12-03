@@ -15,7 +15,7 @@ const stamp = {
 };
 
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -93,15 +93,21 @@ export function SmallNftCard({ stamp }) {
     <Link to={`/nft/${id}`}>
       <div
         className={`w-[260px] h-[374px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
-        ${isHovered
-          ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
-          : "bg-card"}`}
+        ${
+          isHovered
+            ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
+            : "bg-card"
+        }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <Card
           className={`w-full h-full p-0 overflow-hidden bg-card border-2 transition-all duration-300
-          ${isHovered ? "shadow-[0_-5px_10px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.2)]" : ""}`}
+          ${
+            isHovered
+              ? "shadow-[0_-5px_10px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.2)]"
+              : ""
+          }`}
         >
           <CardHeader
             className={`px-3 pt-5 pb-0 transition-all duration-300 ${
@@ -131,7 +137,6 @@ export function SmallNftCard({ stamp }) {
   );
 }
 
-
 export function BigNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { id, name, owner, price, image, owner_image } = stamp;
@@ -140,17 +145,21 @@ export function BigNftCard({ stamp }) {
     <Link to={`/nft/${id}`}>
       <div
         className={`w-[330px] h-[480px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
-        ${isHovered
-          ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
-          : "bg-card"}`}
+        ${
+          isHovered
+            ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
+            : "bg-card"
+        }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <Card
           className={`w-full h-full p-0 overflow-hidden bg-card border-2 transition-all duration-300
-         ${isHovered
-           ? "shadow-[0_-5px_10px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.2)]"
-           : ""}`}
+         ${
+           isHovered
+             ? "shadow-[0_-5px_10px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.2)]"
+             : ""
+         }`}
         >
           <CardHeader
             className={`px-3 pt-3 pb-0 transition-all duration-300 ${
@@ -185,7 +194,7 @@ export function BigNftCard({ stamp }) {
               </div>
             </div>
             {isHovered && (
-              <Button className="text-primary-foreground px-6 py-4 mt-2 rounded-md w-full transition-colors duration-200">
+              <Button className="text-primary-foreground px-6 py-4 mt-2 rounded-md w-full transition-colors duration-300">
                 Collect now!
               </Button>
             )}
