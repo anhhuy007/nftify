@@ -31,6 +31,7 @@ const RootLayout = () => {
           </div>
           <Outlet />
         </main>
+
         <Footer />
       </div>
     </>

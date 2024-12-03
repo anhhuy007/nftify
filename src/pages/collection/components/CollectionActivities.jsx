@@ -1,11 +1,11 @@
 import React from "react";
-import CollectionActivity from "@/pages/collection/components/CollectionActivity";
+import Activity from "@/pages/collection/components/Activity";
 
 function CollectionActivities({ collection }) {
   return (
     <div className="space-y-5">
       {collection.activity.map((activity, index) => (
-        <CollectionActivity key={index} activity={activity} />
+        <Activity key={index} activity={activity} />
       ))}
     </div>
   );

@@ -25,13 +25,9 @@ import CollectionsMarketplace from "@/pages/marketplace/collections/CollectionsM
 import UsersMarketplace from "@/pages/marketplace/users/UsersMarketplace";
 import CollectionDetail from "@/pages/collection/CollectionDetail";
 import UserDetail from "@/pages/user/UserDetail";
-import UserOnSale from "@/pages/user/UserOnSale";
-import UserCreated from "@/pages/user/UserCreated";
 import UserActivities from "@/pages/user/UserActivities";
-import UserLiked from "@/pages/user/UserLiked";
-import UserOwned from "@/pages/user/UserOwned";
-import UserSold from "@/pages/user/UserSold";
 import UserCollections from "@/pages/user/UserCollections";
+import UserNfts from "@/pages/user/UserNfts";
 
 const menuItems = [
   {
@@ -174,12 +170,12 @@ const menuItems = [
       {
         name: "Owned",
         link: "owned",
-        element: <UserOwned />,
+        element: <UserNfts />,
       },
       {
         name: "On Sale",
         link: "onSale",
-        element: <UserOnSale />,
+        element: <UserNfts />,
       },
       {
         name: "Collections",
@@ -189,7 +185,7 @@ const menuItems = [
       {
         name: "Created",
         link: "created",
-        element: <UserCreated />,
+        element: <UserNfts />,
       },
       {
         name: "Activity",
@@ -199,12 +195,12 @@ const menuItems = [
       {
         name: "Sold",
         link: "sold",
-        element: <UserSold />,
+        element: <UserNfts />,
       },
       {
         name: "Liked",
         link: "liked",
-        element: <UserLiked />,
+        element: <UserNfts />,
       },
     ],
   },

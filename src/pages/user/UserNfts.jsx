@@ -5,6 +5,7 @@ import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import { BigNftCard, SmallNftCard } from "@/components/NFT/NftCard";
 import Filter from "@/pages/marketplace/nfts/components/Filter";
+import { useLocation } from "react-router-dom";
 import {
   Pagination,
   PaginationContent,
@@ -13,11 +14,28 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useOutletContext } from "react-router-dom";
 
-function UserOwned() {
+function UserNfts() {
+  // Fetch location to determine the current path
+  const location = useLocation();
+  const { userName, userId } = useOutletContext(); // Fetch user details from outlet context
+
+  const currentPath = location.pathname; // Get the current path (URL)
+
+  // Determine the NFT type based on the path (owned, onSale, or created)
+  let typeData = "";
+  if (currentPath.includes("owned")) {
+    typeData = "owned";
+  } else if (currentPath.includes("onSale")) {
+    typeData = "onSale";
+  } else if (currentPath.includes("created")) {
+    typeData = "created";
+  }
+  // useSearchParams is a hook to read and manipulate the URL search parameters
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // View state: grid or list layout
+  // State variables for different parameters (grid view, sorting, search, etc.)
   const [isGrid, setIsGrid] = useState(searchParams.get("isGrid") === "true");
   const [sortOption, setSortOption] = useState(searchParams.get("sort") || "");
   const [searchValue, setSearchValue] = useState(
@@ -29,26 +47,26 @@ function UserOwned() {
   const [filter, setFilter] = useState({
     status: searchParams.get("status") || "all",
     collection: searchParams.get("collection") || "",
-    user: searchParams.get("user") || "",
     lowestPrice: searchParams.get("lowestPrice") || "",
     highestPrice: searchParams.get("highestPrice") || "",
   });
-  const [cards, setCards] = useState([]);
-  const [totalPages, setTotalPages] = useState(5);
-  const [totalResults, setTotalResults] = useState(0); // Total number of results
+  const [cards, setCards] = useState([]); // State for storing fetched NFT cards
+  const [totalPages, setTotalPages] = useState(5); // Total number of pages for pagination
+  const [totalResults, setTotalResults] = useState(0); // Total number of NFT results
 
-  // Determine card count per page based on isGrid state
-  const calculateCardCount = () => (isGrid ? 5 : 4); // 5 cards for grid, 4 for list
+  // Calculate the number of cards per row based on grid view state
+  const calculateCardCount = () => (isGrid ? 5 : 4);
   const [cardCount, setCardCount] = useState(calculateCardCount());
-  const [limitCard, setLimitCard] = useState(cardCount * 4);
+  const [limitCard, setLimitCard] = useState(cardCount * 4); // Limit the number of cards per page
 
-  // Function to fetch NFT data from the API
+  // Function to fetch data based on the current parameters
   const fetchData = async () => {
     try {
       const payload = {
+        type: typeData,
         status: filter.status,
         collection: filter.collection,
-        user: filter.user,
+        user: userId,
         lowestPrice: filter.lowestPrice,
         highestPrice: filter.highestPrice,
         sort: sortOption,
@@ -57,7 +75,7 @@ function UserOwned() {
         limit: limitCard,
       };
 
-      const response = await fetch(`/api/nfts`, {
+      const response = await fetch(`/api/users/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,15 +84,28 @@ function UserOwned() {
       });
 
       const result = await response.json();
-      setCards(result.data);
-      setTotalPages(Math.ceil(result.total / limitCard));
-      setTotalResults(result.total); // Store the total number of results
+      setCards(result.data); // Set the fetched NFT cards
+      setTotalPages(Math.ceil(result.total / limitCard)); // Set total pages for pagination
+      setTotalResults(result.total); // Set total results for displaying info
     } catch (error) {
-      console.error("Error fetching filtered data:", error);
+      console.error("Error fetching filtered data:", error); // Log error if fetch fails
     }
   };
 
-  // Update URL params when states change
+  // Update the card count and limit based on grid view toggle
+  useEffect(() => {
+    const newCardCount = calculateCardCount();
+    setCardCount(newCardCount);
+    setLimitCard(newCardCount * 4); // Update limitCard according to card count
+  }, [isGrid]);
+
+  // Update URL search parameters when filters, search, sorting, etc., change
+  useEffect(() => {
+    updateUrlParams();
+    // fetchData(); // Uncomment to fetch data when parameters change
+  }, [searchValue, sortOption, currentPage, filter, isGrid, limitCard]);
+
+  // Update URL parameters based on current state
   const updateUrlParams = () => {
     const newParams = {
       search: searchValue,
@@ -84,35 +115,29 @@ function UserOwned() {
       ...filter,
       limit: limitCard,
     };
-    setSearchParams(newParams);
+    setSearchParams(newParams); // Set the updated search params in the URL
   };
 
-  // Update cardCount and limitCard when isGrid changes
-  useEffect(() => {
-    const newCardCount = calculateCardCount();
-    setCardCount(newCardCount);
-    setLimitCard(newCardCount * 4);
-  }, [isGrid]);
+  // updateUrlParams(); // Call the function to update URL params
 
-  // Update URL params whenever relevant states change
-  useEffect(() => {
-    // fetchData();
-    updateUrlParams();
-  }, [searchValue, sortOption, currentPage, filter, isGrid, limitCard]);
-
-  // Update cards when currentPage changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
+  // Handlers for page change, search input, sorting, filter change, and grid toggle
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
   const handleSearch = (value) => setSearchValue(value);
   const handleSort = (option) => setSortOption(option);
   const handleFilterChange = (newFilter) => setFilter(newFilter);
   const handleToggleGrid = (value) => setIsGrid(value);
 
-  // Dynamically calculate the start and end result
+  // Calculate the range of results to display (start and end)
   const startResult = (currentPage - 1) * limitCard + 1;
   const endResult = Math.min(currentPage * limitCard, totalResults);
+
+  // Disabled fields (user details)
+  const disabledFields = {
+    user: {
+      isDisabled: true,
+      name: userName,
+    },
+  };
 
   return (
     <>
@@ -120,7 +145,11 @@ function UserOwned() {
         {/* Filters and controls */}
         <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
           <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
-            <Filter filter={filter} setFilter={handleFilterChange} />
+            <Filter
+              filter={filter}
+              setFilter={handleFilterChange}
+              disabledFields={disabledFields}
+            />
             <div className="flex-1">
               <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
             </div>
@@ -195,4 +224,4 @@ function UserOwned() {
   );
 }
 
-export default UserOwned;
+export default UserNfts;
