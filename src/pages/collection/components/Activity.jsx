@@ -37,9 +37,9 @@ function CollectionActivity({ activity }) {
         alt={activity.name}
         className="w-32 h-32 rounded-lg object-cover "
       />
-      <div className="flex flex-col gap-3">
-        <span className="font-semibold text-2xl">{activity.name}</span>
-        <p className="text-gray-300 text-lg">{getActivityDescription()}</p>
+      <div className="flex flex-col gap-4 justify-between">
+        <span className="font-semibold text-3xl">{activity.name}</span>
+        <p className="text-gray-300 text-xl">{getActivityDescription()}</p>
         <p className="text-gray-400 text-sm">{activity.time}</p>
       </div>
     </div>

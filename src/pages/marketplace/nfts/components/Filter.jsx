@@ -33,9 +33,6 @@ export default function Filter({ filter, setFilter, disabledFields }) {
     return initialFilter;
   });
 
-  console.log(disabledFields);
-  console.log(tempFilter);
-
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       setFilter(tempFilter);

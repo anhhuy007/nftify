@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import Billing from "@/pages/billing/Billing";
-import Create from "@/pages/create/Create";
+import CreateNft from "@/pages/create/CreateNft";
 import Help from "@/pages/help/Help";
 import Marketplace from "@/pages/marketplace/Marketplace";
 import Profile from "@/pages/profile/Profile";
@@ -24,6 +24,11 @@ import NftsMarketplace from "@/pages/marketplace/nfts/NftsMarketplace";
 import CollectionsMarketplace from "@/pages/marketplace/collections/CollectionsMarketplace";
 import UsersMarketplace from "@/pages/marketplace/users/UsersMarketplace";
 import CollectionDetail from "@/pages/collection/CollectionDetail";
+import UserDetail from "@/pages/user/UserDetail";
+import UserActivities from "@/pages/user/UserActivities";
+import UserCollections from "@/pages/user/UserCollections";
+import UserNfts from "@/pages/user/UserNfts";
+import CreateCollection from "@/pages/create/CreateCollection";
 
 const menuItems = [
   {
@@ -90,13 +95,22 @@ const menuItems = [
     isPrivate: false,
   },
   {
+    name: "Create Collection",
+    group: "create",
+    layout: "RootLayout",
+    link: "/create/collection",
+    icon: <User />,
+    element: <CreateCollection />,
+    // isPrivate: true,
+  },
+  {
     name: "Create",
     group: "create",
     layout: "RootLayout",
-    link: "/create",
+    link: "/create/nft",
     icon: <User />,
-    element: <Create />,
-    isPrivate: true,
+    element: <CreateNft />,
+    // isPrivate: true,
   },
   {
     name: "Marketplace",
@@ -155,6 +169,50 @@ const menuItems = [
     layout: "RootLayout",
     element: <CollectionDetail />,
     isPrivate: false,
+  },
+  {
+    name: "User Detail",
+    group: "userDetail",
+    link: "/user/:userId",
+    layout: "RootLayout",
+    element: <UserDetail />,
+    children: [
+      {
+        name: "Owned",
+        link: "owned",
+        element: <UserNfts />,
+      },
+      {
+        name: "On Sale",
+        link: "onSale",
+        element: <UserNfts />,
+      },
+      {
+        name: "Collections",
+        link: "collections",
+        element: <UserCollections />,
+      },
+      {
+        name: "Created",
+        link: "created",
+        element: <UserNfts />,
+      },
+      {
+        name: "Activity",
+        link: "activity",
+        element: <UserActivities />,
+      },
+      {
+        name: "Sold",
+        link: "sold",
+        element: <UserNfts />,
+      },
+      {
+        name: "Liked",
+        link: "liked",
+        element: <UserNfts />,
+      },
+    ],
   },
 ];
 
