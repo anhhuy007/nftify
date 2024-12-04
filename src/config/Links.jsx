@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import Billing from "@/pages/billing/Billing";
-import Create from "@/pages/create/Create";
+import CreateNft from "@/pages/create/CreateNft";
 import Help from "@/pages/help/Help";
 import Marketplace from "@/pages/marketplace/Marketplace";
 import Profile from "@/pages/profile/Profile";
@@ -28,6 +28,7 @@ import UserDetail from "@/pages/user/UserDetail";
 import UserActivities from "@/pages/user/UserActivities";
 import UserCollections from "@/pages/user/UserCollections";
 import UserNfts from "@/pages/user/UserNfts";
+import CreateCollection from "@/pages/create/CreateCollection";
 
 const menuItems = [
   {
@@ -94,13 +95,22 @@ const menuItems = [
     isPrivate: false,
   },
   {
+    name: "Create Collection",
+    group: "create",
+    layout: "RootLayout",
+    link: "/create/collection",
+    icon: <User />,
+    element: <CreateCollection />,
+    // isPrivate: true,
+  },
+  {
     name: "Create",
     group: "create",
     layout: "RootLayout",
-    link: "/create",
+    link: "/create/nft",
     icon: <User />,
-    element: <Create />,
-    isPrivate: true,
+    element: <CreateNft />,
+    // isPrivate: true,
   },
   {
     name: "Marketplace",
