@@ -23,6 +23,7 @@ import NftDetail from "@/pages/nft/NftDetail";
 import NftsMarketplace from "@/pages/marketplace/nfts/NftsMarketplace";
 import CollectionsMarketplace from "@/pages/marketplace/collections/CollectionsMarketplace";
 import UsersMarketplace from "@/pages/marketplace/users/UsersMarketplace";
+import CollectionDetail from "@/pages/collection/CollectionDetail";
 
 const menuItems = [
   {
@@ -32,6 +33,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <User />,
     element: <Profile />,
+    isPrivate: true,
   },
   {
     name: "Billing",
@@ -40,6 +42,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <CreditCard />,
     element: <Billing />,
+    isPrivate: true,
   },
   {
     name: "Setting",
@@ -48,6 +51,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <Settings />,
     element: <Setting />,
+    isPrivate: true,
   },
   {
     name: "Help Center",
@@ -56,6 +60,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <LifeBuoy />,
     element: <Help />,
+    isPrivate: false,
   },
   {
     name: "Log out",
@@ -64,6 +69,7 @@ const menuItems = [
     link: "/auth/sign-out",
     icon: <LogOut />,
     element: <SignOut />,
+    isPrivate: false,
   },
   {
     name: "Sign in",
@@ -72,6 +78,7 @@ const menuItems = [
     layout: "AuthLayout",
     icon: <User />,
     element: <SignIn />,
+    isPrivate: false,
   },
   {
     name: "Sign up",
@@ -80,6 +87,7 @@ const menuItems = [
     layout: "AuthLayout",
     icon: <User />,
     element: <SignUp />,
+    isPrivate: false,
   },
   {
     name: "Create",
@@ -88,6 +96,7 @@ const menuItems = [
     link: "/create",
     icon: <User />,
     element: <Create />,
+    isPrivate: true,
   },
   {
     name: "Marketplace",
@@ -96,6 +105,7 @@ const menuItems = [
     layout: "MarketplaceLayout",
     icon: <ShoppingCart />,
     element: <NftsMarketplace />,
+    isPrivate: false,
   },
   {
     name: "Home",
@@ -104,6 +114,7 @@ const menuItems = [
     link: "/",
     icon: <User />,
     element: <Home />,
+    isPrivate: false,
   },
   {
     name: "NFT Detail",
@@ -111,6 +122,7 @@ const menuItems = [
     link: "/nft/:nftId",
     layout: "RootLayout",
     element: <NftDetail />,
+    isPrivate: false,
   },
   {
     name: "NFTs",
@@ -118,6 +130,7 @@ const menuItems = [
     link: "/marketplace/nfts",
     layout: "MarketplaceLayout",
     element: <NftsMarketplace />,
+    isPrivate: false,
   },
   {
     name: "Collections",
@@ -125,6 +138,7 @@ const menuItems = [
     link: "/marketplace/collections",
     layout: "MarketplaceLayout",
     element: <CollectionsMarketplace />,
+    isPrivate: false,
   },
   {
     name: "Users",
@@ -132,6 +146,15 @@ const menuItems = [
     link: "/marketplace/users",
     layout: "MarketplaceLayout",
     element: <UsersMarketplace />,
+    isPrivate: false,
+  },
+  {
+    name: "Collection Detail",
+    group: "collection",
+    link: "/collection/:collectionId",
+    layout: "RootLayout",
+    element: <CollectionDetail />,
+    isPrivate: false,
   },
 ];
 

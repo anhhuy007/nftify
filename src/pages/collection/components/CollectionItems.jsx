@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import { BigNftCard, SmallNftCard } from "@/components/NFT/NftCard";
 import Filter from "@/pages/marketplace/nfts/components/Filter";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
-function NftsMarketplace() {
+function CollectionItems({ collection }) {
+  const id = collection.id;
   const [searchParams, setSearchParams] = useSearchParams();
-
-  // View state: grid or list layout
   const [isGrid, setIsGrid] = useState(searchParams.get("isGrid") === "true");
   const [sortOption, setSortOption] = useState(searchParams.get("sort") || "");
   const [searchValue, setSearchValue] = useState(
@@ -28,7 +19,6 @@ function NftsMarketplace() {
   );
   const [filter, setFilter] = useState({
     status: searchParams.get("status") || "all",
-    collection: searchParams.get("collection") || "",
     user: searchParams.get("user") || "",
     lowestPrice: searchParams.get("lowestPrice") || "",
     highestPrice: searchParams.get("highestPrice") || "",
@@ -42,12 +32,11 @@ function NftsMarketplace() {
   const [cardCount, setCardCount] = useState(calculateCardCount());
   const [limitCard, setLimitCard] = useState(cardCount * 4);
 
-  // Function to fetch NFT data from the API
   const fetchData = async () => {
     try {
       const payload = {
         status: filter.status,
-        collection: filter.collection,
+        collection: id,
         user: filter.user,
         lowestPrice: filter.lowestPrice,
         highestPrice: filter.highestPrice,
@@ -57,7 +46,7 @@ function NftsMarketplace() {
         limit: limitCard,
       };
 
-      const response = await fetch(`/api/nfts`, {
+      const response = await fetch(`/api/collection/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,23 +99,35 @@ function NftsMarketplace() {
   const handleFilterChange = (newFilter) => setFilter(newFilter);
   const handleToggleGrid = (value) => setIsGrid(value);
 
+  const disabledFields = {
+    collection: { isDisabled: true, name: collection.name },
+    user: { isDisabled: true, name: collection.author.name },
+  };
+
   // Dynamically calculate the start and end result
   const startResult = (currentPage - 1) * limitCard + 1;
   const endResult = Math.min(currentPage * limitCard, totalResults);
-
   return (
     <div className="flex flex-col gap-10">
       {/* Filters and controls */}
       <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
         <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
-          <Filter filter={filter} setFilter={handleFilterChange} />
+          <Filter
+            filter={filter}
+            setFilter={handleFilterChange}
+            disabledFields={disabledFields}
+          />
           <div className="flex-1">
             <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
           </div>
         </div>
         <div className="flex items-center justify-center w-full lg:w-auto gap-8 mt-4 lg:mt-0">
           <Sort sortOption={sortOption} setSortOption={handleSort} />
-          <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} />
+          <ToggleSwitch
+            isGrid={isGrid}
+            setIsGrid={handleToggleGrid}
+            disabledField={disabledFields}
+          />
         </div>
       </div>
 
@@ -193,4 +194,4 @@ function NftsMarketplace() {
   );
 }
 
-export default NftsMarketplace;
+export default CollectionItems;
