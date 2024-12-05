@@ -59,7 +59,7 @@ function Home() {
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Creators
           </span>
-          <CreatorCarousel data={creatorsData} />
+          <CreatorCarousel data={creatorsData} isLoading={trendingLoading} />
         </div>
         <Banner />
       </div>
