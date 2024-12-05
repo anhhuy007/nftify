@@ -47,7 +47,7 @@ function Home() {
           <span className="text-5xl font-bold leading-normal text-gradient">
             Trending NFTs
           </span>
-          <NftCarousel data={trendingData} />
+          <NftCarousel data={trendingData} isLoading={trendingLoading} />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
