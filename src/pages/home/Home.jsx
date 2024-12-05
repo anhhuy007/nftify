@@ -5,6 +5,7 @@ import Introduction from "@/pages/home/components/Introduction";
 import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
 import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
+import SkeletonNftCard from "@/components/skeleton/SkeletonNft";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 const trendingApiEndpoint =
