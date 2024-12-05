@@ -1,20 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { RouterProvider } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { router } from '@/routes/index';
+import AuthProvider from '@/context/AuthProvider';
+
+const queryClient = new QueryClient();
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <h1 className='flex flex-col-reverse'>
-          NFTify <img src={reactLogo} alt="React Logo" />
-        </h1>
-      </div>
-    </>
-  )
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
