@@ -8,17 +8,6 @@ import {
 } from "@/components/ui/carousel";
 import NftCard from "@/components/NFT/NftCard";
 
-const stampData = {
-  id: 1,
-  name: "Stamp",
-  owner: "0x1234567890",
-  price: "0.1",
-  image:
-    "https://i.etsystatic.com/27708971/r/il/1b55f0/2853845438/il_1588xN.2853845438_n8z5.jpg",
-  owner_image:
-    "https://i0.wp.com/thatnhucuocsong.com.vn/wp-content/uploads/2023/02/Hinh-anh-avatar-cute.jpg?ssl\u003d1",
-};
-
 function NftCarousel({ data }) {
   const stamps = data.items;
 
