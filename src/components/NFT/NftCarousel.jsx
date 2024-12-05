@@ -19,11 +19,24 @@ const stampData = {
     "https://i0.wp.com/thatnhucuocsong.com.vn/wp-content/uploads/2023/02/Hinh-anh-avatar-cute.jpg?ssl\u003d1",
 };
 
-function NftCarousel() {
+function NftCarousel({ data }) {
+  const stamps = data.items;
+
   return (
-    <Carousel className="h-full w-full max-w-[290px] md:max-w-[1000px] xl:max-w-[1500px]">
+    <Carousel className="h-full w-full max-w-[290px] md:max-w-[1000px] xl:max-w-[90vw]">
       <CarouselContent className="-ml-2 overflow-visible my-4">
-        {Array.from({ length: 10 }).map((_, index) => (
+        {stamps.map((stamp) => (
+          <CarouselItem
+            key={stamp.id}
+            className="md:basis-1/2 lg:basis-1/3 xl:basis-1/5 relative"
+          >
+            <div className="relative z-10">
+              <NftCard stamp={stamp} />
+            </div>
+          </CarouselItem>
+        )
+        )}
+        {/* {Array.from({ length: 10 }).map((_, index) => (
           <CarouselItem
             key={index}
             className="md:basis-1/2 lg:basis-1/3 xl:basis-1/5 relative"
@@ -32,7 +45,7 @@ function NftCarousel() {
               <NftCard stamp={stampData} />
             </div>
           </CarouselItem>
-        ))}
+        ))} */}
       </CarouselContent>
       <CarouselPrevious className="hidden md:inline-block md:p-2" />
       <CarouselNext className="hidden md:inline-block md:p-2" />

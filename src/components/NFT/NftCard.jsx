@@ -17,14 +17,54 @@ const stamp = {
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
+/*
+Stamp data structure:
+{
+    "_id": "6745e27e336bf17419810dd6",
+    "creatorId": "673876c24af03358be502d81",
+    "title": "King George V",
+    "issuedBy": "Turks & Caicos Islands",
+    "function": "postage",
+    "date": "31/12/1904",
+    "denom": {
+        "$numberDecimal": "34.91"
+    },
+    "color": "scarlet",
+    "imgUrl": "https://stampdata.com/files/thumbs/zk/300px-Colnect-5572-405-King-George-V.jpg",
+    "createdAt": "2024-11-26T15:00:14.460Z",
+    "itemIdString": "6745e27e336bf17419810dd6",
+    "insight": [
+        {
+            "_id": "67489392a9874935b081326b",
+            "itemId": "6745e27e336bf17419810dd6",
+            "verifyStatus": "verified",
+            "favoriteCount": 869,
+            "viewCount": 991,
+            "updatedAt": "2024-11-29T04:12:22.751Z"
+        }
+    ],
+    "price": [
+        {
+            "_id": "67484c3a3965399cd6354e85",
+            "itemId": "6745e27e336bf17419810dd6",
+            "price": {
+                "$numberDecimal": "92.15"
+            },
+            "currency": "ETH",
+            "createdAt": "2024-11-28T10:55:54.674Z"
+        }
+    ],
+    "collectionName": "Art on Envelopes"
+},
+*/
+
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
-  const { id, name, owner, price, image, owner_image } = stamp;
 
   return (
-    <Link to={`/nft/${id}`}>
+    <Link to={`/nft/${stamp._id}`}>
       <div
-        className={`w-[278px] h-96 p-[2px] rounded-xl transition-all duration-300 ease-in-out
+        className={`w-[260x] h-96 p-[2px] rounded-xl transition-all duration-300 ease-in-out
           ${
             isHovered
               ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
@@ -47,7 +87,7 @@ export default function NftCard({ stamp }) {
             }`}
           >
             <img
-              src={image}
+              src={stamp.imgUrl}
               alt="Stamp"
               className="w-full h-full object-cover shadow-sm rounded-xl transition-all duration-300"
             />
@@ -59,18 +99,18 @@ export default function NftCard({ stamp }) {
           >
             <div className="flex items-center gap-4 mt-1">
               <img
-                src={owner_image}
-                alt={owner}
+                src={stamp.imgUrl}
+                alt={stamp.collectionName}
                 className="w-11 h-11 rounded-sm"
               />
               <div className="flex flex-col">
                 <p className="text-xs text-zinc-300 dark:text-zinc-400">
-                  {owner}
+                  {stamp.collectionName}
                 </p>
-                <p className="text-sm font-semibold">{name}</p>
+                <p className="text-sm font-semibold">{stamp.title}</p>
               </div>
               <div className="flex-1 text-right">
-                <h1>{price} ETH</h1>
+                <h1>{stamp.price[0].price.$numberDecimal} ETH</h1>
               </div>
             </div>
             {isHovered && (
