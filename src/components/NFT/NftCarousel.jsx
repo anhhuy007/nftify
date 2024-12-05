@@ -21,8 +21,8 @@ const stampData = {
 
 function NftCarousel() {
   return (
-    <Carousel className="h-full w-full max-w-[290px] md:max-w-[1000px] xl:max-w-[1500px]">
-      <CarouselContent className="-ml-2 overflow-visible my-4">
+    <Carousel className="h-full w-full max-w-[290px] md:max-w-[1000px] xl:max-w-[90vw]">
+      <CarouselContent className="ml-3 overflow-visible my-4">
         {Array.from({ length: 10 }).map((_, index) => (
           <CarouselItem
             key={index}

@@ -24,7 +24,7 @@ export default function NftCard({ stamp }) {
   return (
     <Link to={`/nft/${id}`}>
       <div
-        className={`w-[278px] h-96 p-[2px] rounded-xl transition-all duration-300 ease-in-out
+        className={`w-[265px] h-96 p-[2px] rounded-xl transition-all duration-300 ease-in-out
           ${
             isHovered
               ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"

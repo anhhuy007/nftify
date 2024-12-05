@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import CollectionCard from "@/pages/marketplace/collections/components/CollectionCard";
-import { useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 
 const fetchCollections = async (
