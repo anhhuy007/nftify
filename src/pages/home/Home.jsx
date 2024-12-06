@@ -6,6 +6,7 @@ import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
 import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
 import SkeletonNftCard from "@/components/skeleton/SkeletonNft";
+import LoadingAnimation from "@/components/ui/loading";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 const trendingApiEndpoint =
@@ -33,7 +34,8 @@ function Home() {
   } = useQuery("top-creators", () => fetcher(creatorsApiEndpoint));
 
   if (trendingLoading || collectionsLoading || creatorsLoading)
-    return <div className="text-white">Loading...</div>;
+    return LoadingAnimation();
+
   if (trendingError) return <div>Error: {trendingError.message}</div>;
   if (collectionsError) return <div>Error: {collectionsError.message}</div>;
   if (creatorsError) return <div>Error: {creatorsError.message}</div>;

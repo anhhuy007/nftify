@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Maximize2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -9,6 +9,8 @@ import NftGeneralInformation from "@/pages/nft/components/NftGeneralInformation"
 import NftDetailTabs from "@/pages/nft/components/NftDetailTabs";
 import NftCarousel from "@/components/NFT/NftCarousel";
 import { useQuery } from "react-query";
+import LoadingAnimation from "@/components/ui/loading";
+import ErrorAnimation from "@/components/ui/error";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -18,20 +20,33 @@ export default function NftDetail() {
 
   const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp/${nftId}`;
 
-  const { data: nftDetail, error: nftDetailError, isLoading: nftDetailLoading } = useQuery(
-    'nft-detail',
-    () => fetcher(stampDetailApiEndpoint)
-  );
+  const {
+    data: nftDetail,
+    error: nftDetailError,
+    isLoading: nftDetailLoading,
+  } = useQuery(["nft-detail", nftId], () => fetcher(stampDetailApiEndpoint), {
+    enabled: !!nftId,
+  });
 
-  const moreFromCreatorEndpoint = nftDetail ? `http://localhost:3000/api/v1/stamp/list/${nftDetail.creatorId}?page=1&limit=10` : null;
-  const { data: moreFromCreatorData, error: moreFromCreatorError, isLoading: moreFromCreatorLoading } = useQuery(
-    'more-from-creator',
+  const moreFromCreatorEndpoint = nftDetail
+    ? `http://localhost:3000/api/v1/stamp/list/${nftDetail.creatorId}?page=1&limit=10`
+    : null;
+
+  const {
+    data: moreFromCreatorData,
+    error: moreFromCreatorError,
+    isLoading: moreFromCreatorLoading,
+  } = useQuery(
+    ["more-from-creator", nftId],
     () => fetcher(moreFromCreatorEndpoint),
     { enabled: !!nftDetail }
   );
 
-  if (nftDetailLoading) return <div>Loading...</div>;
-  if (nftDetailError) return <div>Error: {nftDetailError.message}</div>;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [nftId]);
+  if (nftDetailLoading) return LoadingAnimation();
+  if (nftDetailError) return ErrorAnimation();
 
   return (
     <div className="w-full flex flex-col my-20 p-0 md:px-32 items-center justify-center gap-32">
@@ -41,7 +56,7 @@ export default function NftDetail() {
             <img
               src={nftDetail.imgUrl}
               alt="NFT Image"
-              className="w-full mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square border-2 border-primary rounded-xl"
+              className="w-full object-contain mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square rounded-xl"
             />
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
@@ -55,7 +70,11 @@ export default function NftDetail() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl p-2">
-                <img src={nftDetail.imgUrl} alt="Full size NFT" className="w-full h-full" />
+                <img
+                  src={nftDetail.imgUrl}
+                  alt="Full size NFT"
+                  className="w-full h-full"
+                />
               </DialogContent>
             </Dialog>
           </div>
@@ -64,7 +83,9 @@ export default function NftDetail() {
         <NftGeneralInformation data={nftDetail} />
       </div>
       <div className="flex flex-col gap-10 items-center">
-        <h2 className="text-3xl text-primary-foreground font-bold">More from this creator</h2>
+        <h2 className="text-3xl text-primary-foreground font-bold">
+          More from this creator
+        </h2>
         {moreFromCreatorLoading ? (
           <div>Loading...</div>
         ) : moreFromCreatorError ? (
