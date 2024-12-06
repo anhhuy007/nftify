@@ -7,14 +7,21 @@ import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import { BigNftCard, SmallNftCard } from "@/components/NFT/NftCard";
 import { Pagination } from "@/components/ui/pagination";
 import LoadingAnimation from "@/components/ui/loading";
-
-const fetcher = (url) => fetch(url).then((res) => res.json());
-const nftsApiEndpoint = "http://localhost:3000/api/v1/marketplace/list/stamps";
+import { fetcher, nftsApiEndpoint } from "@/utils/endpoints";
+import ErrorAnimation from "@/components/ui/error";
 
 function NftsMarketplace() {
   const [searchValue, setSearchValue] = useState("");
   const [sortOption, setSortOption] = useState("latest");
-  const [filter, setFilter] = useState({});
+
+  const [filter, setFilter] = useState({
+    lowestPrice: "",
+    highestPrice: "",
+    status: "all",
+    collection: "",
+    owner: "",
+  });
+
   const [isGrid, setIsGrid] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [limitCard, setLimitCard] = useState(20);
@@ -23,7 +30,24 @@ function NftsMarketplace() {
     data: nftsData,
     error: nftsError,
     isLoading: nftsLoading,
-  } = useQuery("nfts", () => fetcher(nftsApiEndpoint));
+  } = useQuery(
+    [
+      "nfts",
+      searchValue,
+      sortOption,
+      filter.lowestPrice,
+      filter.highestPrice,
+      filter.status,
+      filter.collection,
+      filter.user,
+      currentPage,
+      limitCard,
+    ],
+    () =>
+      fetcher(
+        `${nftsApiEndpoint}?search=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${currentPage}&limit=${limitCard}`
+      )
+  );
 
   useEffect(() => {
     const newCardCount = isGrid ? 4 : 1;
@@ -46,9 +70,7 @@ function NftsMarketplace() {
   );
 
   if (nftsLoading) return LoadingAnimation();
-  if (nftsError) return <div>Error: {nftsError.message}</div>;
-
-  console.log("nftsData", nftsData);
+  if (nftsError) return ErrorAnimation();
 
   return (
     <div className="flex flex-col gap-10">

@@ -20,14 +20,14 @@ export default function Filter({ filter, setFilter, disabledFields }) {
       lowestPrice: filter.lowestPrice || "",
       highestPrice: filter.highestPrice || "",
       status: filter.status || "all",
-      user: filter.user || "",
+      owner: filter.owner || "",
     };
     if (!disabledFields || disabledFields.collection?.isDisabled !== true) {
       initialFilter.collection = filter.collection || "";
     }
 
-    if (!disabledFields || disabledFields.user?.isDisabled !== true) {
-      initialFilter.user = filter.user || "";
+    if (!disabledFields || disabledFields.owner?.isDisabled !== true) {
+      initialFilter.owner = filter.owner || "";
     }
 
     return initialFilter;
@@ -131,8 +131,8 @@ export default function Filter({ filter, setFilter, disabledFields }) {
                     {status === "all"
                       ? "All"
                       : status === "buy"
-                      ? "Buy now"
-                      : "Live auction"}
+                      ? "Selling"
+                      : "Displaying"}
                   </Button>
                 ))}
               </div>
@@ -179,19 +179,19 @@ export default function Filter({ filter, setFilter, disabledFields }) {
               </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                {disabledFields?.user?.isDisabled || false ? (
+                {disabledFields?.owner?.isDisabled || false ? (
                   <Input
                     className="w-full bg-[#252850] border-0 pl-10 h-14"
-                    placeholder={`${disabledFields?.user?.name || "User"}`}
+                    placeholder={`${disabledFields?.owner?.name || "User"}`}
                     disabled
                   />
                 ) : (
                   <Input
                     className="w-full bg-[#252850] border-0 pl-10 h-14"
                     placeholder="Search by User"
-                    value={tempFilter.user}
+                    value={tempFilter.owner}
                     onChange={(e) =>
-                      handleTempFilterChange("user", e.target.value)
+                      handleTempFilterChange("owner", e.target.value)
                     }
                   />
                 )}
