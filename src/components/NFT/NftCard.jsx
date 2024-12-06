@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import userPlaceHolder from "@/assets/user-placeholder.png";
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -46,22 +47,23 @@ export default function NftCard({ stamp }) {
               isHovered ? "h-[150px]" : "h-[90px]"
             }`}
           >
-            <div className="grid grid-cols-[20%_2%_50%_20%] items-center mt-1">
+            <div className="grid grid-cols-[20%_2%_50%_4%_20%] items-center mt-1">
               <img
               // get placeholder image if null
-                src={stamp?.ownerDetails?.avatarUrl || ""} 
-                alt={stamp?.ownerDetails?.name || ""}
+                src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder} 
+                alt={stamp?.ownerDetails?.name || "Unknown"}
                 className="w-11 h-11 rounded-sm"
               />
               <div></div>
               <div className="flex flex-col">
                 <p className="text-xs text-zinc-300 dark:text-zinc-400 line-clamp-1">
-                  {stamp.ownerDetails?.name}
+                  {stamp.ownerDetails?.name || "Unknown"}
                 </p>
                 <p className="text-sm font-semibold line-clamp-2">
                   {stamp.title}
                 </p>
               </div>
+              <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
                 <h1>{stamp.price.$numberDecimal} ETH</h1>
               </div>
