@@ -1,133 +1,80 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "react-query";
+import Sort from "@/pages/marketplace/nfts/components/Sort";
+import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import CollectionCard from "@/pages/marketplace/collections/components/CollectionCard";
+import { Pagination } from "@/components/ui/pagination";
+import LoadingAnimation from "@/components/ui/loading";
+import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
+import Filter from "@/pages/marketplace/nfts/components/Filter";
 
-const fetchCollections = async (searchValue, currentPage, limitCard) => {
-  try {
-    const response = await fetch("/api/collections", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        searchValue,
-        currentPage,
-        limitCard,
-      }),
-    });
-
-    const data = await response.json();
-    return data.collections; // Assuming the API returns collections in 'collections'
-  } catch (error) {
-    console.error("Error fetching collections:", error);
-    return [];
-  }
-};
+const fetcher = (url) => fetch(url).then((res) => res.json());
+const collectionsApiEndpoint = "http://localhost:3000/api/v1/marketplace/list/collections";
 
 function CollectionsMarketplace() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchValue, setSearchValue] = useState(
-    searchParams.get("search") || ""
-  );
-  const [collections, setCollections] = useState([]);
-  const [currentPage, setCurrentPage] = useState(
-    parseInt(searchParams.get("page")) || 1
-  );
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalResults, setTotalResults] = useState(0); // Track total number of results
-  const limitCard = 12;
+  const [searchValue, setSearchValue] = useState("");
+  const [sortOption, setSortOption] = useState("latest");
+  const [filter, setFilter] = useState({});
+  const [isGrid, setIsGrid] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limitCard, setLimitCard] = useState(20);
 
-  const handleSearch = (value) => setSearchValue(value);
-
-  const updateUrlParams = () => {
-    setSearchParams({ search: searchValue, page: currentPage });
-  };
+  const {
+    data: collectionsData,
+    error: collectionsError,
+    isLoading: collectionsLoading,
+  } = useQuery("collections", () => fetcher(collectionsApiEndpoint));
 
   useEffect(() => {
-    const fetchData = async () => {
-      const collectionsData = await fetchCollections(
-        searchValue,
-        currentPage,
-        limitCard
-      );
-      setCollections(collectionsData);
-
-      // Assuming the API sends back the total count of collections
-      const totalCount = collectionsData.length;
-      setTotalResults(totalCount);
-      setTotalPages(Math.ceil(totalCount / limitCard));
-    };
-
-    // fetchData();
-    updateUrlParams();
-  }, [searchValue, currentPage]);
+    const newCardCount = isGrid ? 4 : 1;
+    setLimitCard(newCardCount * 4);
+  }, [isGrid]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  // Calculate start and end results based on current page and limit
+  const handleSort = (option) => setSortOption(option);
+  const handleToggleGrid = (value) => setIsGrid(value);
+
   const startResult = (currentPage - 1) * limitCard + 1;
-  const endResult = Math.min(currentPage * limitCard, totalResults);
+  const endResult = Math.min(
+    currentPage * limitCard,
+    collectionsData?.totalResults || 0
+  );
+
+  if (collectionsLoading) return LoadingAnimation();
+  if (collectionsError) return <div>Error: {collectionsError.message}</div>;
 
   return (
-    <div className="flex flex-col gap-20">
-      {/* Display search input */}
-      <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
-
-      {/* Results info */}
-      {totalResults > 0 ? (
-        <p className="text-primary-foreground text-bold text-xl">
-          Showing {startResult} to {endResult} of {totalResults} results
-        </p>
-      ) : (
-        <p className="text-center text-primary-foreground text-bold text-xl">
-          No results found
-        </p>
-      )}
-
-      {/* Collection Cards */}
-      <div className="grid grid-cols-3 gap-4">
-        {collections.map((collection) => (
-          <CollectionCard key={collection.id} collection={collection} />
-        ))}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-4 mt-4">
-          <button
-            className="px-4 py-2 bg-gray-300 rounded"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              className={`px-4 py-2 rounded ${
-                currentPage === index + 1
-                  ? "bg-primary-500 text-white"
-                  : "bg-gray-300"
-              }`}
-              onClick={() => handlePageChange(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
-
-          <button
-            className="px-4 py-2 bg-gray-300 rounded"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
+        <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
+          <Filter filter={filter} />
+          <div className="flex-1">
+            <SearchNfts searchValue={searchValue} />
+          </div>
         </div>
-      )}
+        <div className="flex items-center justify-center w-full lg:w-auto gap-8 mt-4 lg:mt-0">
+          <Sort sortOption={sortOption} setSortOption={handleSort} />
+          <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} />
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-4">
+        {collectionsData.items.length !== 0 &&
+          collectionsData.items.map((card, index) => (
+            <CollectionCard key={card._id || index} collection={card} />
+          ))}
+      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalResults={collectionsData?.totalResults}
+        resultsPerPage={limitCard}
+        onPageChange={handlePageChange}
+      />
+      <div className="text-white">
+        Showing {startResult} to {endResult} of {collectionsData?.totalResults} results
+      </div>
     </div>
   );
 }

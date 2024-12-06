@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import userPlaceHolder from "@/assets/user-placeholder.png";
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -37,7 +36,7 @@ export default function NftCard({ stamp }) {
             }`}
           >
             <img
-              src={stamp.imgUrl}
+              src={stamp.imgUrl ?? userPlaceHolder}
               alt="Stamp"
               className="w-full h-full object-cover shadow-sm rounded-xl transition-all duration-300"
             />
@@ -82,10 +81,11 @@ export default function NftCard({ stamp }) {
 
 export function SmallNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
-  const { id, name, owner, price, image, owner_image } = stamp;
+
+  console.log("SmallNftCard: ", stamp);
 
   return (
-    <Link to={`/nft/${id}`}>
+    <Link to={`/nft/${stamp._id}`}>
       <div
         className={`w-[260px] h-[374px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
@@ -110,17 +110,17 @@ export function SmallNftCard({ stamp }) {
             }`}
           >
             <img
-              src={image}
+              src={stamp.imgUrl ?? userPlaceHolder}
               alt="Stamp"
               className="w-full h-full object-cover shadow-sm rounded-xl transition-all duration-300"
             />
           </CardHeader>
           <CardContent className={`px-3 pt-2 transition-all duration-300`}>
             <div className="grid grid-cols-[75%_2%_23%] items-center justify-between gap-4">
-              <p className="text-xl font-bold">{name}</p>
+              <p className="text-xl font-bold">{stamp.title}</p>
               <div></div>
               <p className="text-xl font-bold text-right whitespace-nowrap">
-                {price} ETH
+                {stamp.price.$numberDecimal} ETH
               </p>
             </div>
             {isHovered && (
@@ -137,10 +137,9 @@ export function SmallNftCard({ stamp }) {
 
 export function BigNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
-  const { id, name, owner, price, image, owner_image } = stamp;
 
   return (
-    <Link to={`/nft/${id}`}>
+    <Link to={`/nft/${stamp._id}`}>
       <div
         className={`w-[330px] h-[480px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
@@ -165,7 +164,7 @@ export function BigNftCard({ stamp }) {
             }`}
           >
             <img
-              src={image}
+              src={stamp.imgUrl ?? userPlaceHolder}
               alt="Stamp"
               className="w-full h-full object-cover shadow-sm rounded-xl transition-all duration-300"
             />
@@ -177,20 +176,20 @@ export function BigNftCard({ stamp }) {
           >
             <div className="grid grid-cols-[20%_2%_50%_2%_20%]  items-center gap-3">
               <img
-                src={owner_image}
-                alt={owner}
+                src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder}
+                alt={stamp?.ownerDetails?.name || "Unknown"}
                 className="w-12 h-12 rounded-sm border-2"
               />
               <div></div>
               <div className="flex flex-col">
                 <p className="text-xl font-bold text-zinc-400 dark:text-zinc-400 line-clamp-1">
-                  {owner}
+                  {stamp?.ownerDetails?.name || "Unknown"}
                 </p>
-                <p className="text-xl font-bold line-clamp-2">{name}</p>
+                <p className="text-xl font-bold line-clamp-2">{stamp.title}</p>
               </div>
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
-                <p className="text-xl font-bold">{price} ETH</p>
+                <p className="text-xl font-bold">{stamp.price.$numberDecimal} ETH</p>
               </div>
             </div>
             {isHovered && (
