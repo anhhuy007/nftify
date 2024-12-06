@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import NftGeneralInformation from "@/pages/nft/components/NftGeneralInformation";
 import NftDetailTabs from "@/pages/nft/components/NftDetailTabs";
 import NftCarousel from "@/components/NFT/NftCarousel";
-import { useQuery } from "react-query"; 
+import { useQuery } from "react-query";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -17,10 +17,21 @@ export default function NftDetail() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp/${nftId}`;
-  const { data: nftDetail, error, isLoading } = useQuery('nft-detail', () => fetcher(stampDetailApiEndpoint));
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  const { data: nftDetail, error: nftDetailError, isLoading: nftDetailLoading } = useQuery(
+    'nft-detail',
+    () => fetcher(stampDetailApiEndpoint)
+  );
+
+  const moreFromCreatorEndpoint = nftDetail ? `http://localhost:3000/api/v1/stamp/list/${nftDetail.creatorId}?page=1&limit=10` : null;
+  const { data: moreFromCreatorData, error: moreFromCreatorError, isLoading: moreFromCreatorLoading } = useQuery(
+    'more-from-creator',
+    () => fetcher(moreFromCreatorEndpoint),
+    { enabled: !!nftDetail }
+  );
+
+  if (nftDetailLoading) return <div>Loading...</div>;
+  if (nftDetailError) return <div>Error: {nftDetailError.message}</div>;
 
   return (
     <div className="w-full flex flex-col my-20 p-0 md:px-32 items-center justify-center gap-32">
@@ -44,11 +55,7 @@ export default function NftDetail() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl p-2">
-                <img
-                  src={nftDetail.imgUrl}
-                  alt="Full size NFT"
-                  className="w-full h-full"
-                />
+                <img src={nftDetail.imgUrl} alt="Full size NFT" className="w-full h-full" />
               </DialogContent>
             </Dialog>
           </div>
@@ -57,12 +64,16 @@ export default function NftDetail() {
         <NftGeneralInformation data={nftDetail} />
       </div>
       <div className="flex flex-col gap-10 items-center">
-        <h2 className="text-3xl text-primary-foreground font-bold">
-          More from this collection
-        </h2>
-        {/* <NftCarousel  /> */}
+        <h2 className="text-3xl text-primary-foreground font-bold">More from this creator</h2>
+        {moreFromCreatorLoading ? (
+          <div>Loading...</div>
+        ) : moreFromCreatorError ? (
+          <div>Error: {moreFromCreatorError.message}</div>
+        ) : (
+          <NftCarousel data={moreFromCreatorData} />
+        )}
         <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
-          <p>View collection</p>
+          <p>View creator NFTs</p>
         </div>
       </div>
     </div>

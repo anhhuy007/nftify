@@ -4,16 +4,14 @@ export default function CreatorCard({ creatorData }) {
   const creator = creatorData.creatorDetails;
   // console.log("Creator Details: ", creator.name);
 
-  // const image1 = creatorData.images[0];
-  // const image2 = creatorData.images[1];
-  // const image3 = creatorData.images[2];
-
-  const image1 = "https://stampdata.com/files/stash/00/Colnect-3615-900-Christmas.jpg";
-  const image2 = "https://stampdata.com/files/thumbs/05/300px-Colnect-3591-805-Conductor.jpg";
-  const image3 = "https://stampdata.com/files/thumbs/lu/300px-Colnect-2859-487-King-Luis-I---Type-of-1870.jpg";
+  const image1 = creatorData.creatorStamps[0];
+  const image2 = creatorData.creatorStamps[1];
+  const image3 = creatorData.creatorStamps[2];
   const creatorName = creator?.name || "Unknown";
+  const description = creator?.description || "No description available";
 
-  console.log("Creator Name: ", creatorName);
+  console.log("Image 1: ", image1);
+  console.log("Creator Data: ", creatorData);
 
   return (
     <Card className="xl:w-[445px] xl:h-[470px] overflow-hidden">
@@ -52,7 +50,7 @@ export default function CreatorCard({ creatorData }) {
       </CardContent>
       <CardFooter className="rounded-b-xl">
         <h3 className="text-xl font-semibold text-center w-full break-words">
-          { creatorName }
+          { creatorName } - { description }
         </h3>
       </CardFooter>
     </Card>

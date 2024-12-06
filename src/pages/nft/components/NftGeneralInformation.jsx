@@ -12,10 +12,10 @@ export default function NftGeneralInformation({ data }) {
       <CardContent className="">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src="/placeholder.svg" />
+            <AvatarImage src={data.collection?.thumbUrl || "/placeholder.jpg"} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <span className="font-medium">{data.collection[0]?.name || "Unknown"}</span>
+          <span className="font-medium">{data.collection?.name || "Not in collection"}</span>
         </div>
 
         <h1 className="text-4xl font-bold my-6 md:my-10">{data.title}</h1>
@@ -23,7 +23,7 @@ export default function NftGeneralInformation({ data }) {
         <div className="flex gap-20">
           <div className="flex items-center gap-3">
             <Avatar>
-              <AvatarImage src="/placeholder.svg" />
+              <AvatarImage src={data.creatorDetails?.avatarUrl} />
               <AvatarFallback>CR</AvatarFallback>
             </Avatar>
             <div>
@@ -34,12 +34,12 @@ export default function NftGeneralInformation({ data }) {
 
           <div className="flex items-center gap-3">
             <Avatar>
-              <AvatarImage src="/placeholder.svg" />
+              <AvatarImage src={data.ownerDetails?.avatarUrl} />
               <AvatarFallback>CO</AvatarFallback>
             </Avatar>
             <div>
               <p className="text-sm ">Current owner</p>
-              <p className="font-medium">{data.ownerDetails.name}</p>
+              <p className="font-medium">{data.ownerDetails?.name || "Unknow"}</p>
             </div>
           </div>
         </div>
