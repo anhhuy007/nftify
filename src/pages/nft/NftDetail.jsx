@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Maximize2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -8,13 +8,41 @@ import { Button } from "@/components/ui/button";
 import NftGeneralInformation from "@/pages/nft/components/NftGeneralInformation";
 import NftDetailTabs from "@/pages/nft/components/NftDetailTabs";
 import NftCarousel from "@/components/NFT/NftCarousel";
+import { useQuery } from "react-query";
+import LoadingAnimation from "@/components/ui/loading";
+import ErrorAnimation from "@/components/ui/error";
+
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function NftDetail() {
   const { nftId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const imageUrl =
-    "https://th.bing.com/th/id/OIP.GubYybcE-2aUiHUBmhl53wHaI-?w=164&h=183&c=7&r=0&o=5&dpr=1.5&pid=1.7";
+  const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp/${nftId}`;
+
+  const {
+    data: nftDetail,
+    error: nftDetailError,
+    isLoading: nftDetailLoading,
+  } = useQuery("nft-detail", () => fetcher(stampDetailApiEndpoint));
+
+  const moreFromCreatorEndpoint = nftDetail
+    ? `http://localhost:3000/api/v1/stamp/list/${nftDetail.creatorId}?page=1&limit=10`
+    : null;
+  const {
+    data: moreFromCreatorData,
+    error: moreFromCreatorError,
+    isLoading: moreFromCreatorLoading,
+  } = useQuery("more-from-creator", () => fetcher(moreFromCreatorEndpoint), {
+    enabled: !!nftDetail,
+  });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (nftDetailLoading) return LoadingAnimation();
+  if (nftDetailError) return ErrorAnimation();
 
   return (
     <div className="w-full flex flex-col my-20 p-0 md:px-32 items-center justify-center gap-32">
@@ -22,7 +50,7 @@ export default function NftDetail() {
         <div className="flex flex-col">
           <div className="relative">
             <img
-              src={imageUrl}
+              src={nftDetail.imgUrl}
               alt="NFT Image"
               className="w-full mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square border-2 border-primary rounded-xl"
             />
@@ -39,24 +67,30 @@ export default function NftDetail() {
               </DialogTrigger>
               <DialogContent className="max-w-2xl p-2">
                 <img
-                  src={imageUrl}
+                  src={nftDetail.imgUrl}
                   alt="Full size NFT"
                   className="w-full h-full"
                 />
               </DialogContent>
             </Dialog>
           </div>
-          <NftDetailTabs />
+          <NftDetailTabs data={nftDetail} />
         </div>
-        <NftGeneralInformation />
+        <NftGeneralInformation data={nftDetail} />
       </div>
       <div className="flex flex-col gap-10 items-center">
         <h2 className="text-3xl text-primary-foreground font-bold">
-          More from this collection
+          More from this creator
         </h2>
-        <NftCarousel />
+        {moreFromCreatorLoading ? (
+          <div>Loading...</div>
+        ) : moreFromCreatorError ? (
+          <div>Error: {moreFromCreatorError.message}</div>
+        ) : (
+          <NftCarousel data={moreFromCreatorData} />
+        )}
         <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
-          <p>View collection</p>
+          <p>View creator NFTs</p>
         </div>
       </div>
     </div>

@@ -3,21 +3,41 @@ import React from "react";
 import Banner from "@/pages/home/components/Banner";
 import Introduction from "@/pages/home/components/Introduction";
 import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
-import CategoryCarousel from "./components/CategoryCarousel";
-import NftCard from "@/components/NFT/NftCard";
+import { useQuery } from "react-query";
+import CreatorCarousel from "./components/CreatorCarousel";
+import LoadingAnimation from "@/components/ui/loading";
 
-const stamp = {
-  id: 1,
-  name: "Stamp",
-  owner: "0x1234567890",
-  price: "0.1",
-  image:
-    "https://i.etsystatic.com/27708971/r/il/1b55f0/2853845438/il_1588xN.2853845438_n8z5.jpg",
-  owner_image:
-    "https://i0.wp.com/thatnhucuocsong.com.vn/wp-content/uploads/2023/02/Hinh-anh-avatar-cute.jpg?ssl\u003d1",
-};
+const fetcher = (url) => fetch(url).then((res) => res.json());
+const trendingApiEndpoint =
+  "http://localhost:3000/api/v1/marketplace/list/trending/stamps";
+const collectionsApiEndpoint =
+  "http://localhost:3000/api/v1/marketplace/list/trending/collections";
+const creatorsApiEndpoint =
+  "http://localhost:3000/api/v1/marketplace/list/trending/creators";
 
 function Home() {
+  const {
+    data: trendingData,
+    error: trendingError,
+    isLoading: trendingLoading,
+  } = useQuery("trending-nfts", () => fetcher(trendingApiEndpoint));
+  const {
+    data: collectionsData,
+    error: collectionsError,
+    isLoading: collectionsLoading,
+  } = useQuery("top-collections", () => fetcher(collectionsApiEndpoint));
+  const {
+    data: creatorsData,
+    error: creatorsError,
+    isLoading: creatorsLoading,
+  } = useQuery("top-creators", () => fetcher(creatorsApiEndpoint));
+
+  if (trendingLoading || collectionsLoading || creatorsLoading) return LoadingAnimation();
+
+  if (trendingError) return <div>Error: {trendingError.message}</div>;
+  if (collectionsError) return <div>Error: {collectionsError.message}</div>;
+  if (creatorsError) return <div>Error: {creatorsError.message}</div>;
+
   return (
     <>
       <div className="flex flex-col items-center justify-center">
@@ -28,19 +48,19 @@ function Home() {
           <span className="text-5xl font-bold leading-normal text-gradient">
             Trending NFTs
           </span>
-          <NftCarousel />
+          <NftCarousel data={trendingData} isLoading={trendingLoading} />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Collections
           </span>
-          <CollectionCarousel />
+          <CollectionCarousel data={collectionsData} />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
-            Categories
+            Top Creators
           </span>
-          <CategoryCarousel />
+          <CreatorCarousel data={creatorsData} isLoading={trendingLoading} />
         </div>
         <Banner />
       </div>

@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-export default function NftDetailTabs() {
+export default function NftDetailTabs({ data }) {
   return (
     <div className="w-full mx-auto max-w-[350px] md:max-w-[400px] xl:max-w-[650px] mt-8">
       <Tabs defaultValue="overview" className="w-full">
