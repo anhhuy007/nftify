@@ -7,18 +7,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-export default function CollectionCard({ collection }) {
+export default function CollectionCard({ collection = {} }) {
   const [isLiked, setIsLiked] = useState(false);
 
+  // Extract values with fallback defaults
+  const {
+    _id = "unknown",
+    thumbUrl = "",
+    name = "Unknown Collection",
+    ownerDetails = {},
+  } = collection;
+
+  const { avatarUrl = "", name: ownerName = "Unknown Owner" } = ownerDetails;
+
   return (
-    <Link to={`/collection/${collection._id}`}>
+    <Link to={`/collection/${_id}`}>
       <Card className="group relative overflow-hidden rounded-3xl border-0 w-full max-w-[450px]">
         {/* Collection Image */}
         <div className="overflow-hidden bg-[#C5C6FF]">
           <img
-            src={collection.thumbUrl}
-            alt={collection.name}
-            className="h-[300px] w-full oject-cover transition-transform duration-300 group-hover:scale-110"
+            src={thumbUrl}
+            alt={name}
+            className="h-[300px] w-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
         </div>
 
@@ -39,12 +49,12 @@ export default function CollectionCard({ collection }) {
         {/* User Info */}
         <div className="absolute bottom-0 left-0 right-0 flex items-center gap-3 bg-gradient-to-t from-black/60 to-transparent p-4">
           <Avatar className="h-10 w-10 rounded-lg border-2 border-white">
-            <AvatarImage src={collection.ownerDetails.avatarUrl} alt={collection.ownerDetails.name} />
+            <AvatarImage src={avatarUrl} alt={ownerName} />
             <AvatarFallback className="rounded-lg bg-blue-500">
-              {collection.ownerDetails.avatarUrl}
+              {ownerName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="font-semibold text-white">{collection.ownerDetails.avatarUrl}</span>
+          <span className="font-semibold text-white">{name}</span>
         </div>
       </Card>
     </Link>

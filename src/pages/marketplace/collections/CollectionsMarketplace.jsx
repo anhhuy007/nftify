@@ -7,6 +7,7 @@ import { Pagination } from "@/components/ui/pagination";
 import LoadingAnimation from "@/components/ui/loading";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Filter from "@/pages/marketplace/nfts/components/Filter";
+import ErrorAnimation from "@/components/ui/error";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 const collectionsApiEndpoint = "http://localhost:3000/api/v1/marketplace/list/collections";
@@ -44,7 +45,7 @@ function CollectionsMarketplace() {
   );
 
   if (collectionsLoading) return LoadingAnimation();
-  if (collectionsError) return <div>Error: {collectionsError.message}</div>;
+  if (collectionsError) return ErrorAnimation();
 
   return (
     <div className="flex flex-col gap-10">

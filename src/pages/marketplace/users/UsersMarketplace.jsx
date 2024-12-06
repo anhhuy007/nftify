@@ -10,9 +10,9 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 const usersApiEndpoint = "http://localhost:3000/api/v1/marketplace/list/creators";
 
 function UsersMarketplace() {
-  const [searchValue, setSearchValue] = useState("");
+  // const [searchValue, setSearchValue] = useState("");
   const [sortOption, setSortOption] = useState("latest");
-  const [filter, setFilter] = useState({});
+  // const [filter, setFilter] = useState({});
   const [isGrid, setIsGrid] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [limitCard, setLimitCard] = useState(20);
