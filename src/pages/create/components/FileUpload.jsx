@@ -10,56 +10,73 @@ const FileUpload = ({
   accept = ["image/png", "image/jpeg", "image/webp"],
   onFileSelect,
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState("");
+  // const [isDragging, setIsDragging] = useState(false);
+  // const [error, setError] = useState("");
+  // const [nft, setNft] = useState({ imgUrl: "" });
 
-  const validateFile = (file) => {
-    if (!accept.includes(file.type)) {
-      setError("Please upload a PNG, JPG or WEBP file");
-      return false;
-    }
-    if (file.size > maxSize) {
-      setError("File size must be less than 20MB");
-      return false;
-    }
-    return true;
+  // const validateFile = (file) => {
+  //   if (!accept.includes(file.type)) {
+  //     setError("Please upload a PNG, JPG or WEBP file");
+  //     return false;
+  //   }
+  //   if (file.size > maxSize) {
+  //     setError("File size must be less than 20MB");
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
+  // const handleDrag = useCallback((e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   if (e.type === "dragenter" || e.type === "dragover") {
+  //     setIsDragging(true);
+  //   } else if (e.type === "dragleave") {
+  //     setIsDragging(false);
+  //   }
+  // }, []);
+
+  // const handleDrop = useCallback(
+  //   (e) => {
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //     setIsDragging(false);
+  //     setError("");
+
+  //     const file = e.dataTransfer.files?.[0];
+  //     if (file && validateFile(file)) {
+  //       onFileSelect?.(file);
+  //     }
+  //   },
+  //   [onFileSelect]
+  // );
+
+  // const handleFileSelect = useCallback(
+  //   (e) => {
+  //     setError("");
+  //     const file = e.target.files?.[0];
+  //     if (file && validateFile(file)) {
+  //       onFileSelect?.(file);
+  //     }
+  //   },
+  //   [onFileSelect]
+  // );
+
+  // const handleFileUpload = (file) => {
+  //   const reader = new FileReader();
+  //   reader.onload = (e) => {
+  //     setNft((prevNft) => ({ ...prevNft, imgUrl: e.target.result }));
+  //   };
+  //   reader.readAsDataURL(file);
+  //   console.log("File selected: ", file);
+  // };
+
+  const [file, setFile] = useState(null);
+  const handleFileUpload = (e) => {
+    setFile(URL.createObjectURL(e.target.files[0]));
+    onFileSelect(URL.createObjectURL(e.target.files[0]));
+    console.log("File selected: ", URL.createObjectURL(e.target.files[0]));
   };
-
-  const handleDrag = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setIsDragging(true);
-    } else if (e.type === "dragleave") {
-      setIsDragging(false);
-    }
-  }, []);
-
-  const handleDrop = useCallback(
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      setError("");
-
-      const file = e.dataTransfer.files?.[0];
-      if (file && validateFile(file)) {
-        onFileSelect?.(file);
-      }
-    },
-    [onFileSelect]
-  );
-
-  const handleFileSelect = useCallback(
-    (e) => {
-      setError("");
-      const file = e.target.files?.[0];
-      if (file && validateFile(file)) {
-        onFileSelect?.(file);
-      }
-    },
-    [onFileSelect]
-  );
 
   return (
     <div className="w-full space-y-4">
@@ -71,17 +88,24 @@ const FileUpload = ({
         className={cn(
           "relative border-2 border-dashed rounded-lg p-8",
           "flex flex-col items-center justify-center gap-4",
-          "bg-background/50 hover:bg-background/80 transition-colors",
-          isDragging && "border-primary bg-primary/10",
-          error && "border-destructive"
+          "bg-background/50 hover:bg-background/80 transition-colors"
+          // isDragging && "border-primary bg-primary/10",
+          // error && "border-destructive"
         )}
-        onDragEnter={handleDrag}
-        onDragOver={handleDrag}
-        onDragLeave={handleDrag}
-        onDrop={handleDrop}
+        // onDragEnter={handleDrag}
+        // onDragOver={handleDrag}
+        // onDragLeave={handleDrag}
+        // onDrop={handleDrop}
       >
         <div className="text-center flex flex-col gap-5 ">
           <Upload className="w-10 h-10 mx-auto text-muted-foreground" />
+          {file ? (
+            <img src={file} alt="Preview" className="w-20 h-20 mx-auto" />
+          ) : (
+            <span className="text-3xl text-primary-foreground">
+              Drag and drop or click to upload
+            </span>
+          )}
           <span className="text-2xl text-muted-foreground">
             PNG, JPG or WEBP. Max 20mb.
           </span>
@@ -93,15 +117,15 @@ const FileUpload = ({
             type="file"
             className="sr-only"
             accept={accept.join(",")}
-            onChange={handleFileSelect}
+            onChange={handleFileUpload}
           />
         </label>
 
-        {error && (
+        {/* {error && (
           <div className="text-sm text-destructive absolute -bottom-6">
             {error}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

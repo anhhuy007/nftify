@@ -47,6 +47,23 @@ export default function Filter({ filter, setFilter, disabledFields }) {
     setFilter(tempFilter);
   };
 
+  const resetFilters = () => {
+    setTempFilter({
+      lowestPrice: "",
+      highestPrice: "",
+      status: "all",
+      collection: "",
+      user: "",
+    });
+    setFilter({
+      lowestPrice: "",
+      highestPrice: "",
+      status: "all",
+      collection: "",
+      user: "",
+    });
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -57,7 +74,7 @@ export default function Filter({ filter, setFilter, disabledFields }) {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="w-[400px] p-0 bg-[#1a1b3b] text-white flex flex-col"
+        className="w-[400px] overflow-y-auto p-0 bg-[#1a1b3b] text-white flex flex-col"
         onKeyDown={handleKeyPress}
       >
         <SheetTitle className="text-3xl p-6 pb-0 font-semibold">
@@ -207,6 +224,12 @@ export default function Filter({ filter, setFilter, disabledFields }) {
             className="w-full bg-[#252850] text-lg h-14 text-white hover:bg-[#2f3266]"
           >
             Apply Filters
+          </Button>
+          <Button
+            onClick={resetFilters}
+            className="w-full bg-[#252850] text-lg h-14 text-white hover:bg-[#2f3266] bg-destructive"
+          >
+            Clear Filters
           </Button>
         </SheetFooter>
       </SheetContent>
