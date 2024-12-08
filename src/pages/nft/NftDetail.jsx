@@ -24,23 +24,27 @@ export default function NftDetail() {
     data: nftDetail,
     error: nftDetailError,
     isLoading: nftDetailLoading,
-  } = useQuery("nft-detail", () => fetcher(stampDetailApiEndpoint));
+  } = useQuery(["nft-detail", nftId], () => fetcher(stampDetailApiEndpoint), {
+    enabled: !!nftId,
+  });
 
   const moreFromCreatorEndpoint = nftDetail
     ? `http://localhost:3000/api/v1/stamp/list/${nftDetail.creatorId}?page=1&limit=10`
     : null;
+
   const {
     data: moreFromCreatorData,
     error: moreFromCreatorError,
     isLoading: moreFromCreatorLoading,
-  } = useQuery("more-from-creator", () => fetcher(moreFromCreatorEndpoint), {
-    enabled: !!nftDetail,
-  });
+  } = useQuery(
+    ["more-from-creator", nftId],
+    () => fetcher(moreFromCreatorEndpoint),
+    { enabled: !!nftDetail }
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
-
+  }, [nftId]);
   if (nftDetailLoading) return LoadingAnimation();
   if (nftDetailError) return ErrorAnimation();
 
@@ -52,7 +56,7 @@ export default function NftDetail() {
             <img
               src={nftDetail.imgUrl}
               alt="NFT Image"
-              className="w-full mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square border-2 border-primary rounded-xl"
+              className="w-full object-contain mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square rounded-xl"
             />
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>

@@ -1,8 +1,27 @@
 import { Card, CardContent } from "@/components/ui/card";
 
+// Helper function to generate a random hex color
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
 export default function CollectionCard({ collection }) {
+  collection.thumbUrl =
+    "https://i.seadn.io/s/primary-drops/0x99815c8dfa51ed63e25b6c8fd91d3a8f75a3e251/31032972:about:media:812e69df-95b4-4a62-afd9-9c4181cd5193.jpeg?auto=format&dpr=1&w=1920";
+
+  // Generate a random background color
+  const randomColor = getRandomColor();
+
   return (
-    <Card className="w-full overflow-hidden bg-[#F15A24] text-white rounded-3xl">
+    <Card
+      className="w-full overflow-hidden text-white rounded-3xl"
+      style={{ backgroundColor: randomColor }} // Apply random color as background
+    >
       <CardContent className="p-0">
         <div className="flex items-center justify-between flex-col-reverse gap-5 md:flex-row md:gap-20 p-8">
           <div className="space-y-6 md:max-w-[280px] lg:max-w-[300px] xl:max-w-[500px]">

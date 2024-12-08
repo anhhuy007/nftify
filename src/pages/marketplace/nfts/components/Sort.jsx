@@ -14,18 +14,21 @@ import {
   ArrowDownAZ,
   ArrowUpAZ,
   Star,
+  ArrowUpDown,
+  Heart,
 } from "lucide-react";
 
 const sortOptions = [
+  { value: "default", label: "Default", icon: ArrowUpDown },
   { value: "price-up", label: "Price Up", icon: ArrowUpNarrowWide },
   { value: "price-down", label: "Price Down", icon: ArrowDownWideNarrow },
   { value: "trending", label: "Trending", icon: TrendingUp },
-  { value: "popular", label: "Popular", icon: Star },
+  { value: "favourite", label: "Favourite", icon: Heart },
   { value: "a-to-z", label: "A to Z", icon: ArrowDownAZ },
   { value: "z-to-a", label: "Z to A", icon: ArrowUpAZ },
 ];
 
-function Sort({ sortOption, setSortOption }) {
+function Sort({ sortOption = sortOptions[0], setSortOption }) {
   const handleSortChange = (value) => {
     setSortOption(value);
   };

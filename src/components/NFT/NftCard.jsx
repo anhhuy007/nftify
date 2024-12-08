@@ -46,10 +46,10 @@ export default function NftCard({ stamp }) {
               isHovered ? "h-[150px]" : "h-[90px]"
             }`}
           >
-            <div className="grid grid-cols-[20%_2%_50%_4%_20%] items-center mt-1">
+            <div className="grid grid-cols-[20%_2%_45%_3%_20%] items-center mt-1">
               <img
-              // get placeholder image if null
-                src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder} 
+                // get placeholder image if null
+                src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder}
                 alt={stamp?.ownerDetails?.name || "Unknown"}
                 className="w-11 h-11 rounded-sm"
               />
@@ -58,7 +58,7 @@ export default function NftCard({ stamp }) {
                 <p className="text-xs text-zinc-300 dark:text-zinc-400 line-clamp-1">
                   {stamp.ownerDetails?.name || "Unknown"}
                 </p>
-                <p className="text-sm font-semibold line-clamp-2">
+                <p className="text-sm font-semibold line-clamp-1">
                   {stamp.title}
                 </p>
               </div>
@@ -90,7 +90,7 @@ export function SmallNftCard({ stamp }) {
         className={`w-[260px] h-[374px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
         ${
           isHovered
-            ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
+            ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[#ebcef8] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
             : "bg-card"
         }`}
         onMouseEnter={() => setIsHovered(true)}
@@ -106,7 +106,7 @@ export function SmallNftCard({ stamp }) {
         >
           <CardHeader
             className={`px-3 pt-5 pb-0 transition-all duration-300 ${
-              isHovered ? "h-[254px]" : "h-[320px]"
+              isHovered ? "h-[270px]" : "h-[320px]"
             }`}
           >
             <img
@@ -116,10 +116,11 @@ export function SmallNftCard({ stamp }) {
             />
           </CardHeader>
           <CardContent className={`px-3 pt-2 transition-all duration-300`}>
-            <div className="grid grid-cols-[75%_2%_23%] items-center justify-between gap-4">
-              <p className="text-xl font-bold">{stamp.title}</p>
-              <div></div>
-              <p className="text-xl font-bold text-right whitespace-nowrap">
+            <div className="flex justify-between items-center gap-4">
+              <p className="text-lg font-semibold line-clamp-1">
+                {stamp.title}
+              </p>
+              <p className="text-lg font-semibold text-right whitespace-nowrap ">
                 {stamp.price.$numberDecimal} ETH
               </p>
             </div>
@@ -160,7 +161,7 @@ export function BigNftCard({ stamp }) {
         >
           <CardHeader
             className={`px-3 pt-3 pb-0 transition-all duration-300 ${
-              isHovered ? "h-[327px]" : "h-[390px]"
+              isHovered ? "h-[350px]" : "h-[390px]"
             }`}
           >
             <img
@@ -174,22 +175,25 @@ export function BigNftCard({ stamp }) {
               isHovered ? "h-[150px]" : "h-[90px]"
             }`}
           >
-            <div className="grid grid-cols-[20%_2%_50%_2%_20%]  items-center gap-3">
+            <div className="grid grid-cols-[20%_49%_1%_20%]  items-center">
               <img
                 src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder}
                 alt={stamp?.ownerDetails?.name || "Unknown"}
                 className="w-12 h-12 rounded-sm border-2"
               />
-              <div></div>
               <div className="flex flex-col">
                 <p className="text-xl font-bold text-zinc-400 dark:text-zinc-400 line-clamp-1">
                   {stamp?.ownerDetails?.name || "Unknown"}
                 </p>
-                <p className="text-xl font-bold line-clamp-2">{stamp.title}</p>
+                <p className="text-lg font-semibold line-clamp-1">
+                  {stamp.title}
+                </p>
               </div>
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
-                <p className="text-xl font-bold">{stamp.price.$numberDecimal} ETH</p>
+                <p className="text-lg font-semibold">
+                  {stamp.price.$numberDecimal} ETH
+                </p>
               </div>
             </div>
             {isHovered && (
