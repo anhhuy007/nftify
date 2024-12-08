@@ -117,7 +117,7 @@ export default function Filter({ filter, setFilter, disabledFields }) {
                 <ChevronDown className="h-5 w-5" />
               </div>
               <div className="flex justify-between">
-                {["all", "buy", "auction"].map((status) => (
+                {["all", "selling", "displaying"].map((status) => (
                   <Button
                     key={status}
                     className={`rounded-full text-lg ${
@@ -130,7 +130,7 @@ export default function Filter({ filter, setFilter, disabledFields }) {
                   >
                     {status === "all"
                       ? "All"
-                      : status === "buy"
+                      : status === "selling"
                       ? "Selling"
                       : "Displaying"}
                   </Button>
