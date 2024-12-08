@@ -48,8 +48,8 @@ function Sort({ sortOption = sortOptions[0], setSortOption }) {
           <SelectGroup>
             {sortOptions.map(({ value, label, icon: Icon }) => (
               <SelectItem key={value} value={value}>
-                <div className="flex items-center my-3">
-                  <Icon className="mr-4 h-6 w-6" />
+                <div className="flex items-center my-3 gap-3">
+                  <Icon className="h-6 w-6" />
                   <span>{label}</span>
                 </div>
               </SelectItem>

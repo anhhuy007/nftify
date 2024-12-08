@@ -10,17 +10,19 @@ import ErrorAnimation from "@/components/ui/error";
 import Filter from "@/pages/marketplace/nfts/components/Filter";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
-
-function useQueryParams() {
-  return new URLSearchParams(useLocation().search);
-}
+import InfiniteScroll from "react-infinite-scroll-component";
+import FetchingMoreAnimation from "@/components/ui/fetching-more";
 
 function NftsMarketplace() {
   const navigate = useNavigate();
-  const queryParams = useQueryParams();
+  const queryParams = new URLSearchParams(useLocation().search);
 
-  const [searchValue, setSearchValue] = useState(queryParams.get("search") || "");
-  const [sortOption, setSortOption] = useState(queryParams.get("sort") || "default");
+  const [searchValue, setSearchValue] = useState(
+    queryParams.get("search") || ""
+  );
+  const [sortOption, setSortOption] = useState(
+    queryParams.get("sort") || "default"
+  );
   const [filter, setFilter] = useState({
     lowestPrice: queryParams.get("minPrice") || "",
     highestPrice: queryParams.get("maxPrice") || "",
@@ -29,13 +31,20 @@ function NftsMarketplace() {
     owner: queryParams.get("ownerName") || "",
   });
   const [isGrid, setIsGrid] = useState(true);
-  const [currentPage, setCurrentPage] = useState(parseInt(queryParams.get("page"), 10) || 1);
-  const [limitCard, setLimitCard] = useState(parseInt(queryParams.get("limit"), 10) || 20);
+  const [currentPage, setCurrentPage] = useState(
+    parseInt(queryParams.get("page"), 10) || 1
+  );
+  const [limitCard, setLimitCard] = useState(
+    parseInt(queryParams.get("limit"), 10) || 20
+  );
+  const [items, setItems] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
 
   const {
     data: nftsData,
     error: nftsError,
     isLoading: nftsLoading,
+    refetch,
   } = useQuery(
     [
       "nfts",
@@ -51,19 +60,33 @@ function NftsMarketplace() {
     ],
     () =>
       fetcher(
-        `${nftsApiEndpoint}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${1}&limit=${10}`
-      )
-  );
+        `${nftsApiEndpoint}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${currentPage}&limit=${limitCard}`
+      ),
+    {
+      keepPreviousData: true,
+      onSuccess: (data) => {
+        // Append new items or reset based on page
+        if (currentPage === 1) {
+          setItems(data.items);
+        } else {
+          setItems((prevItems) => [...prevItems, ...data.items]);
+        }
 
-  // watch api changes
-  useEffect(() => {
-    console.log("API: ", nftsApiEndpoint);
-  }, [nftsApiEndpoint]);
+        // Update hasMore based on API response
+        setHasMore(data.hasMore || data.items.length > 0);
+      },
+      enabled: true, // Ensure query can be manually triggered
+    }
+  );
 
   useEffect(() => {
     const newCardCount = isGrid ? 4 : 1;
     setLimitCard(newCardCount * 4);
-  }, [isGrid]);
+    // Reset pagination when view changes
+    setCurrentPage(1);
+    setItems([]);
+    refetch();
+  }, [isGrid, refetch]);
 
   const updateQueryParams = (params) => {
     const searchParams = new URLSearchParams({
@@ -81,33 +104,45 @@ function NftsMarketplace() {
   const handleSearch = (value) => {
     setSearchValue(value);
     updateQueryParams({ search: value });
+    // Reset pagination and items when searching
+    setCurrentPage(1);
+    setItems([]);
+    refetch();
   };
 
   const handleSort = (option) => {
     setSortOption(option);
     updateQueryParams({ sort: option });
+    // Reset pagination and items when sorting
+    setCurrentPage(1);
+    setItems([]);
+    refetch();
   };
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
-    updateQueryParams({ 
+    updateQueryParams({
       minPrice: newFilter.lowestPrice,
       maxPrice: newFilter.highestPrice,
       status: newFilter.status,
       collectionName: newFilter.collection,
       ownerName: newFilter.owner,
     });
+    // Reset pagination and items when filtering
+    setCurrentPage(1);
+    setItems([]);
+    refetch();
   };
 
   const handleToggleGrid = (value) => setIsGrid(value);
 
-  const startResult = (currentPage - 1) * limitCard + 1;
-  const endResult = Math.min(currentPage * limitCard, nftsData?.totalResults || 0);
+  const fetchMoreData = () => {
+    // Increment page and trigger refetch
+    handlePageChange(currentPage + 1);
+  };
 
-  if (nftsLoading) return <LoadingAnimation />;
+  if (nftsLoading && currentPage === 1) return <LoadingAnimation />;
   if (nftsError) return <ErrorAnimation />;
-
-  console.log("Data: ", nftsData);
 
   return (
     <div className="flex flex-col gap-10">
@@ -121,29 +156,27 @@ function NftsMarketplace() {
           <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} />
         </div>
       </div>
-      <div
-        className={`text-primary-foreground grid gap-4 ${
-          isGrid ? "grid-cols-5" : "grid-cols-4"
-        }`}
+      <InfiniteScroll
+        dataLength={items.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={<FetchingMoreAnimation />}
+        endMessage={
+          <p className="text-center text-white">
+            {items.length > 0 ? "No more items to display" : "No items found"}
+          </p>
+        }
       >
-        {nftsData.items.length !== 0 &&
-          nftsData.items.map((card, index) =>
-            limitCard === 4 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+          {items.map((card, index) =>
+            isGrid ? (
               <BigNftCard key={card._id || index} stamp={card} />
             ) : (
               <SmallNftCard key={card._id || index} stamp={card} />
             )
           )}
-      </div>
-      <Pagination
-        currentPage={currentPage}
-        totalResults={nftsData?.totalResults}
-        resultsPerPage={limitCard}
-        onPageChange={handlePageChange}
-      />
-      <div className="text-white">
-        Showing {startResult} to {endResult} of {nftsData?.totalResults} results
-      </div>
+        </div>
+      </InfiniteScroll>
     </div>
   );
 }
