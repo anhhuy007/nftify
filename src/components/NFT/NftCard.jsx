@@ -104,7 +104,7 @@ export function SmallNftCard({ stamp }) {
         >
           <CardHeader
             className={`px-3 pt-5 pb-0 transition-all duration-300 ${
-              isHovered ? "h-[260px]" : "h-[320px]"
+              isHovered ? "h-[265px]" : "h-[320px]"
             }`}
           >
             <img

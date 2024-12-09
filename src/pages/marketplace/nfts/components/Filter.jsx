@@ -14,7 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 
-export default function Filter({ filter, setFilter, disabledFields }) {
+export default function Filter({
+  filter,
+  setFilter,
+  disabledFields,
+  clearFilter,
+  closeFilter,
+}) {
   const [tempFilter, setTempFilter] = useState(() => {
     const initialFilter = {
       lowestPrice: filter.lowestPrice || "",
@@ -36,6 +42,7 @@ export default function Filter({ filter, setFilter, disabledFields }) {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       setFilter(tempFilter);
+      closeFilter();
     }
   };
 
@@ -45,23 +52,12 @@ export default function Filter({ filter, setFilter, disabledFields }) {
 
   const applyFilters = () => {
     setFilter(tempFilter);
+    closeFilter();
   };
 
   const resetFilters = () => {
-    setTempFilter({
-      lowestPrice: "",
-      highestPrice: "",
-      status: "all",
-      collection: "",
-      user: "",
-    });
-    setFilter({
-      lowestPrice: "",
-      highestPrice: "",
-      status: "all",
-      collection: "",
-      user: "",
-    });
+    clearFilter();
+    closeFilter();
   };
 
   return (

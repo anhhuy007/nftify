@@ -11,9 +11,6 @@ const getRandomColor = () => {
 };
 
 export default function CollectionCard({ collection }) {
-  collection.thumbUrl =
-    "https://i.seadn.io/s/primary-drops/0x99815c8dfa51ed63e25b6c8fd91d3a8f75a3e251/31032972:about:media:812e69df-95b4-4a62-afd9-9c4181cd5193.jpeg?auto=format&dpr=1&w=1920";
-
   // Generate a random background color
   const randomColor = getRandomColor();
 
