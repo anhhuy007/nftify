@@ -11,6 +11,7 @@ import NftCarousel from "@/components/NFT/NftCarousel";
 import { useQuery } from "react-query";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
+import { Link } from "react-router-dom";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -56,7 +57,7 @@ export default function NftDetail() {
             <img
               src={nftDetail.imgUrl}
               alt="NFT Image"
-              className="w-full object-contain mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square rounded-xl"
+              className="w-full relative object-contain mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square rounded-xl"
             />
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
@@ -93,9 +94,11 @@ export default function NftDetail() {
         ) : (
           <NftCarousel data={moreFromCreatorData} />
         )}
-        <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
-          <p>View creator NFTs</p>
-        </div>
+        <Link to={`/user/${nftDetail.creatorId}`}>
+          <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
+            <p>View creator NFTs</p>
+          </div>
+        </Link>
       </div>
     </div>
   );

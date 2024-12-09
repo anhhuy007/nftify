@@ -5,51 +5,58 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Eye, Heart, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function NftGeneralInformation({ data }) {
   return (
     <Card className="w-full max-w-md bg-transparent shadow-none mx-auto md:mx-0 border-none">
       <CardContent className="">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage
-              src={data.collection?.thumbUrl || "/placeholder.jpg"}
-            />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <span className="font-medium">
-            {data.collection?.name || "Not in collection"}
-          </span>
-        </div>
+        <Link to={`/collection/${data.collection?.id}`} className="group">
+          <div className="flex items-center gap-3 ">
+            <Avatar className="h-10 w-10 group-hover:opacity-75 transition-opacity duration-200">
+              <AvatarImage
+                src={data.collection?.thumbUrl || "/placeholder.jpg"}
+              />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <span className="font-medium group-hover:underline">
+              {data.collection?.name || "Not in collection"}
+            </span>
+          </div>
+        </Link>
 
         <h1 className="text-4xl font-bold my-6 md:my-10">{data.title}</h1>
 
         <div className="flex gap-20">
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={data.creatorDetails?.avatarUrl} />
-              <AvatarFallback>CR</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-sm ">Creator</p>
-              <p className="font-medium">
-                {data.creatorDetails?.name || "Unknow"}
-              </p>
+          <Link to={`/user/${data.creatorDetails?.id}`} className="group">
+            <div className="flex items-center gap-3">
+              <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
+                <AvatarImage src={data.creatorDetails?.avatarUrl} />
+                <AvatarFallback>CR</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm ">Creator</p>
+                <p className="font-medium group-hover:underline">
+                  {data.creatorDetails?.name || "Unknow"}
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={data.ownerDetails?.avatarUrl} />
-              <AvatarFallback>CO</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-sm ">Current owner</p>
-              <p className="font-medium">
-                {data.ownerDetails?.name || "Unknow"}
-              </p>
+          <Link to={`/user/${data.ownerDetails?.id}`} className="group">
+            <div className="flex items-center gap-3">
+              <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
+                <AvatarImage src={data.ownerDetails?.avatarUrl} />
+                <AvatarFallback>CO</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm ">Current owner</p>
+                <p className="font-medium group-hover:underline">
+                  {data.ownerDetails?.name || "Unknow"}
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         <Separator className="bg-secondary my-4 md:my-6" />
