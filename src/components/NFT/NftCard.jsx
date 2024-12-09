@@ -82,8 +82,6 @@ export default function NftCard({ stamp }) {
 export function SmallNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
 
-  console.log("SmallNftCard: ", stamp);
-
   return (
     <Link to={`/nft/${stamp._id}`}>
       <div
