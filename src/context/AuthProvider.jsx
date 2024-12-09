@@ -1,49 +1,70 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("site") || "");
+  const [token, setToken] = useState(localStorage.getItem('jwtToken') || "");
+
+  useEffect(() => {
+    if (token) {
+      fetchUserData(token);
+    }
+  }, [token]);
+
+  const fetchUserData = async (token) => {
+    try {
+      const response = await fetch('/api/user', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      setUser(data.user);
+    }
+    catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
 
   const loginAction = async (data) => {
     try {
-      const response = await fetch("your-api-endpoint/auth/login", {
-        method: "POST",
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
-      const res = await response.json();
-      if (res.data) {
-        setUser(res.data.user);
-        setToken(res.token);
-        localStorage.setItem("site", res.token);
-        return res;
+  
+      const result = await response.json();
+      if (result.token) {
+        setUser(result.user);
+        setToken(result.token);
+        localStorage.setItem('jwtToken', result.token);
+  
+        return result;
       }
-      throw new Error(res.message);
-    } catch (err) {
-      console.error(err);
+      throw new Error('Login failed:', result.message);
+    } catch (error) {
+      console.error('Error logging in:', error);
+      return { error: error.message };
     }
   };
-
-  const logOut = () => {
+  
+  const logoutAction = () => {
     setUser(null);
-    setToken("");
-    localStorage.removeItem("site");
-    // Navigation will be handled in the component
+    setToken('');
+    localStorage.removeItem('jwtToken');
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, loginAction, logOut }}>
+    <AuthContext.Provider value={{ user, loginAction, logoutAction }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export default AuthProvider;
+export const useAuth = () => useContext(AuthContext);
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
