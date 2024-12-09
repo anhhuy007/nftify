@@ -40,6 +40,8 @@ function NftsMarketplace() {
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
+  const CardComponent = isGrid ? SmallNftCard : BigNftCard;
+
   const {
     data: nftsData,
     error: nftsError,
@@ -80,7 +82,7 @@ function NftsMarketplace() {
   );
 
   useEffect(() => {
-    const newCardCount = isGrid ? 4 : 1;
+    const newCardCount = isGrid ? 5 : 4;
     setLimitCard(newCardCount * 4);
     // Reset pagination when view changes
     setCurrentPage(1);
@@ -133,8 +135,9 @@ function NftsMarketplace() {
     setItems([]);
     refetch();
   };
-
-  const handleToggleGrid = (value) => setIsGrid(value);
+  const handleToggleGrid = (isGrid) => {
+    setIsGrid(isGrid);
+  };
 
   const fetchMoreData = () => {
     // Increment page and trigger refetch
@@ -167,14 +170,14 @@ function NftsMarketplace() {
           </p>
         }
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-          {items.map((card, index) =>
-            isGrid ? (
-              <BigNftCard key={card._id || index} stamp={card} />
-            ) : (
-              <SmallNftCard key={card._id || index} stamp={card} />
-            )
-          )}
+        <div
+          className={`grid grid-cols-1 sm:grid-cols-2 gap-4
+          ${isGrid ? "md:grid-cols-5" : "md:grid-cols-4"}
+          `}
+        >
+          {items.map((card, index) => (
+            <CardComponent key={card._id || index} stamp={card} />
+          ))}
         </div>
       </InfiniteScroll>
     </div>
