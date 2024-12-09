@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import CollectionChooser from "./components/CollectionChooser";
 import { PreviewNftCard } from "@/components/NFT/NftCard";
 import { Button } from "@/components/ui/button";
+import toast, { Toaster } from "react-hot-toast";
 
 const user = {
   name: "John Doe",
@@ -17,8 +18,6 @@ const user = {
     { id: "4", name: "Name..", icon: "/placeholder.svg?height=40&width=40" },
   ],
 };
-
-import toast, { Toaster } from "react-hot-toast";
 
 function CreateNft() {
   const [isOnMarketplace, setIsOnMarketplace] = useState(false);
@@ -106,7 +105,7 @@ function CreateNft() {
     }
 
     // If no errors, create the NFT
-    setIsCreated(true);
+    // setIsCreated(true);
 
     // Show success message
     toast.success("NFT created successfully!");
@@ -187,6 +186,7 @@ function CreateNft() {
                   <Input
                     id="price"
                     placeholder="Enter price"
+                    value={nft.price.$numberDecimal}
                     onChange={handlePriceChange}
                     className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
                       ${
@@ -219,6 +219,7 @@ function CreateNft() {
                 <Input
                   id="name"
                   placeholder="Name your NFT"
+                  value={nft.title}
                   onChange={handleNameChange}
                   className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
                     ${
@@ -240,6 +241,7 @@ function CreateNft() {
                 <Input
                   id="description"
                   placeholder="Enter a description"
+                  value={nft.description}
                   onChange={handleDescriptionChange}
                   className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
                     ${
@@ -262,7 +264,7 @@ function CreateNft() {
               <span className="text-primary-foreground text-3xl font-bold">
                 Preview
               </span>
-              {isCreated ? (
+              {nft.imgUrl ? (
                 <PreviewNftCard stamp={nft} />
               ) : (
                 <div className="border h-[450px] rounded-xl text-center p-4 flex justify-between items-center">

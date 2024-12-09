@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FileLogoUpload } from "@/pages/create/components/FileUpload";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import toast, { Toaster } from "react-hot-toast";
 
 const user = {
   name: "John Doe",
@@ -10,26 +11,69 @@ const user = {
 };
 
 function CreateCollection() {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [name, setName] = useState("");
-  const [token, setToken] = useState("");
-  const [description, setDescription] = useState("");
+  const [collection, setCollection] = useState({
+    name: "",
+    token: "",
+    description: "",
+    image: "",
+  });
 
   const handleFileSelect = (file) => {
-    setSelectedFile(file);
+    setCollection({ ...collection, image: file });
+  };
+
+  const handleNameChange = (e) => {
+    setCollection({ ...collection, name: e.target.value });
+  };
+
+  const handleTokenChange = (e) => {
+    setCollection({ ...collection, token: e.target.value });
+  };
+
+  const handleDescriptionChange = (e) => {
+    setCollection({ ...collection, description: e.target.value });
   };
 
   const createCollection = () => {
+    let errors = [];
+
+    if (!collection.image) {
+      errors.push("Please upload an image");
+    }
+
+    if (!collection.name) {
+      errors.push("Please enter a name");
+    }
+
+    if (!collection.token) {
+      errors.push("Please enter a token symbol");
+    }
+
+    if (!collection.description) {
+      errors.push("Please enter a description");
+    }
+
+    // If there are errors, show them and stop the NFT creation process
+    if (errors.length > 0) {
+      errors.forEach((error) => toast.error(error));
+      return; // Stop execution if there are validation errors
+    }
+
+    toast.success("Collection created successfully");
+
     // Create
     console.log("Creating collection...");
-    console.log("File", selectedFile);
-    console.log("Name", name);
-    console.log("Token", token);
-    console.log("Description", description);
+    console.log("File", collection.image);
+    console.log("Name", collection.name);
+    console.log("Token", collection.token);
+    console.log("Description", collection.description);
   };
 
   return (
     <>
+      <div>
+        <Toaster position="top-right" reverseOrder={false} />{" "}
+      </div>
       <div className="flex flex-col min-h-screen my-20 mx-56 ">
         <h1 className="text-primary-foreground text-6xl font-bold mb-10">
           Create New Collection
@@ -80,13 +124,20 @@ function CreateCollection() {
             {/* Name */}
             <div className="flex flex-col gap-4">
               <span className="text-primary-foreground text-3xl font-bold">
-                Name
+                Name <span className="text-destructive">*</span>
               </span>
               <Input
                 placeholder="Name your collection"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+                id="name"
+                value={collection.name}
+                onChange={handleNameChange}
+                className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
+                  ${
+                    !collection.name
+                      ? "border-2 border-destructive"
+                      : "border-2 border-primary"
+                  }
+                  `}
               />
             </div>
             {/* Gap */}
@@ -99,9 +150,16 @@ function CreateCollection() {
               </span>
               <Input
                 placeholder="Enter token symbol"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                className="pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+                value={collection.token}
+                id="token"
+                onChange={handleTokenChange}
+                className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
+                ${
+                  !collection.token
+                    ? "border-2 border-destructive"
+                    : "border-2 border-primary"
+                }
+                  `}
               />
             </div>
           </div>
@@ -113,9 +171,16 @@ function CreateCollection() {
             </span>
             <Input
               placeholder="Enter a description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+              id="description"
+              value={collection.description}
+              onChange={handleDescriptionChange}
+              className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
+                ${
+                  !collection.description
+                    ? "border-2 border-destructive"
+                    : "border-2 border-primary"
+                }
+                `}
             />
           </div>
           {/* Create button */}
