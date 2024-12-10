@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react";
 import {
-    DropdownMenu as UI_DropdownMenu,
+  DropdownMenu as UI_DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuLabel,
@@ -11,6 +11,7 @@ import {
 import { User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import menuItems from "@/config/Links";
+import { useAuth } from "@/context/AuthProvider";
 
 const renderMenuItems = (group, pathname) =>
   menuItems
@@ -31,6 +32,19 @@ const renderMenuItems = (group, pathname) =>
 
 function DropdownMenuComponent() {
   const location = useLocation();
+  const { logoutAction } = useAuth();
+
+  const handleLogout = async () => {
+    const result = await logoutAction();
+
+    console.log("Logout result:", result);
+
+    if (result.status === 200) {
+      // show dialog
+      alert("You have been logged out");
+    }
+  };
+
   return (
     <UI_DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -52,11 +66,15 @@ function DropdownMenuComponent() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="my-2" />
         <DropdownMenuGroup>
-          {renderMenuItems("logout", location.pathname)}
+          <DropdownMenuItem onSelect={handleLogout}>
+            <div className="block w-full px-4 py-2 text-sm cursor-pointer">
+              Logout
+            </div>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </UI_DropdownMenu>
   );
 }
 
-export default DropdownMenuComponent; 
+export default DropdownMenuComponent;

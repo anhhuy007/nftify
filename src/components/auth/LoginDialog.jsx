@@ -3,23 +3,35 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { User } from "lucide-react"
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom"
+import { useAuth } from "@/context/AuthProvider"
+import { useState } from "react";
 
 export default function LoginDialog({ children }) {
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    // Handle login logic here
-    console.log("Login submitted")
-  }
+  const { loginAction } = useAuth();
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const result = await loginAction({ userName, password });
+
+    if (result.error) {
+      // console.log("Message: ", result.error);
+      alert("Error logging in: " + result.error);
+      return;
+    }
+
+    // console.log("Login successful: ", result);
+    alert("Login successful");
+  };
 
   return (
     <Dialog>
@@ -44,7 +56,9 @@ export default function LoginDialog({ children }) {
             </Label>
             <Input
               id="username"
-              placeholder="Enter your username or email"
+              placeholder="Enter your username"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
               required
               className="w-full h-14"
             />
@@ -56,6 +70,8 @@ export default function LoginDialog({ children }) {
             <Input
               id="password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
               className="w-full h-14"

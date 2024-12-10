@@ -29,8 +29,6 @@ function Home() {
   if (trendingLoading || collectionsLoading || creatorsLoading) return LoadingAnimation();
   if (trendingError || collectionsError || creatorsError) return ErrorAnimation();
 
-  console.log("API: ", trendingNftsApiEndpoint);  
-
   return (
     <>
       <div className="flex flex-col items-center justify-center">
