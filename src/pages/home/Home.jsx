@@ -6,8 +6,15 @@ import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
 import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
 import LoadingAnimation from "@/components/ui/loading";
-import { trendingNftsApiEndpoint, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, fetcher } from "@/utils/endpoints";
+import {
+  trendingNftsApiEndpoint,
+  trendingCollectionsApiEndpoint,
+  trendingCreatorsApiEndpoint,
+  fetcher,
+} from "@/utils/endpoints";
 import ErrorAnimation from "@/components/ui/error";
+import { Toaster } from "react-hot-toast";
+import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
 
 function Home() {
   const {
@@ -19,18 +26,50 @@ function Home() {
     data: collectionsData,
     error: collectionsError,
     isLoading: collectionsLoading,
-  } = useQuery("top-collections", () => fetcher(trendingCollectionsApiEndpoint));
+  } = useQuery("top-collections", () =>
+    fetcher(trendingCollectionsApiEndpoint)
+  );
   const {
     data: creatorsData,
     error: creatorsError,
     isLoading: creatorsLoading,
   } = useQuery("top-creators", () => fetcher(trendingCreatorsApiEndpoint));
 
-  if (trendingLoading || collectionsLoading || creatorsLoading) return LoadingAnimation();
-  if (trendingError || collectionsError || creatorsError) return ErrorAnimation();
+  if (trendingLoading || collectionsLoading || creatorsLoading)
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center">
+          <Introduction />
+        </div>
+        <div className="flex flex-col gap-32 items-center justify-center">
+          <div className="flex flex-col gap-10 items-center">
+            <span className="text-5xl font-bold leading-normal text-gradient">
+              Trending NFTs
+            </span>
+            <SkeletonNftCarousel />
+          </div>
+          <div className="flex flex-col justify-center items-center gap-10">
+            <span className="text-5xl leading-normal font-bold text-gradient">
+              Top Collections
+            </span>
+            {/* Skeleton for collections here */}
+          </div>
+          <div className="flex flex-col justify-center items-center gap-10">
+            <span className="text-5xl leading-normal font-bold text-gradient">
+              Top Creators
+            </span>
+            {/* Skeleton for creators here */}
+          </div>
+          <Banner />
+        </div>
+      </>
+    );
+  if (trendingError || collectionsError || creatorsError)
+    return ErrorAnimation();
 
   return (
     <>
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col items-center justify-center">
         <Introduction />
       </div>

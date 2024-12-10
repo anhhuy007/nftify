@@ -34,6 +34,8 @@ const AuthProvider = ({ children }) => {
   };
 
   const loginAction = async (data) => {
+    console.log("Logging in with data:", data);
+
     try {
       const response = await fetch(loginApiEndpoint, {
         method: "POST",

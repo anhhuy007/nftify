@@ -3,7 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Maximize2 } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import NftGeneralInformation from "@/pages/nft/components/NftGeneralInformation";
 import NftDetailTabs from "@/pages/nft/components/NftDetailTabs";
@@ -11,6 +16,7 @@ import NftCarousel from "@/components/NFT/NftCarousel";
 import { useQuery } from "react-query";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
+import { Link } from "react-router-dom";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -56,7 +62,7 @@ export default function NftDetail() {
             <img
               src={nftDetail.imgUrl}
               alt="NFT Image"
-              className="w-full object-contain mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square rounded-xl"
+              className="w-full relative object-contain mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:max-w-[700px] aspect-square rounded-xl"
             />
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
@@ -69,11 +75,11 @@ export default function NftDetail() {
                   <Maximize2 className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl p-2">
+              <DialogContent className="p-10">
                 <img
                   src={nftDetail.imgUrl}
                   alt="Full size NFT"
-                  className="w-full h-full"
+                  className=" max-w-[50vw] max-h-[80vw] w-full h-full"
                 />
               </DialogContent>
             </Dialog>
@@ -93,9 +99,11 @@ export default function NftDetail() {
         ) : (
           <NftCarousel data={moreFromCreatorData} />
         )}
-        <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
-          <p>View creator NFTs</p>
-        </div>
+        <Link to={`/user/${nftDetail.creatorId}`}>
+          <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
+            <p>View creator NFTs</p>
+          </div>
+        </Link>
       </div>
     </div>
   );
