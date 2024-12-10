@@ -129,7 +129,7 @@ function CreateNft() {
           <div className="space-y-14">
             {/* Blockchain connection */}
             <div className="bg-card p-5 rounded-xl border-2">
-              <div className="flex items-center justify-between gap-10">
+              <div className="flex items-center flex-col md:flex-row justify-between gap-10">
                 {/* Image */}
                 <div className="flex gap-10 items-center">
                   <img

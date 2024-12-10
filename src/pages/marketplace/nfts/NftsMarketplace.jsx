@@ -201,7 +201,7 @@ function NftsMarketplace() {
         hasMore={hasMore}
         loader={<FetchingMoreAnimation />}
         endMessage={
-          <p className="text-center text-white">
+          <p className="text-center text-white mt-20">
             {items.length > 0 ? "No more items to display" : "No items found"}
           </p>
         }

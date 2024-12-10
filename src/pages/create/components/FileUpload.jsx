@@ -16,6 +16,7 @@ const FileUpload = ({ onFileSelect }) => {
 
   const handleFileUpload = (e) => {
     const uploadedFile = e.target.files[0];
+    console.log(uploadedFile);
     if (uploadedFile) {
       setFile(URL.createObjectURL(uploadedFile));
       onFileSelect(URL.createObjectURL(uploadedFile));
@@ -258,5 +259,159 @@ export const FileLogoUpload = ({ onFileSelect }) => {
         </div>
       </div>
     </>
+  );
+};
+
+export const FileBackgroundUpload = ({
+  initialBackground,
+  onBackgroundChange,
+}) => {
+  const [background, setBackground] = useState(initialBackground || null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const accept = ["image/png", "image/jpeg", "image/webp"];
+  const maxSize = 1024 * 1024 * 1024; // 20MB
+
+  const handleFileUpload = (e) => {
+    const uploadedFile = e.target.files[0];
+    if (
+      uploadedFile &&
+      accept.includes(uploadedFile.type) &&
+      uploadedFile.size <= maxSize
+    ) {
+      setBackground(URL.createObjectURL(uploadedFile));
+      onBackgroundChange(URL.createObjectURL(uploadedFile));
+    } else {
+      alert("Invalid file type or size exceeds 20MB");
+    }
+  };
+
+  const handleRemoveBackground = () => {
+    setBackground(null);
+    onBackgroundChange(null);
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const uploadedFile = e.dataTransfer.files[0];
+    if (
+      uploadedFile &&
+      accept.includes(uploadedFile.type) &&
+      uploadedFile.size <= maxSize
+    ) {
+      const fileURL = URL.createObjectURL(uploadedFile);
+      setBackground(fileURL);
+      onBackgroundChange(fileURL);
+    } else {
+      alert("Invalid file type or size exceeds 20MB");
+    }
+  };
+
+  return (
+    <div className="relative">
+      <div
+        className={`relative w-full aspect-[933/221] rounded-xl overflow-hidden transition-transform duration-300 ${
+          isDragging ? "opacity-80 " : ""
+        }`}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {background ? (
+          <img
+            src={background}
+            alt="Profile background"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div
+            className={`flex items-center justify-center h-full text-center bg-gray-200 transition-colors duration-300 ${
+              isDragging ? "bg-accent/30" : "bg-muted"
+            }`}
+          >
+            Drag and drop or click to upload background image
+          </div>
+        )}
+        <div className="absolute top-3 right-3 flex gap-2">
+          <Button variant="buy">
+            <label className="cursor-pointer">
+              Edit Cover
+              <input
+                type="file"
+                className="sr-only"
+                accept={accept.join(",")}
+                onChange={handleFileUpload}
+              />
+            </label>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const FileAvaUpload = ({ initialAvatar, onAvatarChange }) => {
+  const [avatar, setAvatar] = useState(initialAvatar || "");
+  const [isHovering, setIsHovering] = useState(false);
+
+  const accept = ["image/png", "image/jpeg", "image/webp"];
+
+  const handleFileUpload = (e) => {
+    const uploadedFile = e.target.files[0];
+    if (uploadedFile) {
+      setAvatar(URL.createObjectURL(uploadedFile));
+      onAvatarChange(URL.createObjectURL(uploadedFile));
+    }
+  };
+
+  return (
+    <div
+      className="relative group w-[110px] h-[110px] ml-6"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <img
+        src={avatar}
+        alt="Profile avatar"
+        className="w-full h-full rounded-xl object-cover border-4 border-[#1a1b2e] aspect-square"
+      />
+
+      {isHovering && (
+        <div className="absolute hover:cursor-pointer inset-0 flex items-center justify-center bg-black/50 rounded-xl cursor-pointer">
+          <label className="flex items-center justify-center text-white">
+            <Image className="w-8 h-8" />
+            <input
+              type="file"
+              src={avatar}
+              className="sr-only"
+              accept={accept.join(",")}
+              onChange={handleFileUpload}
+            />
+          </label>
+        </div>
+      )}
+    </div>
   );
 };
