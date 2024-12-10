@@ -33,7 +33,7 @@ function Setting() {
             ))}
           </div>
         </div>
-        <div className="text-primary-foreground container mx-auto p-14">
+        <div className="text-primary-foreground container mx-auto p-16">
           <Outlet />
         </div>
       </div>

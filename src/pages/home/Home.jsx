@@ -14,6 +14,7 @@ import {
 } from "@/utils/endpoints";
 import ErrorAnimation from "@/components/ui/error";
 import { Toaster } from "react-hot-toast";
+import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
 
 function Home() {
   const {
@@ -35,7 +36,34 @@ function Home() {
   } = useQuery("top-creators", () => fetcher(trendingCreatorsApiEndpoint));
 
   if (trendingLoading || collectionsLoading || creatorsLoading)
-    return LoadingAnimation();
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center">
+          <Introduction />
+        </div>
+        <div className="flex flex-col gap-32 items-center justify-center">
+          <div className="flex flex-col gap-10 items-center">
+            <span className="text-5xl font-bold leading-normal text-gradient">
+              Trending NFTs
+            </span>
+            <SkeletonNftCarousel />
+          </div>
+          <div className="flex flex-col justify-center items-center gap-10">
+            <span className="text-5xl leading-normal font-bold text-gradient">
+              Top Collections
+            </span>
+            {/* Skeleton for collections here */}
+          </div>
+          <div className="flex flex-col justify-center items-center gap-10">
+            <span className="text-5xl leading-normal font-bold text-gradient">
+              Top Creators
+            </span>
+            {/* Skeleton for creators here */}
+          </div>
+          <Banner />
+        </div>
+      </>
+    );
   if (trendingError || collectionsError || creatorsError)
     return ErrorAnimation();
 
