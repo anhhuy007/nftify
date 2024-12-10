@@ -6,8 +6,14 @@ import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
 import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
 import LoadingAnimation from "@/components/ui/loading";
-import { trendingNftsApiEndpoint, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, fetcher } from "@/utils/endpoints";
+import {
+  trendingNftsApiEndpoint,
+  trendingCollectionsApiEndpoint,
+  trendingCreatorsApiEndpoint,
+  fetcher,
+} from "@/utils/endpoints";
 import ErrorAnimation from "@/components/ui/error";
+import { Toaster } from "react-hot-toast";
 
 function Home() {
   const {
@@ -19,20 +25,25 @@ function Home() {
     data: collectionsData,
     error: collectionsError,
     isLoading: collectionsLoading,
-  } = useQuery("top-collections", () => fetcher(trendingCollectionsApiEndpoint));
+  } = useQuery("top-collections", () =>
+    fetcher(trendingCollectionsApiEndpoint)
+  );
   const {
     data: creatorsData,
     error: creatorsError,
     isLoading: creatorsLoading,
   } = useQuery("top-creators", () => fetcher(trendingCreatorsApiEndpoint));
 
-  if (trendingLoading || collectionsLoading || creatorsLoading) return LoadingAnimation();
-  if (trendingError || collectionsError || creatorsError) return ErrorAnimation();
+  if (trendingLoading || collectionsLoading || creatorsLoading)
+    return LoadingAnimation();
+  if (trendingError || collectionsError || creatorsError)
+    return ErrorAnimation();
 
-  console.log("API: ", trendingNftsApiEndpoint);  
+  console.log("API: ", trendingNftsApiEndpoint);
 
   return (
     <>
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col items-center justify-center">
         <Introduction />
       </div>
