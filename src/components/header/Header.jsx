@@ -17,7 +17,9 @@ import { User, ShoppingCart, Bell } from "lucide-react";
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const auth = useAuth();
-  const isAuth = auth && auth.user;
+
+  // Set isAuth to true to show the authenticated user's menu. Set to false to show the unauthenticated user's menu.
+  const isAuth = true;
 
   return (
     <header className="fixed w-full top-0 left-0 right-0 bg-background border-b border-[var(--border)] z-50">

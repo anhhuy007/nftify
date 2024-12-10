@@ -9,9 +9,9 @@ import {
   Users,
   Shield,
   Bell,
+  Heart,
 } from "lucide-react";
 
-import Billing from "@/pages/billing/Billing";
 import CreateNft from "@/pages/create/CreateNft";
 import Help from "@/pages/help/Help";
 import Marketplace from "@/pages/marketplace/Marketplace";
@@ -45,12 +45,12 @@ const menuItems = [
     isPrivate: true,
   },
   {
-    name: "Billing",
+    name: "Favorites",
     group: "user",
-    link: "/billing",
+    link: "/user/:userId/favorites",
     layout: "RootLayout",
-    icon: <CreditCard />,
-    element: <Billing />,
+    icon: <Heart />,
+    element: <UserDetail />,
     isPrivate: true,
   },
   {

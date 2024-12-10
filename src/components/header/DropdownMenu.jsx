@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react";
 import {
-    DropdownMenu as UI_DropdownMenu,
+  DropdownMenu as UI_DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuLabel,
@@ -59,4 +59,4 @@ function DropdownMenuComponent() {
   );
 }
 
-export default DropdownMenuComponent; 
+export default DropdownMenuComponent;
