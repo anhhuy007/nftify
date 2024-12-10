@@ -21,8 +21,7 @@ function CollectionCarousel({ data }) {
                 <CollectionCard collection={collection} />
               </div>
             </CarouselItem>
-            )
-          )}
+          ))}
         </CarouselContent>
         <CarouselPrevious className="hidden md:inline-block md:p-2" />
         <CarouselNext className="hidden md:inline-block md:p-2" />

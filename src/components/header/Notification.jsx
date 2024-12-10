@@ -23,7 +23,7 @@ function Notification() {
             <SheetTitle>Notifications</SheetTitle>
           </SheetHeader>
           <SheetDescription>
-            <p>No new notifications</p>
+            <p> No description</p>
           </SheetDescription>
         </SheetContent>
       </Sheet>

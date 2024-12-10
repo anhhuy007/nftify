@@ -7,13 +7,14 @@ import {
   LogOut,
   ShoppingCart,
   Users,
+  Shield,
+  Bell,
+  Heart,
 } from "lucide-react";
 
-import Billing from "@/pages/billing/Billing";
 import CreateNft from "@/pages/create/CreateNft";
 import Help from "@/pages/help/Help";
 import Marketplace from "@/pages/marketplace/Marketplace";
-import Profile from "@/pages/profile/Profile";
 import Setting from "@/pages/setting/Setting";
 import SignIn from "@/pages/auth/sign-in/SignIn";
 import SignUp from "@/pages/auth/sign-up/SignUp";
@@ -29,34 +30,57 @@ import UserActivities from "@/pages/user/UserActivities";
 import UserCollections from "@/pages/user/UserCollections";
 import UserNfts from "@/pages/user/UserNfts";
 import CreateCollection from "@/pages/create/CreateCollection";
+import Profile from "@/pages/setting/Profile/Profile";
+import Notification from "@/pages/setting/Notification/Notification";
+import Account from "@/pages/setting/Account/Account";
 
 const menuItems = [
   {
     name: "Profile",
     group: "user",
-    link: "/profile",
+    link: "/user/:userId",
     layout: "RootLayout",
     icon: <User />,
-    element: <Profile />,
+    element: <UserDetail />,
     isPrivate: true,
   },
   {
-    name: "Billing",
+    name: "Favorites",
     group: "user",
-    link: "/billing",
+    link: "/user/:userId/favorites",
     layout: "RootLayout",
-    icon: <CreditCard />,
-    element: <Billing />,
+    icon: <Heart />,
+    element: <UserDetail />,
     isPrivate: true,
   },
   {
     name: "Setting",
     group: "help",
-    link: "/settings",
+    link: "/setting",
     layout: "RootLayout",
     icon: <Settings />,
     element: <Setting />,
     isPrivate: true,
+    children: [
+      {
+        name: "Profile",
+        link: "profile",
+        icon: <User size={32} />,
+        element: <Profile />,
+      },
+      {
+        name: "Account",
+        link: "account",
+        icon: <Shield size={32} />,
+        element: <Account />,
+      },
+      {
+        name: "Notification",
+        link: "notification",
+        icon: <Bell size={32} />,
+        element: <Notification />,
+      },
+    ],
   },
   {
     name: "Help Center",

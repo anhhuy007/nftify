@@ -2,11 +2,23 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
 import LoginDialog from "@/components/auth/LoginDialog";
-
+import { fetchWithAuth } from "@/api/AuthHandler";
+import { testEndpoint } from "@/api/Endpoints";
 
 function Introduction() {
-  const auth = useAuth();
-  const isAuth = auth && auth.user;
+  const { isAuth, refreshAccessToken } = useAuth();
+
+  const handleCreate = async () => {
+    if (!isAuth) {
+      alert("Please login to create NFTs");
+      return;
+    }
+
+    const result = await fetchWithAuth(testEndpoint, {}, refreshAccessToken);
+
+    console.log("Test endpoint result: ", result);
+    alert("Test endpoint result: " + JSON.stringify(result));
+  };
 
   return (
     <div className="min-h-[600px] w-full flex items-center">
@@ -32,23 +44,15 @@ function Introduction() {
             <button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-foreground rounded-lg font-medium transition-colors">
               <Link to="/marketplace/nfts">Explore</Link>
             </button>
-            {isAuth ? (
-                  <>
-                      <button className="px-8 py-3 border border-gray-700 hover:border-gray-600 text-foreground rounded-lg font-medium transition-colors">
-                        <Link to="/create">Create</Link>
-                      </button>
-                  </>
-                ) 
-                : (
-                  <>
-                    <LoginDialog>
-                      <button className="px-8 py-3 border border-gray-700 hover:border-gray-600 text-foreground rounded-lg font-medium transition-colors">
-                        Create
-                      </button>
-                    </LoginDialog>
-                  </>
-                )}
-          
+            {
+              <button
+                onClick={handleCreate}
+                className="px-8 py-3 border border-gray-700 hover:border-gray-600 text-foreground rounded-lg font-medium transition-colors"
+              >
+                {/* <Link to="/create">Create</Link> */}
+                Create
+              </button>
+            }
           </div>
         </div>
       </div>
