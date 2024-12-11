@@ -1,5 +1,10 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { loginApiEndpoint, logoutApiEndpoint, refreshTokenApiEndpoint } from "@/api/Endpoints";
+import {
+  loginApiEndpoint,
+  logoutApiEndpoint,
+  refreshTokenApiEndpoint,
+} from "@/api/Endpoints";
+import { ethers } from "ethers";
 
 const AuthContext = createContext();
 
@@ -10,6 +15,9 @@ const AuthProvider = ({ children }) => {
     localStorage.getItem("jwtRefreshToken") || ""
   );
   const [isAuth, setIsAuth] = useState(!!token);
+  const [walletAddress, setWalletAddress] = useState(
+    localStorage.getItem("walletAddress") || ""
+  );
 
   useEffect(() => {
     if (token) {
@@ -106,8 +114,12 @@ const AuthProvider = ({ children }) => {
       // clear local storage
       localStorage.removeItem("jwtToken");
       localStorage.removeItem("jwtRefreshToken");
+      localStorage.removeItem("walletAddress"); 
       setIsAuth(false);
       setUser(null);
+      setToken("");
+      setRefreshToken("");
+      setWalletAddress("");
 
       return result;
     } catch (error) {
@@ -116,8 +128,56 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert("Please install MetaMask to connect your wallet");
+      return;
+    }
+
+    try {
+      // For ethers v5
+      // const provider = window.ethereum
+      //   ? new ethers.providers.Web3Provider(window.ethereum)
+      //   : null;
+
+      // For ethers v6
+      const provider = window.ethereum ? new ethers.BrowserProvider(window.ethereum) : null;
+      if (!provider) {
+        throw new Error("Unable to create provider");
+      }
+
+      // Request account access
+      await provider.send("eth_requestAccounts", []);
+
+      // Get the signer
+      const signer = await provider.getSigner();
+
+      // Get wallet address
+      const address = await signer.getAddress();
+
+      setWalletAddress(address);
+      localStorage.setItem("walletAddress", address);
+
+      console.log("Wallet connected:", address);
+      return address;
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      alert("Failed to connect wallet: " + error.message);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuth, loginAction, logoutAction, refreshAccessToken }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuth,
+        loginAction,
+        logoutAction,
+        refreshAccessToken,
+        connectWallet,
+        walletAddress
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

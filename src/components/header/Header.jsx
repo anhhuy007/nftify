@@ -13,15 +13,21 @@ import Logo from "../../assets/logo.svg";
 import { useAuth } from "@/context/AuthProvider";
 import LoginDialog from "@/components/auth/LoginDialog";
 import { User, ShoppingCart, Bell } from "lucide-react";
+import { WalletConnected } from "../ui/wallet_connected";
+import { ConnectWallet } from "../ui/connect_wallet";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuth } = useAuth();
+  const { isAuth, connectWallet, walletAddress } = useAuth();
 
   useEffect(() => {
     // This effect will run whenever isAuth changes
     console.log("Authentication state changed:", isAuth);
   }, [isAuth]);
+
+  const handleConnectWallet = async () => {
+    await connectWallet();
+  };
 
   return (
     <header className="fixed w-full top-0 left-0 right-0 bg-background border-b border-[var(--border)] z-50">
@@ -73,22 +79,13 @@ function Header() {
             <div className="hidden md:flex items-center gap-4">
               {isAuth ? (
                 <>
+                  <ConnectWallet walletAddress={walletAddress} handleOnClicked={handleConnectWallet} />
                   <DropdownMenuComponent />
                   <Notification />
                   <Cart />
                 </>
               ) : (
                 <>
-                  <Button
-                    variant="primary"
-                    className="bg-[hsl(214,84%,56%)] p-6"
-                  >
-                    <Link to="/auth/connect-wallet">
-                      <span className="text-primary-foreground">
-                        Connect Wallet
-                      </span>
-                    </Link>
-                  </Button>
                   <LoginDialog>
                     <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
                       <User size={20} />
