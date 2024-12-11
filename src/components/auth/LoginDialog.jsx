@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -13,33 +12,25 @@ import { Label } from "@/components/ui/label";
 import { User } from "lucide-react";
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
+import { useAuth } from "@/context/AuthProvider"
+import { useState } from "react";
 
 export default function LoginDialog({ children }) {
-  const [name, setName] = useState("");
+  const { loginAction, isAuth } = useAuth();
+  const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(false);
 
-  const [displayName, setDisplayName] = useState("John Doe");
-  const [email, setEmail] = useState("");
-  const [isAccepted, setIsAccepted] = useState(false);
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle login logic here
-    console.log("Login submitted");
-    console.log("Name: ", name);
-    console.log("Password", password);
-    setIsLogin(true);
-  };
+    const result = await loginAction({ username, password });
 
-  const handleSignUp = (event) => {
-    event.preventDefault();
-    // Handle sign up logic here
-    console.log("Sign up submitted");
-    console.log("Display Name: ", displayName);
-    console.log("Email", email);
+    if (result.error) {
+      alert("Error logging in: " + result.error);
+      return;
+    }
+
+    alert("Login successful");
   };
 
   return (
@@ -48,7 +39,7 @@ export default function LoginDialog({ children }) {
       <DialogContent className="sm:max-w-[500px] p-10 text-primary-foreground">
         {
           // Show success message if login is successful
-          isLogin ? (
+          isAuth ? (
             <>
               <DialogHeader>
                 <DialogTitle>
@@ -154,7 +145,7 @@ export default function LoginDialog({ children }) {
                     id="username"
                     placeholder="Enter your username or email"
                     required
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => setUserName(e.target.value)}
                     className="w-full h-14"
                   />
                 </div>

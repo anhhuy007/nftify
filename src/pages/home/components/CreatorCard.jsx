@@ -11,9 +11,6 @@ export default function CreatorCard({ creatorData }) {
   const creatorName = creator?.name || "Unknown";
   const description = creator?.description || "No description available";
 
-  console.log("Image 1: ", image1);
-  console.log("Creator Data: ", creatorData);
-
   return (
     <Link to={`/user/${creator.id}`}>
       <Card className="xl:w-[445px] xl:h-[470px] overflow-hidden">

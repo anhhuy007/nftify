@@ -67,8 +67,6 @@ function Home() {
   if (trendingError || collectionsError || creatorsError)
     return ErrorAnimation();
 
-  console.log("API: ", trendingNftsApiEndpoint);
-
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
