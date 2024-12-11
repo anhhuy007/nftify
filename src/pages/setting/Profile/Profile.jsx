@@ -55,7 +55,7 @@ function Profile() {
   };
 
   const saveChanges = () => {
-    // Save user data to the database
+    // Save user data to the database 
     console.log(user);
   };
 

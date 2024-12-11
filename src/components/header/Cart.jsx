@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SheetContent,
   SheetDescription,
@@ -13,41 +13,31 @@ import { Separator } from "../ui/separator";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 
-const nfts = [
-  {
-    id: 1,
-    title: "NFT Title",
-    imgUrl:
-      "https://pyxis.nymag.com/v1/imgs/51b/28a/622789406b8850203e2637d657d5a0e0c3-avatar-rerelease.2x.rsocial.w600.jpg",
-    price: "0.01",
-  },
-  {
-    id: 2,
-    title: "NFT Title",
-    imgUrl:
-      "https://pyxis.nymag.com/v1/imgs/51b/28a/622789406b8850203e2637d657d5a0e0c3-avatar-rerelease.2x.rsocial.w600.jpg",
-    price: "0.01",
-  },
-  {
-    id: 3,
-    title: "NFT Title",
-    imgUrl:
-      "https://pyxis.nymag.com/v1/imgs/51b/28a/622789406b8850203e2637d657d5a0e0c3-avatar-rerelease.2x.rsocial.w600.jpg",
-    price: "0.01",
-  },
-];
-
 function Cart() {
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const fetchCart = () => {
+      const storedCart = localStorage.getItem("cart");
+      try {
+        const parsedCart = JSON.parse(storedCart) || [];
+        setCart(parsedCart);
+        console.log("Cart:", parsedCart);
+      } catch (error) {
+        console.error("Failed to parse cart from localStorage:", error);
+        setCart([]);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
   const calculateTotal = () => {
-    let total = 0;
-    nfts.forEach((nft) => {
-      total += parseFloat(nft.price);
-    });
-    return total;
+    return cart.reduce((total, nft) => total + parseFloat(nft.price || 0), 0);
   };
 
   const handleCheckout = () => {
-    // Call the checkout API here
+    console.log("Proceeding to checkout:", cart);
   };
 
   return (
@@ -63,29 +53,35 @@ function Cart() {
             <SheetTitle>Your ShoppingCart</SheetTitle>
           </SheetHeader>
 
-          <div className="flex flex-col gap-4 text-primary-foreground mt-8 flex-grow">
-            {nfts.map((nft) => (
-              <React.Fragment key={nft.id}>
-                <Link to={`/nft/${nft.id}`}>
+          <div className="flex flex-col gap-8 text-primary-foreground mt-8 flex-grow">
+            {cart.length > 0 ? (
+              cart.map(({ _id, imgUrl, title, price }) => (
+                <Link to={`/nft/${_id}`} key={_id} className="group">
                   <div className="grid grid-cols-[18%_2%_60%_30%] items-center">
                     <img
-                      src={nft.imgUrl}
-                      alt={nft.title}
-                      className="w-12 h-12 rounded-lg"
+                      src={imgUrl}
+                      alt={title}
+                      className="w-12 h-12 rounded-lg group-hover:opacity-75 transition-opacity duration-200"
                     />
                     <div></div>
-                    <span className="text-lg font-bold">{nft.title}</span>
-                    <span className="text-sm">{nft.price} ETH</span>
+                    <span className="text-lg font-bold line-clamp-1 group-hover:underline">
+                      {title}
+                    </span>
+                    <span className="text-sm">
+                      {/* {price.price.$numberDecimal} ETH */}
+                    </span>
                   </div>
+                  <Separator className="w-full bg-muted mt-5" />
                 </Link>
-                <Separator className="w-full bg-muted" />
-              </React.Fragment>
-            ))}
+              ))
+            ) : (
+              <p className="text-center">Your cart is empty</p>
+            )}
           </div>
 
           <SheetFooter className="mt-auto">
             <Button className="w-full h-14" onClick={handleCheckout}>
-              Checkout {calculateTotal()} ETH
+              Checkout {calculateTotal().toFixed(2)} ETH
             </Button>
           </SheetFooter>
         </SheetContent>

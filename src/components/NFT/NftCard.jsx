@@ -9,12 +9,40 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 
-export const handleAddToCart = (title) => {
-  toast.success(
-    <>
-      <span className="">"{title}" added to your cart 🛒.</span>
-    </>
-  );
+export const handleAddToCart = (stamp, setCart) => {
+  if (!stamp) {
+    console.error("Invalid stamp object provided:", stamp);
+    return;
+  }
+
+  let cart;
+  try {
+    cart = JSON.parse(localStorage.getItem("cart")) || [];
+  } catch (error) {
+    console.error("Failed to parse cart from localStorage:", error);
+    cart = [];
+  }
+
+  if (!Array.isArray(cart)) {
+    console.warn("Cart is not an array, resetting to empty array.");
+    cart = [];
+  }
+
+  const exists = cart.some((item) => item._id === stamp._id);
+  if (!exists) {
+    cart.push(stamp);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    setCart(cart);
+    toast.success(
+      <>
+        <span>"{stamp.title}" added to your cart 🛒.</span>
+      </>
+    );
+  } else {
+    toast(`"${stamp.title}" is already in your cart`, {
+      icon: "🛒",
+    });
+  }
 };
 
 export default function NftCard({ stamp }) {
@@ -95,7 +123,7 @@ export default function NftCard({ stamp }) {
                 <div></div>
                 <Button
                   className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                  onClick={() => handleAddToCart(stamp.title)}
+                  onClick={() => handleAddToCart(stamp)}
                 >
                   <ShoppingCart className="h-10 w-10" />
                 </Button>
@@ -164,7 +192,7 @@ export function SmallNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={() => handleAddToCart(stamp)}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -249,7 +277,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={() => handleAddToCart(stamp)}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -334,7 +362,7 @@ export function PreviewNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                // onClick={() => handleAddToCart(stamp.title, stamp._id)}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>

@@ -119,7 +119,7 @@ export default function NftGeneralInformation({ data }) {
               <div></div>
               <Button
                 className="w-full bg-white text-black hover:bg-gray-400 font-semibold py-6"
-                onClick={() => handleAddToCart(data.title)}
+                onClick={() => handleAddToCart(data)}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
