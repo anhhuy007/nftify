@@ -11,10 +11,8 @@ export default function UserCard({ user }) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const { id, bannerUrl, avatarUrl, userName, followers } = user;
-
   return (
-    <Link to={`/user/${id}`}>
+    <Link to={`/user/${user._id}`}>
       <Card
         className={`relative w-[340px] overflow-hidden rounded-3xl group border-2 transition-all duration-300 ${
           isHovered
@@ -27,7 +25,7 @@ export default function UserCard({ user }) {
         {/* Banner Image */}
         <div className="h-52 p-4 bg-[#797da0]">
           <img
-            src={bannerUrl}
+            src={user.avatar}
             alt=""
             className="h-full w-full rounded-xl object-cover transition-transform duration-300 group-hover:scale-105"
           />
@@ -37,19 +35,19 @@ export default function UserCard({ user }) {
         <div className="relative flex items-center justify-between gap-6 bg-[#797da0] p-6">
           {/* Avatar - Positioned to overlap banner */}
           <Avatar className="absolute -top-12 left-8 h-16 w-16 rounded-full">
-            <AvatarImage src={avatarUrl} alt={userName} />
+            <AvatarImage src={user.avatar} alt={user.name} />
             <AvatarFallback className="bg-blue-500 text-2xl">
-              {userName.slice(0, 2).toUpperCase()}
+              {user.name}
             </AvatarFallback>
           </Avatar>
 
           {/* User Info */}
           <div className="flex flex-col max-w-[145px]">
             <h2 className="text-lg font-bold text-white truncate">
-              {userName}
+              {user.name}
             </h2>
             <p className="text-sm font-semibold text-gray-300">
-              {followers.toLocaleString()} Followers
+              {user.total} NFTs
             </p>
           </div>
 

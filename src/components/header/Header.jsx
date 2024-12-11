@@ -4,7 +4,7 @@ import Notification from "@/components/header/Notification";
 import DropdownMenuComponent from "@/components/header/DropdownMenu";
 import Cart from "@/components/header/Cart";
 import { Separator } from "@/components/ui/separator";
-import React from "react";
+import React, { useEffect } from "react";
 import menuItems from "@/config/Links";
 import { useState } from "react";
 import { Search, Menu, X } from "lucide-react";
@@ -16,8 +16,12 @@ import { User, ShoppingCart, Bell } from "lucide-react";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const auth = useAuth();
-  const isAuth = auth && auth.user;
+  const { isAuth } = useAuth();
+
+  useEffect(() => {
+    // This effect will run whenever isAuth changes
+    console.log("Authentication state changed:", isAuth);
+  }, [isAuth]);
 
   return (
     <header className="fixed w-full top-0 left-0 right-0 bg-background border-b border-[var(--border)] z-50">

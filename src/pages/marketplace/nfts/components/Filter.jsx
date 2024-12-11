@@ -14,20 +14,26 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 
-export default function Filter({ filter, setFilter, disabledFields }) {
+export default function Filter({
+  filter,
+  setFilter,
+  disabledFields,
+  clearFilter,
+  closeFilter,
+}) {
   const [tempFilter, setTempFilter] = useState(() => {
     const initialFilter = {
       lowestPrice: filter.lowestPrice || "",
       highestPrice: filter.highestPrice || "",
       status: filter.status || "all",
-      user: filter.user || "",
+      owner: filter.owner || "",
     };
     if (!disabledFields || disabledFields.collection?.isDisabled !== true) {
       initialFilter.collection = filter.collection || "";
     }
 
-    if (!disabledFields || disabledFields.user?.isDisabled !== true) {
-      initialFilter.user = filter.user || "";
+    if (!disabledFields || disabledFields.owner?.isDisabled !== true) {
+      initialFilter.owner = filter.owner || "";
     }
 
     return initialFilter;
@@ -36,6 +42,7 @@ export default function Filter({ filter, setFilter, disabledFields }) {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       setFilter(tempFilter);
+      closeFilter();
     }
   };
 
@@ -45,6 +52,12 @@ export default function Filter({ filter, setFilter, disabledFields }) {
 
   const applyFilters = () => {
     setFilter(tempFilter);
+    closeFilter();
+  };
+
+  const resetFilters = () => {
+    clearFilter();
+    closeFilter();
   };
 
   return (
@@ -57,7 +70,7 @@ export default function Filter({ filter, setFilter, disabledFields }) {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="w-[400px] p-0 bg-[#1a1b3b] text-white flex flex-col"
+        className="w-[400px] overflow-y-auto p-0 bg-[#1a1b3b] text-white flex flex-col"
         onKeyDown={handleKeyPress}
       >
         <SheetTitle className="text-3xl p-6 pb-0 font-semibold">
@@ -117,7 +130,7 @@ export default function Filter({ filter, setFilter, disabledFields }) {
                 <ChevronDown className="h-5 w-5" />
               </div>
               <div className="flex justify-between">
-                {["all", "buy", "auction"].map((status) => (
+                {["all", "selling", "displaying"].map((status) => (
                   <Button
                     key={status}
                     className={`rounded-full text-lg ${
@@ -130,9 +143,9 @@ export default function Filter({ filter, setFilter, disabledFields }) {
                   >
                     {status === "all"
                       ? "All"
-                      : status === "buy"
-                      ? "Buy now"
-                      : "Live auction"}
+                      : status === "selling"
+                      ? "Selling"
+                      : "Displaying"}
                   </Button>
                 ))}
               </div>
@@ -179,19 +192,19 @@ export default function Filter({ filter, setFilter, disabledFields }) {
               </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                {disabledFields?.user?.isDisabled || false ? (
+                {disabledFields?.owner?.isDisabled || false ? (
                   <Input
                     className="w-full bg-[#252850] border-0 pl-10 h-14"
-                    placeholder={`${disabledFields?.user?.name || "User"}`}
+                    placeholder={`${disabledFields?.owner?.name || "User"}`}
                     disabled
                   />
                 ) : (
                   <Input
                     className="w-full bg-[#252850] border-0 pl-10 h-14"
                     placeholder="Search by User"
-                    value={tempFilter.user}
+                    value={tempFilter.owner}
                     onChange={(e) =>
-                      handleTempFilterChange("user", e.target.value)
+                      handleTempFilterChange("owner", e.target.value)
                     }
                   />
                 )}
@@ -207,6 +220,12 @@ export default function Filter({ filter, setFilter, disabledFields }) {
             className="w-full bg-[#252850] text-lg h-14 text-white hover:bg-[#2f3266]"
           >
             Apply Filters
+          </Button>
+          <Button
+            onClick={resetFilters}
+            className="w-full bg-[#252850] text-lg h-14 text-white hover:bg-[#2f3266] bg-destructive"
+          >
+            Clear Filters
           </Button>
         </SheetFooter>
       </SheetContent>
