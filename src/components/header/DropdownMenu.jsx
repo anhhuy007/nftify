@@ -12,6 +12,7 @@ import { User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import menuItems from "@/config/Links";
 import { useAuth } from "@/context/AuthProvider";
+import toast from "react-hot-toast";
 
 const renderMenuItems = (group, pathname) =>
   menuItems
@@ -37,11 +38,9 @@ function DropdownMenuComponent() {
   const handleLogout = async () => {
     const result = await logoutAction();
 
-    console.log("Logout result:", result);
-
     if (result.status === 200) {
       // show dialog
-      alert("You have been logged out");
+      toast.success("Logout successfully");
     }
   };
 

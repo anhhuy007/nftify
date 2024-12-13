@@ -4,13 +4,14 @@ import { useAuth } from "@/context/AuthProvider";
 import LoginDialog from "@/components/auth/LoginDialog";
 import { fetchWithAuth } from "@/api/AuthHandler";
 import { testEndpoint } from "@/api/Endpoints";
+import { toast } from "react-hot-toast";
 
 function Introduction() {
   const { isAuth, refreshAccessToken } = useAuth();
 
   const handleCreate = async () => {
     if (!isAuth) {
-      alert("Please login to create NFTs");
+      toast("Please login to create NFTs");
       return;
     }
 

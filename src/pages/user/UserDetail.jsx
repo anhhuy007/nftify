@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Copy } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const user = {
   id: 1,
@@ -55,9 +55,6 @@ function UserDetail() {
 
   return (
     <>
-      <div>
-        <Toaster position="top-right" reverseOrder={true} />
-      </div>
       <div className="flex flex-col px-20 pt-10">
         <div className="w-full rounded-xl overflow-hidden">
           <div className="relative h-[350px] w-full">

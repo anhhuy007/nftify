@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const initialData = {
   email: "example@domain.com",
@@ -62,7 +63,6 @@ function Account() {
 
   return (
     <>
-      <Toaster position="top-right" reverseOrder={true} />
       <div className="flex flex-col gap-10">
         <span className="text-primary-foreground text-3xl font-bold">
           Account management
@@ -112,9 +112,19 @@ function Account() {
             Change password
           </span>
           <div className="grid grid-cols-[82%]">
-            <Input
+            <PasswordInput
+              placeholder="Enter your current password"
+              id="current-password"
+              value={user.currentPassword}
+              onChange={(e) =>
+                setUser({ ...user, currentPassword: e.target.value })
+              }
+              className="pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+            />
+          </div>
+          <div className="grid grid-cols-[82%_3%_15%]">
+            <PasswordInput
               placeholder="Enter your new password"
-              type="password"
               id="new-password"
               value={user.newPassword}
               onChange={(e) =>
@@ -122,18 +132,7 @@ function Account() {
               }
               className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
             />
-          </div>
-          <div className="grid grid-cols-[82%_3%_15%]">
-            <Input
-              placeholder="Enter your current password"
-              id="current-password"
-              type="password"
-              value={user.currentPassword}
-              onChange={(e) =>
-                setUser({ ...user, currentPassword: e.target.value })
-              }
-              className="pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
-            />
+
             <div></div>
             <Button
               size="xl"

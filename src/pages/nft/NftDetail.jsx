@@ -47,10 +47,6 @@ export default function NftDetail() {
     () => fetcher(moreFromCreatorEndpoint),
     { enabled: !!nftDetail }
   );
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [nftId]);
   if (nftDetailLoading) return LoadingAnimation();
   if (nftDetailError) return ErrorAnimation();
 

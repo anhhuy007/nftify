@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User } from "lucide-react";
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
-import { Separator } from "@radix-ui/react-dropdown-menu";
-import { useAuth } from "@/context/AuthProvider"
+import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default function LoginDialog({ children }) {
   const { loginAction, isAuth } = useAuth();
@@ -26,11 +26,11 @@ export default function LoginDialog({ children }) {
     const result = await loginAction({ username, password });
 
     if (result.error) {
-      alert("Error logging in: " + result.error);
+      toast.error(result.error);
       return;
     }
 
-    alert("Login successful");
+    toast.success("Login successful");
   };
 
   return (
@@ -153,12 +153,11 @@ export default function LoginDialog({ children }) {
                   <Label htmlFor="password" className="text-xl">
                     Password
                   </Label>
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type="password"
+                    value={password}
                     placeholder="Enter your password"
                     onChange={(e) => setPassword(e.target.value)}
-                    required
                     className="w-full h-14"
                   />
                 </div>
