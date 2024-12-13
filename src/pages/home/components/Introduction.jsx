@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
-import LoginDialog from "@/components/auth/LoginDialog";
-import { fetchWithAuth } from "@/api/AuthHandler";
+import { useAuthHandler } from "@/api/AuthHandler";
 import { testEndpoint } from "@/api/Endpoints";
 
 function Introduction() {
-  const { isAuth, refreshAccessToken } = useAuth();
+  const { isAuth } = useAuth();
+  const { fetchWithAuth } = useAuthHandler();
 
   const handleCreate = async () => {
     if (!isAuth) {
@@ -14,7 +14,7 @@ function Introduction() {
       return;
     }
 
-    const result = await fetchWithAuth(testEndpoint, {}, refreshAccessToken);
+    const result = await fetchWithAuth(testEndpoint);
 
     console.log("Test endpoint result: ", result);
     alert("Test endpoint result: " + JSON.stringify(result));

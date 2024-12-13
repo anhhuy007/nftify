@@ -1,38 +1,64 @@
-export const fetchWithAuth = async (url, options = {}, refreshAccessToken) => {
+import { useAuth } from "@/context/AuthProvider";
+
+const useAuthHandler = () => {
+  const { refreshAccessToken, logoutAction } = useAuth();
+  
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+
+  const handleTokenRefresh = async () => {
+    try {
+      const newToken = await refreshAccessToken();
+      if (!newToken) {
+        await logoutAction();
+        throw new Error("Failed to refresh token");
+      }
+      return newToken;
+    } catch (error) {
+      await logoutAction();
+      throw error;
+    }
+  };
+
+  const fetchWithAuth = async (url, options = {}) => {
     const token = localStorage.getItem("jwtToken");
     const headers = {
-        "Content-Type": "application/json",
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
     };
 
-    const response = await fetch(url, { ...options, headers });
+    try {
+      const response = await fetch(url, { ...options, headers });
 
-    if (response.status === 401) {  
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-            const newHeaders = {
-                ...headers,
-                Authorization: `Bearer ${newToken}`,
-            };  
+      if (response.status === 401) {
+        const newToken = await handleTokenRefresh();
+        const newHeaders = {
+          ...headers,
+          Authorization: `Bearer ${newToken}`,
+        };
 
-            console.log("New headers: ", newHeaders);
-
-            const newResponse = await fetch(url, { ...options, headers: newHeaders });
-            if (!newResponse.ok) {
-                throw new Error("Error fetching data");
-            }
-
-            return newResponse.json();
+        const newResponse = await fetch(url, {
+          ...options,
+          headers: newHeaders,
+        });
+        if (!newResponse.ok) {
+          throw new Error("Error fetching data");
         }
-        else {
-            throw new Error("Error refreshing token");
-        }
-    }
+        return newResponse.json();
+      }
 
-    if (!response.ok) {
+      if (!response.ok) {
         throw new Error("Error fetching data");
-    }
+      }
 
-    return response.json();
-}
+      return response.json();
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error;
+    }
+  };
+
+  return { fetcher, fetchWithAuth };
+};
+
+export { useAuthHandler };
