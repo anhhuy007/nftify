@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
+import { useCart } from "@/context/CartProvider";
 
 export const handleAddToCart = (title) => {
   toast.success(
@@ -19,6 +20,13 @@ export const handleAddToCart = (title) => {
 
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addToCart} = useCart();
+
+  const handleCartClick = () => {
+    addToCart(stamp);
+    handleAddToCart(stamp.title);
+  };
+
   return (
     <>
       <div
@@ -95,7 +103,7 @@ export default function NftCard({ stamp }) {
                 <div></div>
                 <Button
                   className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                  onClick={() => handleAddToCart(stamp.title)}
+                  onClick={() => handleCartClick(stamp.title)}
                 >
                   <ShoppingCart className="h-10 w-10" />
                 </Button>

@@ -17,20 +17,19 @@ import { useQuery } from "react-query";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { Link } from "react-router-dom";
-
-const fetcher = (url) => fetch(url).then((res) => res.json());
+import { useAuthHandler } from "@/api/AuthHandler";
+import { stampDetailApiEndpoint } from "@/api/Endpoints";
 
 export default function NftDetail() {
   const { nftId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp/${nftId}`;
+  const { fetcher } = useAuthHandler();
 
   const {
     data: nftDetail,
     error: nftDetailError,
     isLoading: nftDetailLoading,
-  } = useQuery(["nft-detail", nftId], () => fetcher(stampDetailApiEndpoint), {
+  } = useQuery(["nft-detail", nftId], () => fetcher(stampDetailApiEndpoint + `/${nftId}`), {
     enabled: !!nftId,
   });
 

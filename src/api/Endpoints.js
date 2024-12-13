@@ -18,4 +18,8 @@ export const trendingCreatorsApiEndpoint = `${baseUrl}/marketplace/list/trending
 // nfts marketplace endpoints
 export const nftsApiEndpoint = `${baseUrl}/marketplace/list/stamps`;
 
+// nft detail endpoints
+export const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp`;
+
+// test auth endpoint
 export const testEndpoint = `${baseUrl}/auth/posts`;
