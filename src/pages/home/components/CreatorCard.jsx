@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 
 export default function CreatorCard({ creatorData }) {
   const creator = creatorData.creatorDetails;
-  // console.log("Creator Details: ", creator.name);
-
   const image1 = creatorData.creatorStamps[0];
   const image2 = creatorData.creatorStamps[1];
   const image3 = creatorData.creatorStamps[2];

@@ -135,11 +135,6 @@ const AuthProvider = ({ children }) => {
     }
 
     try {
-      // For ethers v5
-      // const provider = window.ethereum
-      //   ? new ethers.providers.Web3Provider(window.ethereum)
-      //   : null;
-
       // For ethers v6
       const provider = window.ethereum ? new ethers.BrowserProvider(window.ethereum) : null;
       if (!provider) {
