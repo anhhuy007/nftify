@@ -15,48 +15,114 @@ import {
   FileAvaUpload,
   FileBackgroundUpload,
 } from "@/pages/create/components/FileUpload";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthHandler } from "@/api/AuthHandler";
+import toast from "react-hot-toast";
+import { redirect } from "react-router-dom";
+import { userApiEndpoint } from "@/api/Endpoints";
 
-const data = {
-  background:
-    "https://asset.gecdesigns.com/img/wallpapers/fantasy-forest-wallpaper-inspired-by-avatar-pandora-planet-with-dark-mountains-and-glowing-creatures-background-sr03072407-cover.webp",
-  avatar: "https://avatars.githubusercontent.com/u/67442564",
-  name: "John Doe",
-  shortBio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  socialLink: [
-    { name: "Twitter", link: "https://twitter.com" },
-    { name: "Facebook", link: "https://facebook.com" },
-    { name: "Instagram", link: "https://instagram.com" },
-  ],
-};
+// Pinata SDK
 
 function Profile() {
-  const [user, setUser] = useState({
-    name: data?.name || "",
-    shortBio: data?.shortBio || "",
-    socialLink: data?.socialLink || "",
-    background: data?.background || "",
-    avatar: data?.avatar || "",
+  const { isAuth } = useAuth();
+  if (!isAuth) {
+    toast.error("Please login to create NFTs");
+    redirect("/");
+    return;
+  }
+  const { fetchWithAuth } = useAuthHandler();
+
+  const [initialUser, setInitialUser] = useState({
+    name: "",
+    shortBio: "",
+    socialLink: "",
+    background: "",
+    avatar: "",
   });
 
+  const fetchData = async () => {
+    if (!isAuth) {
+      toast("Please login to create NFTs");
+      return;
+    }
+
+    try {
+      const result = await fetchWithAuth(userApiEndpoint);
+      const userData = result[0];
+
+      console.log("User data: ", userData);
+
+      // Update state with user data
+      setInitialUser({
+        name: userData.name || "",
+        shortBio: userData.description || "",
+        background: userData.userThumbnail || "",
+        avatar: userData.avatarUrl || "",
+      });
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      toast.error("Failed to fetch user data. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuth) {
+      toast.error("Please login to create NFTs");
+      return;
+    }
+    fetchData();
+  }, []);
+
   const handleNameChange = (e) => {
-    setUser({ ...user, name: e.target.value });
+    setInitialUser({ ...initialUser, name: e.target.value });
   };
 
   const handleShortBioChange = (e) => {
-    setUser({ ...user, shortBio: e.target.value });
+    setInitialUser({ ...initialUser, shortBio: e.target.value });
   };
 
   const handleBackgroundChange = (file) => {
-    setUser({ ...user, background: file });
+    setInitialUser({ ...initialUser, background: file });
   };
 
   const handleAvatarChange = (file) => {
-    setUser({ ...user, avatar: file });
+    setInitialUser({ ...initialUser, avatar: file });
   };
 
-  const saveChanges = () => {
-    // Save user data to the database
-    console.log(user);
+  const saveChanges = async () => {
+    console.log(initialUser); // Log the initial user data before saving
+
+    if (!isAuth) {
+      toast.error("Please login before changing details");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/v1/user/setting/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authentication: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({
+          name: initialUser.name,
+          description: initialUser.shortBio,
+          userThumbnail: initialUser.background,
+          avatarUrl: initialUser.avatar,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Save successfully");
+      } else {
+        toast.error(data.message || "Failed to upload data");
+      }
+    } catch (error) {
+      console.error("Error uploading user data:", error);
+      toast.error("An error occurred while uploading data.");
+    }
   };
 
   return (
@@ -66,19 +132,19 @@ function Profile() {
         <div className="w-full rounded-xl overflow-hidden">
           <div className="relative  w-full">
             <FileBackgroundUpload
-              initialBackground={user.background}
+              initialBackground={initialUser.background}
               onBackgroundChange={handleBackgroundChange}
             />
 
             <div className="-mt-14">
               <FileAvaUpload
-                initialAvatar={user.avatar}
+                initialAvatar={initialUser.avatar}
                 onAvatarChange={handleAvatarChange}
               />
             </div>
           </div>
         </div>
-        {/* User generational information */}
+        {/* initialUser generational information */}
         {/* Display name */}
         <div className="flex flex-col gap-4">
           <span className="text-primary-foreground text-3xl font-bold">
@@ -86,7 +152,7 @@ function Profile() {
           </span>
           <Input
             placeholder="Enter token symbol"
-            value={user.name}
+            value={initialUser.name}
             onChange={handleNameChange}
             id="token"
             className={`pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
@@ -98,10 +164,10 @@ function Profile() {
             Short Bio
           </span>
           <Input
-            placeholder={`${user.name}'s bio`}
+            placeholder={`${initialUser.name}'s bio`}
             id="description"
             onChange={handleShortBioChange}
-            value={user.shortBio}
+            value={initialUser.shortBio}
             className={`pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
           />
         </div>
@@ -113,16 +179,6 @@ function Profile() {
           <span className="text-primary-foreground/50  text-lg">
             Add your existing social links to build a stronger reputation
           </span>
-        </div>
-        <div className="flex flex-col gap-4">
-          <span className="text-primary-foreground text-3xl font-bold">
-            Website URL
-          </span>
-          <Input
-            placeholder="http://example.com"
-            id="url"
-            className={`pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
-          />
         </div>
         <Dialog>
           <DialogTrigger asChild>

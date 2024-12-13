@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/api/AuthHandler";
 import { testEndpoint } from "@/api/Endpoints";
+import { toast } from "react-hot-toast";
 
 function Introduction() {
   const { fetchWithAuth } = useAuthHandler();
@@ -13,10 +14,13 @@ function Introduction() {
 
       console.log("Test endpoint result: ", result);
       alert("Test endpoint result: " + JSON.stringify(result));
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Test endpoint error: ", error);
       alert("Test endpoint error: " + error.message);
+    }
+    if (!isAuth) {
+      toast("Please login to create NFTs");
+      return;
     }
   };
 

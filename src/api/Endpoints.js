@@ -26,3 +26,6 @@ export const cartApiEndpoint = `${baseUrl}/user/cart`;
 
 // test auth endpoint
 export const testEndpoint = `${baseUrl}/auth/posts`;
+
+// user setting endpoints
+export const userApiEndpoint = `${baseUrl}/user/settings`;
