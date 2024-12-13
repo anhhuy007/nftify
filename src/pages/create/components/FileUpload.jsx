@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { X, Image, Upload } from "lucide-react";
@@ -269,6 +269,10 @@ export const FileBackgroundUpload = ({
   const [background, setBackground] = useState(initialBackground || null);
   const [isDragging, setIsDragging] = useState(false);
 
+  useEffect(() => {
+    setBackground(initialBackground || null);
+  }, [initialBackground]);
+
   const accept = ["image/png", "image/jpeg", "image/webp"];
   const maxSize = 1024 * 1024 * 1024; // 20MB
 
@@ -331,7 +335,7 @@ export const FileBackgroundUpload = ({
   return (
     <div className="relative">
       <div
-        className={`relative w-full aspect-[933/221] rounded-xl overflow-hidden transition-transform duration-300 ${
+        className={`relative w-full aspect-[933/250] rounded-xl overflow-hidden transition-transform duration-300 ${
           isDragging ? "opacity-80 " : ""
         }`}
         onDragEnter={handleDragEnter}
@@ -347,11 +351,11 @@ export const FileBackgroundUpload = ({
           />
         ) : (
           <div
-            className={`flex items-center justify-center h-full text-center bg-gray-200 transition-colors duration-300 ${
+            className={`flex items-center justify-center h-full text-center bg-background transition-colors duration-300 text-black ${
               isDragging ? "bg-accent/30" : "bg-muted"
             }`}
           >
-            Drag and drop or click to upload background image
+            Drag and drop or click to upload background image test
           </div>
         )}
         <div className="absolute top-3 right-3 flex gap-2">
@@ -376,11 +380,16 @@ export const FileAvaUpload = ({ initialAvatar, onAvatarChange }) => {
   const [avatar, setAvatar] = useState(initialAvatar || "");
   const [isHovering, setIsHovering] = useState(false);
 
+  useEffect(() => {
+    setAvatar(initialAvatar || "");
+  }, [initialAvatar]);
+
   const accept = ["image/png", "image/jpeg", "image/webp"];
 
   const handleFileUpload = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
+      console.log(uploadedFile);
       setAvatar(URL.createObjectURL(uploadedFile));
       onAvatarChange(URL.createObjectURL(uploadedFile));
     }

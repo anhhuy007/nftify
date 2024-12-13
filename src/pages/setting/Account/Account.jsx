@@ -1,26 +1,64 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { PasswordInput } from "@/components/ui/password-input";
-
-const initialData = {
-  email: "example@domain.com",
-  password: "password",
-  isConnected: true,
-  name: "John Doe",
-  address: "0x1234567890aksnfsd ",
-};
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthHandler } from "@/api/AuthHandler";
+import { userSettingApiEndpoint } from "@/utils/endpoints";
+import { redirect } from "react-router-dom";
 
 function Account() {
-  const [email, setEmail] = useState(initialData.email);
+  const { isAuth } = useAuth();
+  if (!isAuth) {
+    toast("Please login to create NFTs");
+    redirect("/");
+    return;
+  }
+
   const [user, setUser] = useState({
-    tempEmail: initialData.email || "",
+    tempEmail: "",
     currentPassword: "",
     newPassword: "",
+    email: "",
+    name: "",
+    address: "",
   });
 
-  const [isConnected, setIsConnected] = useState(initialData.isConnected);
+  const { fetchWithAuth } = useAuthHandler();
+
+  useEffect(() => {
+    if (!isAuth) {
+      toast("Please login to create NFTs");
+      return;
+    }
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    // Fetch user data
+    try {
+      const result = await fetchWithAuth(userSettingApiEndpoint);
+      const userData = result[0];
+
+      console.log("User data: ", userData);
+
+      setUser({
+        ...user,
+        name: userData.name || "",
+        address: userData.userId || "",
+        email: userData.email || "",
+        tempEmail: userData.email || "",
+      });
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      toast.error("Failed to fetch user data. Please try again.");
+    }
+  };
+
+  const [isConnected, setIsConnected] = useState(true);
 
   const handleEmailChange = () => {
     const isValidEmail = (email) => {
@@ -33,23 +71,62 @@ function Account() {
       return;
     }
 
-    initialData.email = user.tempEmail;
-    setEmail(user.tempEmail);
+    setUser({ ...user, email: user.tempEmail });
+
     toast.success("Email has been successfully changed!");
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
+    // Check if both current and new password are entered
     if (!user.currentPassword || !user.newPassword) {
       toast.error("Please enter both the current and new password.");
       return;
     }
-    if (user.currentPassword !== initialData.password) {
-      toast.error("The current password is incorrect.");
-      return;
+
+    // Check if the current password is correct
+    try {
+      const response = await fetch("/api/check-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          password: user.currentPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        // If password check fails
+        toast.error("Current password is incorrect. Please try again.");
+        return;
+      }
+
+      // If password is correct, proceed to update the password
+      const updateResponse = await fetch("/api/update-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          newPassword: user.newPassword,
+        }),
+      });
+
+      if (!updateResponse.ok) {
+        // If updating password fails
+        toast.error("Error updating password. Please try again.");
+        return;
+      }
+
+      // Success - Password changed
+      toast.success("Password has been successfully changed!");
+
+      // Clear password fields
+      setUser({ ...user, currentPassword: "", newPassword: "" });
+    } catch (error) {
+      console.error("Error checking or updating password:", error);
+      toast.error("An error occurred. Please try again.");
     }
-    initialData.password = user.newPassword;
-    toast.success("Password has been successfully changed!");
-    setUser({ ...user, currentPassword: "", newPassword: "" });
   };
 
   const handleWalletChange = () => {
@@ -77,7 +154,7 @@ function Account() {
             Your email for marketplace notifications
           </span>
           <Input
-            value={email}
+            value={user.email}
             id="email"
             disabled
             className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
@@ -159,7 +236,7 @@ function Account() {
                 />
                 <div className="flex flex-col">
                   <span className="text-primary-foreground text-xl font-bold">
-                    {initialData.address}
+                    {user.address}
                   </span>
                   <span className="text-muted-foreground text-xl font-bold">
                     Ethereum

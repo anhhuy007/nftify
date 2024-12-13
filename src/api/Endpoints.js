@@ -23,3 +23,6 @@ export const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/
 
 // test auth endpoint
 export const testEndpoint = `${baseUrl}/auth/posts`;
+
+// user setting endpoints
+export const userApiEndpoint = `${baseUrl}/user/settings`;
