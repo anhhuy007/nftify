@@ -214,7 +214,7 @@ export const FileLogoUpload = ({ onFileSelect }) => {
               <img
                 src={file}
                 alt="Preview"
-                className="object-fit"
+                className="object-contain"
                 style={{ width: "150px", height: "150px" }}
               />
             </>
