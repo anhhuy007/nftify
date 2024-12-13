@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/AuthProvider";
 
 const useAuthHandler = () => {
-  const { refreshAccessToken, logoutAction } = useAuth();
+  const { isAuth, refreshAccessToken, logoutAction } = useAuth();
   
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -20,6 +20,10 @@ const useAuthHandler = () => {
   };
 
   const fetchWithAuth = async (url, options = {}) => {
+    if (!isAuth) {
+      throw new Error("User not authenticated");
+    }
+
     const token = localStorage.getItem("jwtToken");
     const headers = {
       "Content-Type": "application/json",
@@ -41,14 +45,8 @@ const useAuthHandler = () => {
           ...options,
           headers: newHeaders,
         });
-        if (!newResponse.ok) {
-          throw new Error("Error fetching data");
-        }
+      
         return newResponse.json();
-      }
-
-      if (!response.ok) {
-        throw new Error("Error fetching data");
       }
 
       return response.json();

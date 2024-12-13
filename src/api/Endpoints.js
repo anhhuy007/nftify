@@ -21,5 +21,8 @@ export const nftsApiEndpoint = `${baseUrl}/marketplace/list/stamps`;
 // nft detail endpoints
 export const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp`;
 
+// cart endpoints
+export const cartApiEndpoint = `${baseUrl}/user/cart`;
+
 // test auth endpoint
 export const testEndpoint = `${baseUrl}/auth/posts`;
