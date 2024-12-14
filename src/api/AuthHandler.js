@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthProvider";
 
 const useAuthHandler = () => {
   const { refreshAccessToken, logoutAction } = useAuth();
-  
+
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
   const handleTokenRefresh = async () => {

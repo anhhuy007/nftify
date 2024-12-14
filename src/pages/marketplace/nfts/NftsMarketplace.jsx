@@ -11,7 +11,6 @@ import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { Toaster } from "react-hot-toast";
 
 function NftsMarketplace() {
   const navigate = useNavigate();
@@ -181,7 +180,6 @@ function NftsMarketplace() {
 
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col gap-10">
         <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
           <div className="flex w-full lg:w-auto gap-8 lg:flex-1">

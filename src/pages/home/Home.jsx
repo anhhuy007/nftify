@@ -13,7 +13,6 @@ import {
   fetcher,
 } from "@/utils/endpoints";
 import ErrorAnimation from "@/components/ui/error";
-import { Toaster } from "react-hot-toast";
 import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
 
 function Home() {
@@ -69,7 +68,6 @@ function Home() {
 
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col items-center justify-center">
         <Introduction />
       </div>

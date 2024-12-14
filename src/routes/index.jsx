@@ -4,8 +4,12 @@ import AuthLayout from "@/layouts/AuthLayout";
 import MarketplaceLayout from "@/layouts/MarketplaceLayout";
 import menuItems from "@/config/Links";
 import PrivateRoute from "@/routes/PrivateRoute"; // Import PrivateRoute
+import { useAuth } from "@/context/AuthProvider"; // Import useAuth
+
 
 export const router = (
+
+// 
   <Routes>
     <Route path="/" element={<RootLayout />}>
       {menuItems

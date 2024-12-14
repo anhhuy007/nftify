@@ -17,17 +17,25 @@ import {
 } from "@/pages/create/components/FileUpload";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/api/AuthHandler";
-import { userSettingApiEndpoint } from "@/utils/endpoints";
+import {
+  userSettingApiEndpoint,
+  userSettingUploadApiEndpoint,
+} from "@/api/Endpoints";
 import toast from "react-hot-toast";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // Pinata SDK
+import IpfsService from "@/services/IpfsService";
+import LoadingAnimation from "@/components/ui/loading";
 
 function Profile() {
   const { isAuth } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!isAuth) {
+    const navigate = useNavigate();
     toast.error("Please login to create NFTs");
-    redirect("/");
+    navigate("/");
     return;
   }
   const { fetchWithAuth } = useAuthHandler();
@@ -35,9 +43,12 @@ function Profile() {
   const [initialUser, setInitialUser] = useState({
     name: "",
     shortBio: "",
-    socialLink: "",
     background: "",
     avatar: "",
+  });
+  const [isImgChanged, setIsImgChanged] = useState({
+    background: false,
+    avatar: false,
   });
 
   const fetchData = async () => {
@@ -56,7 +67,7 @@ function Profile() {
       setInitialUser({
         name: userData.name || "",
         shortBio: userData.description || "",
-        background: userData.userThumbnail || "",
+        background: userData.userThumnail || "",
         avatar: userData.avatarUrl || "",
       });
     } catch (error) {
@@ -83,26 +94,70 @@ function Profile() {
 
   const handleBackgroundChange = (file) => {
     setInitialUser({ ...initialUser, background: file });
+    setIsImgChanged({ ...isImgChanged, background: true });
   };
 
   const handleAvatarChange = (file) => {
     setInitialUser({ ...initialUser, avatar: file });
+    setIsImgChanged({ ...isImgChanged, avatar: true });
   };
 
   const saveChanges = async () => {
-    console.log(initialUser); // Log the initial user data before saving
+    console.log("Initial user:", initialUser);
 
     if (!isAuth) {
       toast.error("Please login before changing details");
       return;
     }
+    // try {
+    //   if (isImgChanged.avatar) {
+    //     if (!initialUser.avatar) {
+    //       throw new Error("Avatar is missing");
+    //     }
+
+    //     const avatarUpload = await IpfsService.uploadAvatarImage(
+    //       initialUser.avatar,
+    //       setIsLoading
+    //     );
+    //     setInitialUser({ ...initialUser, avatar: avatarUpload.url });
+    //     console.log("Avatar upload:", avatarUpload);
+    //     toast.success("Avatar image uploaded successfully");
+    //   }
+
+    //   if (isImgChanged.background) {
+    //     if (!initialUser.background) {
+    //       throw new Error("Background image is missing");
+    //     }
+
+    //     const bgUpload = await IpfsService.uploadBackgroundImage(
+    //       initialUser.background,
+    //       setIsLoading
+    //     );
+    //     console.log("Background upload:", bgUpload);
+    //     setInitialUser({ ...initialUser, background: bgUpload.url });
+    //     toast.success("Background image uploaded successfully");
+    //   }
+    // } catch (error) {
+    //   console.error("Error uploading image:", error);
+    //   toast.error(`An error occurred while uploading image: ${error.message}`);
+    //   return;
+    // }
+
+    console.log(
+      "body",
+      JSON.stringify({
+        name: initialUser.name,
+        description: initialUser.shortBio,
+        userThumbnail: initialUser.background,
+        avatarUrl: initialUser.avatar,
+      })
+    );
 
     try {
-      const response = await fetch("/api/v1/user/setting/upload", {
+      const response = await fetchWithAuth(userSettingUploadApiEndpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authentication: `Bearer ${userToken}`,
         },
         body: JSON.stringify({
           name: initialUser.name,
@@ -112,12 +167,12 @@ function Profile() {
         }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Save successfully");
+      if (response.status === "success") {
+        toast.success("User data uploaded successfully");
       } else {
-        toast.error(data.message || "Failed to upload data");
+        toast.error(
+          "An error occurred while uploading data. Please try again later."
+        );
       }
     } catch (error) {
       console.error("Error uploading user data:", error);
@@ -136,7 +191,7 @@ function Profile() {
               onBackgroundChange={handleBackgroundChange}
             />
 
-            <div className="-mt-14">
+            <div className="-mt-28">
               <FileAvaUpload
                 initialAvatar={initialUser.avatar}
                 onAvatarChange={handleAvatarChange}
@@ -185,6 +240,7 @@ function Profile() {
             <Button
               size="xl"
               className="text-black bg-primary-foreground w-fit text-xl p-8"
+              disabled={isLoading}
             >
               Save Changes
             </Button>
@@ -219,6 +275,13 @@ function Profile() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {isLoading && <LoadingAnimation />}
+        {isLoading && (
+          <>
+            <h1 className="text-3xl text-primary-foreground">Uploading...</h1>
+          </>
+        )}
       </div>
     </>
   );
