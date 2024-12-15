@@ -7,14 +7,23 @@ import toast from "react-hot-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/api/AuthHandler";
-import { redirect } from "react-router-dom";
-import { userApiEndpoint } from "@/api/Endpoints";
+import {
+  userApiEndpoint,
+  userSettingApiEndpoint,
+  userCheckPasswordApiEndpoint,
+  userChangePasswordApiEndpoint,
+  userSettingUploadApiEndpoint,
+  userChangeEmailApiEndpoint,
+} from "@/api/Endpoints";
+import { useNavigate } from "react-router-dom";
 
 function Account() {
   const { isAuth } = useAuth();
   if (!isAuth) {
-    toast("Please login to create NFTs");
-    redirect("/");
+    const navigate = useNavigate();
+
+    toast("Please login to see your account settings");
+    navigate("/");
     return;
   }
 
@@ -43,8 +52,6 @@ function Account() {
       const result = await fetchWithAuth(userApiEndpoint);
       const userData = result[0];
 
-      console.log("User data: ", userData);
-
       setUser({
         ...user,
         name: userData.name || "",
@@ -60,7 +67,7 @@ function Account() {
 
   const [isConnected, setIsConnected] = useState(true);
 
-  const handleEmailChange = () => {
+  const handleEmailChange = async () => {
     const isValidEmail = (email) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
@@ -71,9 +78,30 @@ function Account() {
       return;
     }
 
-    setUser({ ...user, email: user.tempEmail });
+    try {
+      const response = await fetchWithAuth(userChangeEmailApiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.tempEmail,
+        }),
+      });
 
-    toast.success("Email has been successfully changed!");
+      console.log(response);
+
+      if (!response.status === "success") {
+        toast.error("Failed to update email. Please try again.");
+        return;
+      }
+
+      setUser({ ...user, email: user.tempEmail });
+      toast.success("Email has been successfully changed!");
+    } catch (error) {
+      console.error("Error updating email:", error);
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   const handlePasswordChange = async () => {
@@ -85,7 +113,7 @@ function Account() {
 
     // Check if the current password is correct
     try {
-      const response = await fetch("/api/check-password", {
+      const response = await fetchWithAuth(userCheckPasswordApiEndpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -95,34 +123,39 @@ function Account() {
         }),
       });
 
-      if (!response.ok) {
-        // If password check fails
-        toast.error("Current password is incorrect. Please try again.");
+      console.log(response);
+
+      if (response.status === "fail") {
+        toast.error("Incorrect password. Please try again.");
         return;
       }
 
       // If password is correct, proceed to update the password
-      const updateResponse = await fetch("/api/update-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          newPassword: user.newPassword,
-        }),
-      });
+      const updateResponse = await fetchWithAuth(
+        userChangePasswordApiEndpoint,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: user.newPassword,
+          }),
+        }
+      );
 
-      if (!updateResponse.ok) {
-        // If updating password fails
-        toast.error("Error updating password. Please try again.");
+      console.log(updateResponse);
+
+      if (!updateResponse.status === "success") {
+        toast.error("Failed to update password. Please try again.");
         return;
+      } else {
+        // Success - Password changed
+        toast.success("Password has been successfully changed!");
+
+        // Clear password fields
+        setUser({ ...user, currentPassword: "", newPassword: "" });
       }
-
-      // Success - Password changed
-      toast.success("Password has been successfully changed!");
-
-      // Clear password fields
-      setUser({ ...user, currentPassword: "", newPassword: "" });
     } catch (error) {
       console.error("Error checking or updating password:", error);
       toast.error("An error occurred. Please try again.");

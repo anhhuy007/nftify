@@ -189,7 +189,7 @@ const menuItems = [
   {
     name: "Collection Detail",
     group: "collection",
-    link: "/collection/:collectionId",
+    link: "/collection/:id",
     layout: "RootLayout",
     element: <CollectionDetail />,
     isPrivate: false,

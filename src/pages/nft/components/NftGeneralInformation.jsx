@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Eye, Heart, Upload, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { handleAddToCart } from "@/components/NFT/NftCard";
 import { useCart } from "@/context/CartProvider";
 
@@ -47,7 +47,6 @@ export default function NftGeneralInformation({ data: stamp }) {
   };
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
       <Card className="w-full max-w-md bg-transparent shadow-none mx-auto md:mx-0 border-none">
         <CardContent className="">
           <Link to={`/collection/${stamp.collection?.id}`} className="group">

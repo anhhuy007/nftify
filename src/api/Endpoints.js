@@ -29,6 +29,16 @@ export const testEndpoint = `${baseUrl}/auth/posts`;
 
 // user setting endpoints
 export const userApiEndpoint = `${baseUrl}/user/settings`;
+export const userSettingApiEndpoint = `${baseUrl}/user/settings`;
+export const userSettingUploadApiEndpoint = `${baseUrl}/user/settings/upload`;
+export const userCheckPasswordApiEndpoint = `${baseUrl}/user/settings/check-password`;
+export const userChangePasswordApiEndpoint = `${baseUrl}/user/settings/change-password`;
+export const userChangeEmailApiEndpoint = `${baseUrl}/user/settings/change-email`;
 
 // user profile endpoints
 export const userProfileApiEndpoint = `${baseUrl}/user/profile`;
+
+// collection detail endpoints
+export const collectionDetailApiEndpoint = `${baseUrl}/collection/:collectionId/detail`;
+export const collectionAboutApiEndpoint = `${baseUrl}/collection/:id/about`;
+export const collectionItemsApiEndpoint = `${baseUrl}/collection/:id/items`;

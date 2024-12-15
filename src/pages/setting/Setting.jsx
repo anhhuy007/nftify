@@ -2,11 +2,17 @@ import React, { useEffect } from "react";
 import menuItems from "@/config/Links";
 import { Outlet, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "@/context/AuthProvider";
+import { toast } from "react-hot-toast";
 
 function Setting() {
   const settingItem = menuItems.find((item) => item.name === "Setting");
   const navigate = useNavigate();
-
+  const { isAuth } = useAuth();
+  if (!isAuth) {
+    toast.error("Please login to create NFTs");
+    navigate("/");
+  }
   useEffect(() => {
     if (window.location.pathname === "/setting") {
       navigate("/setting/profile");
