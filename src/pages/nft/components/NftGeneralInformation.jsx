@@ -8,14 +8,29 @@ import { Eye, Heart, Upload, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { handleAddToCart } from "@/components/NFT/NftCard";
+import { useCart } from "@/context/CartProvider";
 
-export default function NftGeneralInformation({ data }) {
+export default function NftGeneralInformation({ data: stamp }) {
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    }
+    catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
+
   const handleBuyNow = () => {
     // Call the buy now API here and show the success toast
     toast.success(
       <>
         <div className="flex flex-col items-center justify-center">
-          <span>"{data.title}" bought successfully 🎉.</span>
+          <span>"{stamp.title}" bought successfully 🎉.</span>
           <span className="whitespace-nowrap">
             Please check your new stamp at{" "}
             <Link
@@ -34,48 +49,48 @@ export default function NftGeneralInformation({ data }) {
     <>
       <Card className="w-full max-w-md bg-transparent shadow-none mx-auto md:mx-0 border-none">
         <CardContent className="">
-          <Link to={`/collection/${data.collection?.id}`} className="group">
+          <Link to={`/collection/${stamp.collection?.id}`} className="group">
             <div className="flex items-center gap-3 ">
               <Avatar className="h-10 w-10 group-hover:opacity-75 transition-opacity duration-200">
                 <AvatarImage
-                  src={data.collection?.thumbUrl || "/placeholder.jpg"}
+                  src={stamp.collection?.thumbUrl || "/placeholder.jpg"}
                 />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <span className="font-medium group-hover:underline">
-                {data.collection?.name || "Not in collection"}
+                {stamp.collection?.name || "Not in collection"}
               </span>
             </div>
           </Link>
 
-          <h1 className="text-4xl font-bold my-6 md:my-10">{data.title}</h1>
+          <h1 className="text-4xl font-bold my-6 md:my-10">{stamp.title}</h1>
 
           <div className="flex gap-20">
-            <Link to={`/user/${data.creatorDetails?.id}`} className="group">
+            <Link to={`/user/${stamp.creatorDetails?.id}`} className="group">
               <div className="flex items-center gap-3">
                 <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
-                  <AvatarImage src={data.creatorDetails?.avatarUrl} />
+                  <AvatarImage src={stamp.creatorDetails?.avatarUrl} />
                   <AvatarFallback>CR</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm ">Creator</p>
                   <p className="font-medium group-hover:underline">
-                    {data.creatorDetails?.name || "Unknow"}
+                    {stamp.creatorDetails?.name || "Unknow"}
                   </p>
                 </div>
               </div>
             </Link>
 
-            <Link to={`/user/${data.ownerDetails?.id}`} className="group">
+            <Link to={`/user/${stamp.ownerDetails?.id}`} className="group">
               <div className="flex items-center gap-3">
                 <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
-                  <AvatarImage src={data.ownerDetails?.avatarUrl} />
+                  <AvatarImage src={stamp.ownerDetails?.avatarUrl} />
                   <AvatarFallback>CO</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm ">Current owner</p>
                   <p className="font-medium group-hover:underline">
-                    {data.ownerDetails?.name || "Unknow"}
+                    {stamp.ownerDetails?.name || "Unknow"}
                   </p>
                 </div>
               </div>
@@ -87,11 +102,11 @@ export default function NftGeneralInformation({ data }) {
           <div className="flex gap-9">
             <button className="flex items-center gap-2  transition-colors">
               <Eye className="h-5 w-5" />
-              <span>{data.insight.viewCount} views</span>
+              <span>{stamp.insight.viewCount} views</span>
             </button>
             <button className="flex items-center gap-2  transition-colors">
               <Heart className="h-5 w-5" />
-              <span>{data.insight.favoriteCount} favorites</span>
+              <span>{stamp.insight.favoriteCount} favorites</span>
             </button>
             <button className="flex items-center gap-2  transition-colors">
               <Upload className="h-5 w-5" />
@@ -103,7 +118,7 @@ export default function NftGeneralInformation({ data }) {
             <div className=" p-4 rounded-xl bg-card">
               <p className=" mb-1">Price</p>
               <p className="text-2xl font-bold">
-                {data.price.price.$numberDecimal} ETH
+                {stamp.price.price.$numberDecimal} ETH
               </p>
               <p className="">$262</p>
             </div>
@@ -113,12 +128,12 @@ export default function NftGeneralInformation({ data }) {
                 className="w-full bg-white text-black hover:bg-gray-400 font-semibold py-6"
                 onClick={handleBuyNow}
               >
-                Buy now for {data.price.price.$numberDecimal} ETH
+                Buy now for {stamp.price.price.$numberDecimal} ETH
               </Button>
               <div></div>
               <Button
                 className="w-full bg-white text-black hover:bg-gray-400 font-semibold py-6"
-                onClick={() => handleAddToCart(data.title)}
+                onClick={() => handleCartClick(stamp._id)}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>

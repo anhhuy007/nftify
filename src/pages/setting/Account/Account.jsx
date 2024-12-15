@@ -8,6 +8,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/api/AuthHandler";
 import {
+  userApiEndpoint,
   userSettingApiEndpoint,
   userCheckPasswordApiEndpoint,
   userChangePasswordApiEndpoint,
@@ -48,7 +49,7 @@ function Account() {
   const fetchData = async () => {
     // Fetch user data
     try {
-      const result = await fetchWithAuth(userSettingApiEndpoint);
+      const result = await fetchWithAuth(userApiEndpoint);
       const userData = result[0];
 
       setUser({

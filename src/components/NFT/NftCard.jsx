@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import userPlaceHolder from "@/assets/user-placeholder.png";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,11 +19,18 @@ export const handleAddToCart = (title) => {
 
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
-  const { addToCart} = useCart();
+  const { addItemToCart } = useCart();
 
-  const handleCartClick = () => {
-    addToCart(stamp);
-    handleAddToCart(stamp.title);
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    }
+    catch (error) {
+      toast.error("Failed: " + error.message);
+    }
   };
 
   return (

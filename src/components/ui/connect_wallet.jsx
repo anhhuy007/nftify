@@ -4,8 +4,6 @@ export const ConnectWallet = ({
     walletAddress,
     handleOnClicked
 }) => {
-    console.log("walletAddress", walletAddress);
-
     return (
       <Button
         onClick={handleOnClicked}

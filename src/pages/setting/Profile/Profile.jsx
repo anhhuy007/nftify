@@ -18,7 +18,7 @@ import {
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/api/AuthHandler";
 import {
-  userSettingApiEndpoint,
+  userApiEndpoint,
   userSettingUploadApiEndpoint,
 } from "@/api/Endpoints";
 import toast from "react-hot-toast";
@@ -60,7 +60,7 @@ function Profile() {
     }
 
     try {
-      const result = await fetchWithAuth(userSettingApiEndpoint);
+      const result = await fetchWithAuth(userApiEndpoint);
       const userData = result[0];
 
       console.log("User data: ", userData);
@@ -69,7 +69,7 @@ function Profile() {
       setInitialUser({
         name: userData.name || "",
         shortBio: userData.description || "",
-        background: userData.userThumnail || "",
+        background: userData.userThumbnail || "https://w0.peakpx.com/wallpaper/743/574/HD-wallpaper-monkey-nft-nft-monkey-crypto-artist-artwork-digital-art-others-artstation.jpg",
         avatar: userData.avatarUrl || "",
         avatarUrl: userData.avatarUrl || "",
         backgroundUrl: userData.userThumbnail || "",

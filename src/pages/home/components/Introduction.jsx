@@ -6,19 +6,22 @@ import { testEndpoint } from "@/api/Endpoints";
 import { toast } from "react-hot-toast";
 
 function Introduction() {
-  const { isAuth } = useAuth();
   const { fetchWithAuth } = useAuthHandler();
 
   const handleCreate = async () => {
+    try {
+      const result = await fetchWithAuth(testEndpoint);
+
+      console.log("Test endpoint result: ", result);
+      alert("Test endpoint result: " + JSON.stringify(result));
+    } catch (error) {
+      console.error("Test endpoint error: ", error);
+      alert("Test endpoint error: " + error.message);
+    }
     if (!isAuth) {
       toast("Please login to create NFTs");
       return;
     }
-
-    const result = await fetchWithAuth(testEndpoint);
-
-    console.log("Test endpoint result: ", result);
-    alert("Test endpoint result: " + JSON.stringify(result));
   };
 
   return (
