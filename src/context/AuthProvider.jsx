@@ -3,6 +3,7 @@ import {
   loginApiEndpoint,
   logoutApiEndpoint,
   refreshTokenApiEndpoint,
+  userApiEndpoint,
 } from "@/api/Endpoints";
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
@@ -19,28 +20,6 @@ const AuthProvider = ({ children }) => {
   const [walletAddress, setWalletAddress] = useState(
     localStorage.getItem("walletAddress") || ""
   );
-
-  useEffect(() => {
-    if (token) {
-      fetchUserData(token);
-    }
-  }, [token]);
-
-  const fetchUserData = async (token) => {
-    try {
-      const response = await fetch("/api/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-      setUser(data.user);
-      setIsAuth(true);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
 
   const loginAction = async (data) => {
     console.log("Logging in with data:", data);

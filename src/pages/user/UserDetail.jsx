@@ -13,6 +13,11 @@ import { Card } from "@/components/ui/card";
 import { Copy } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import toast from "react-hot-toast";
+import { useQuery } from "react-query";
+import { userProfileApiEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/api/AuthHandler";
+import LoadingAnimation from "@/components/ui/loading";
+import ErrorAnimation from "@/components/ui/error";
 
 const user = {
   id: 1,
@@ -32,12 +37,17 @@ function UserDetail() {
   const navigate = useNavigate();
   const { userId } = useParams();
   const [isExpanded, setIsExpanded] = useState(false);
+  const { fetcher } = useAuthHandler();
 
   const userDetailItem = menuItems.find((item) => item.group === "userDetail");
+  const { data: user, error, isLoading } = useQuery('userProfile', () => fetcher(userProfileApiEndpoint));
 
-  if (!userDetailItem || !userDetailItem.children) {
-    return null;
-  }
+  if (isLoading) return <LoadingAnimation />;
+  if (error) return <ErrorAnimation />;
+
+  // if (!userDetailItem || !userDetailItem.children) {
+  //   return null;
+  // }
 
   const copyAddress = () => {
     toast.success("Address copied to clipboard", {});

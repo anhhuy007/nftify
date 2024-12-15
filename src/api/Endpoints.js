@@ -29,3 +29,6 @@ export const testEndpoint = `${baseUrl}/auth/posts`;
 
 // user setting endpoints
 export const userApiEndpoint = `${baseUrl}/user/settings`;
+
+// user profile endpoints
+export const userProfileApiEndpoint = `${baseUrl}/user/profile`;

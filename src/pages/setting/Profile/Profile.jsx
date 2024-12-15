@@ -56,7 +56,7 @@ function Profile() {
       setInitialUser({
         name: userData.name || "",
         shortBio: userData.description || "",
-        background: userData.userThumbnail || "",
+        background: userData.userThumbnail || "https://w0.peakpx.com/wallpaper/743/574/HD-wallpaper-monkey-nft-nft-monkey-crypto-artist-artwork-digital-art-others-artstation.jpg",
         avatar: userData.avatarUrl || "",
       });
     } catch (error) {
