@@ -25,6 +25,9 @@ const useAuthHandler = () => {
     }
 
     const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      throw new Error("No token found");
+    }
     const headers = {
       "Content-Type": "application/json",
       ...options.headers,

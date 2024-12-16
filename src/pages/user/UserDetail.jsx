@@ -49,6 +49,8 @@ function UserDetail() {
   //   return null;
   // }
 
+  return <LoadingAnimation />;
+
   const copyAddress = () => {
     toast.success("Address copied to clipboard", {});
     navigator.clipboard.writeText(user.address).then(() => {

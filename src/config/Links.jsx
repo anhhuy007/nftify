@@ -197,7 +197,7 @@ const menuItems = [
   {
     name: "User Detail",
     group: "userDetail",
-    link: "/user/:userId",
+    link: "/user/:id",
     layout: "RootLayout",
     element: <UserDetail />,
     children: [

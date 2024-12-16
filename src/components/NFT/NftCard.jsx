@@ -27,8 +27,7 @@ export default function NftCard({ stamp }) {
       if (result) {
         handleAddToCart(stamp.title);
       }
-    }
-    catch (error) {
+    } catch (error) {
       toast.error("Failed: " + error.message);
     }
   };
@@ -109,7 +108,7 @@ export default function NftCard({ stamp }) {
                 <div></div>
                 <Button
                   className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                  onClick={() => handleCartClick(stamp.title)}
+                  onClick={handleCartClick}
                 >
                   <ShoppingCart className="h-10 w-10" />
                 </Button>
@@ -124,6 +123,18 @@ export default function NftCard({ stamp }) {
 
 export function SmallNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
 
   return (
     <div
@@ -178,7 +189,7 @@ export function SmallNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={handleCartClick}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -192,6 +203,19 @@ export function SmallNftCard({ stamp }) {
 
 export function BigNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    }
+    catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
 
   return (
     <div
@@ -263,7 +287,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={handleCartClick}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -277,6 +301,19 @@ export function BigNftCard({ stamp }) {
 
 export function PreviewNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    }
+    catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
 
   return (
     <div
@@ -348,7 +385,7 @@ export function PreviewNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={handleCartClick}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
