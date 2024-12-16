@@ -59,17 +59,17 @@ function Profile() {
     try {
       const result = await fetchWithAuth(userApiEndpoint);
       const userData = result[0];
+      console.log("User data:", userData);
 
       // Update state with user data
       setInitialUser({
         name: userData.name || "",
         shortBio: userData.description || "",
-        background: userData.userThumbnail,
+        background: userData.bgUrl,
         avatar: userData.avatarUrl || "",
         avatarUrl: userData.avatarUrl || "",
-        backgroundUrl: userData.userThumbnail || "",
+        backgroundUrl: userData.bgUrl || "",
       });
-      console.log("Initial user data: ", initialUser);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
       toast.error("Failed to fetch user data. Please try again.");
@@ -85,7 +85,7 @@ function Profile() {
   }, []);
 
   useEffect(() => {
-    console.log("Initial user data: ", initialUser);
+    console.log("Initial user data:", initialUser);
   }, [initialUser]);
 
   const handleNameChange = (e) => {
@@ -150,7 +150,7 @@ function Profile() {
         ).then((bgUpload) => {
           if (bgUpload) {
             toast.success("Background uploaded on Pinata successfully");
-            updates.backgroundUrl = bgUpload.url; // Add the uploaded URL to updates
+            updates.bgUrl = bgUpload.url; // Add the uploaded URL to updates
           } else {
             throw new Error("Failed to upload background image");
           }
@@ -176,6 +176,7 @@ function Profile() {
       });
 
       if (response.status === "success") {
+        console.log("updates: ", updates);
         toast.success("User data uploaded successfully");
         // Update the local state with the new data
         setInitialUser((prev) => ({ ...prev, ...updates }));
@@ -236,15 +237,6 @@ function Profile() {
             value={initialUser.shortBio}
             className={`pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
           />
-        </div>
-        {/* Social Links */}
-        <div className="flex flex-col">
-          <span className="text-primary-foreground text-3xl font-bold">
-            Social Links
-          </span>
-          <span className="text-primary-foreground/50  text-lg">
-            Add your existing social links to build a stronger reputation
-          </span>
         </div>
         <Dialog>
           <DialogTrigger asChild>
