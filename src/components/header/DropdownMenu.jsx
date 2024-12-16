@@ -35,6 +35,8 @@ function DropdownMenuComponent() {
   const location = useLocation();
   const { logoutAction } = useAuth();
 
+  console.log("Location: ", location.pathname);
+
   const handleLogout = async () => {
     const result = await logoutAction();
 

@@ -17,10 +17,7 @@ import {
 } from "@/pages/create/components/FileUpload";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/api/AuthHandler";
-import {
-  userApiEndpoint,
-  userSettingUploadApiEndpoint,
-} from "@/api/Endpoints";
+import { userApiEndpoint, userSettingUploadApiEndpoint } from "@/api/Endpoints";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -45,6 +42,8 @@ function Profile() {
     shortBio: "",
     background: "",
     avatar: "",
+    avatarUrl: "",
+    backgroundUrl: "",
   });
   const [isImgChanged, setIsImgChanged] = useState({
     background: false,
@@ -61,15 +60,16 @@ function Profile() {
       const result = await fetchWithAuth(userApiEndpoint);
       const userData = result[0];
 
-      console.log("User data: ", userData);
-
       // Update state with user data
       setInitialUser({
         name: userData.name || "",
         shortBio: userData.description || "",
-        background: userData.userThumbnail || "https://w0.peakpx.com/wallpaper/743/574/HD-wallpaper-monkey-nft-nft-monkey-crypto-artist-artwork-digital-art-others-artstation.jpg",
+        background: userData.userThumbnail,
         avatar: userData.avatarUrl || "",
+        avatarUrl: userData.avatarUrl || "",
+        backgroundUrl: userData.userThumbnail || "",
       });
+      console.log("Initial user data: ", initialUser);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
       toast.error("Failed to fetch user data. Please try again.");
@@ -84,99 +84,110 @@ function Profile() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    console.log("Initial user data: ", initialUser);
+  }, [initialUser]);
+
   const handleNameChange = (e) => {
-    setInitialUser({ ...initialUser, name: e.target.value });
+    setInitialUser((prev) => ({ ...prev, name: e.target.value }));
   };
 
   const handleShortBioChange = (e) => {
-    setInitialUser({ ...initialUser, shortBio: e.target.value });
+    setInitialUser((prev) => ({ ...prev, shortBio: e.target.value }));
   };
 
   const handleBackgroundChange = (file) => {
-    setInitialUser({ ...initialUser, background: file });
-    setIsImgChanged({ ...isImgChanged, background: true });
+    setInitialUser((prev) => ({ ...prev, background: file }));
+    setIsImgChanged((prev) => ({ ...prev, background: true }));
   };
 
   const handleAvatarChange = (file) => {
-    setInitialUser({ ...initialUser, avatar: file });
-    setIsImgChanged({ ...isImgChanged, avatar: true });
+    setInitialUser((prev) => ({ ...prev, avatar: file }));
+    setIsImgChanged((prev) => ({ ...prev, avatar: true }));
   };
 
   const saveChanges = async () => {
-    console.log("Initial user:", initialUser);
-
     if (!isAuth) {
       toast.error("Please login before changing details");
       return;
     }
-    // try {
-    //   if (isImgChanged.avatar) {
-    //     if (!initialUser.avatar) {
-    //       throw new Error("Avatar is missing");
-    //     }
-
-    //     const avatarUpload = await IpfsService.uploadAvatarImage(
-    //       initialUser.avatar,
-    //       setIsLoading
-    //     );
-    //     setInitialUser({ ...initialUser, avatar: avatarUpload.url });
-    //     console.log("Avatar upload:", avatarUpload);
-    //     toast.success("Avatar image uploaded successfully");
-    //   }
-
-    //   if (isImgChanged.background) {
-    //     if (!initialUser.background) {
-    //       throw new Error("Background image is missing");
-    //     }
-
-    //     const bgUpload = await IpfsService.uploadBackgroundImage(
-    //       initialUser.background,
-    //       setIsLoading
-    //     );
-    //     console.log("Background upload:", bgUpload);
-    //     setInitialUser({ ...initialUser, background: bgUpload.url });
-    //     toast.success("Background image uploaded successfully");
-    //   }
-    // } catch (error) {
-    //   console.error("Error uploading image:", error);
-    //   toast.error(`An error occurred while uploading image: ${error.message}`);
-    //   return;
-    // }
-
-    console.log(
-      "body",
-      JSON.stringify({
-        name: initialUser.name,
-        description: initialUser.shortBio,
-        userThumbnail: initialUser.background,
-        avatarUrl: initialUser.avatar,
-      })
-    );
 
     try {
+      const updates = {};
+
+      const uploadTasks = [];
+
+      if (isImgChanged.avatar) {
+        if (!initialUser.avatar) {
+          throw new Error("Avatar is missing");
+        }
+
+        // Create a promise for uploading the avatar
+        const avatarUploadTask = IpfsService.uploadAvatarImage(
+          initialUser.avatar,
+          setIsLoading
+        ).then((avatarUpload) => {
+          if (avatarUpload) {
+            toast.success("Avatar uploaded on Pinata successfully");
+            updates.avatarUrl = avatarUpload.url; // Add the uploaded URL to updates
+          } else {
+            throw new Error("Failed to upload avatar");
+          }
+        });
+
+        uploadTasks.push(avatarUploadTask); // Add the promise to the array
+      }
+
+      if (isImgChanged.background) {
+        if (!initialUser.background) {
+          throw new Error("Background image is missing");
+        }
+
+        // Create a promise for uploading the background image
+        const bgUploadTask = IpfsService.uploadBackgroundImage(
+          initialUser.background,
+          setIsLoading
+        ).then((bgUpload) => {
+          if (bgUpload) {
+            toast.success("Background uploaded on Pinata successfully");
+            updates.backgroundUrl = bgUpload.url; // Add the uploaded URL to updates
+          } else {
+            throw new Error("Failed to upload background image");
+          }
+        });
+
+        uploadTasks.push(bgUploadTask); // Add the promise to the array
+      }
+
+      // Wait for all upload tasks to complete
+      await Promise.all(uploadTasks);
+
+      // Add additional fields (e.g., name and description) to the updates object
+      updates.name = initialUser.name;
+      updates.description = initialUser.shortBio;
+
+      // Send all updated data to the backend
       const response = await fetchWithAuth(userSettingUploadApiEndpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: initialUser.name,
-          description: initialUser.shortBio,
-          userThumbnail: initialUser.background,
-          avatarUrl: initialUser.avatar,
-        }),
+        body: JSON.stringify(updates),
       });
 
       if (response.status === "success") {
         toast.success("User data uploaded successfully");
+        // Update the local state with the new data
+        setInitialUser((prev) => ({ ...prev, ...updates }));
       } else {
-        toast.error(
+        throw new Error(
           "An error occurred while uploading data. Please try again later."
         );
       }
     } catch (error) {
-      console.error("Error uploading user data:", error);
-      toast.error("An error occurred while uploading data.");
+      // Handle and display any errors that occur during the process
+      console.error("Error uploading image:", error);
+      toast.error(`An error occurred: ${error.message}`);
     }
   };
 

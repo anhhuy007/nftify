@@ -42,3 +42,6 @@ export const userProfileApiEndpoint = `${baseUrl}/user/profile`;
 export const collectionDetailApiEndpoint = `${baseUrl}/collection/:collectionId/detail`;
 export const collectionAboutApiEndpoint = `${baseUrl}/collection/:id/about`;
 export const collectionItemsApiEndpoint = `${baseUrl}/collection/:id/items`;
+
+// User detail endpoints
+export const userDetailApiEndpoint = `${baseUrl}/user/profile/:userId`;

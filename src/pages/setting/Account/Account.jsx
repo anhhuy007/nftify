@@ -28,11 +28,11 @@ function Account() {
   }
 
   const [user, setUser] = useState({
-    tempEmail: "",
     currentPassword: "",
     newPassword: "",
     email: "",
     name: "",
+    username: "",
     address: "",
   });
 
@@ -52,12 +52,14 @@ function Account() {
       const result = await fetchWithAuth(userApiEndpoint);
       const userData = result[0];
 
+      console.log("User data: ", userData);
+
       setUser({
         ...user,
         name: userData.name || "",
+        username: userData.username || "",
         address: userData.userId || "",
         email: userData.email || "",
-        tempEmail: userData.email || "",
       });
     } catch (error) {
       console.error("Failed to fetch user data:", error);
@@ -66,43 +68,6 @@ function Account() {
   };
 
   const [isConnected, setIsConnected] = useState(true);
-
-  const handleEmailChange = async () => {
-    const isValidEmail = (email) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    };
-
-    if (!isValidEmail(user.tempEmail.trim())) {
-      toast.error("Please enter a valid email address.");
-      return;
-    }
-
-    try {
-      const response = await fetchWithAuth(userChangeEmailApiEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.tempEmail,
-        }),
-      });
-
-      console.log(response);
-
-      if (!response.status === "success") {
-        toast.error("Failed to update email. Please try again.");
-        return;
-      }
-
-      setUser({ ...user, email: user.tempEmail });
-      toast.success("Email has been successfully changed!");
-    } catch (error) {
-      console.error("Error updating email:", error);
-      toast.error("An error occurred. Please try again.");
-    }
-  };
 
   const handlePasswordChange = async () => {
     // Check if both current and new password are entered
@@ -178,6 +143,22 @@ function Account() {
           Account management
         </span>
 
+        {/* Name */}
+        <div className="flex flex-col gap-2">
+          <span className="text-primary-foreground font-semibold text-xl">
+            Your username
+          </span>
+          <span className="text-primary-foreground/50">
+            This is your username for signing in
+          </span>
+          <Input
+            value={user.username}
+            id="username"
+            disabled
+            className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+          />
+        </div>
+
         {/* Email */}
         <div className="flex flex-col gap-2">
           <span className="text-primary-foreground font-semibold text-xl">
@@ -192,28 +173,6 @@ function Account() {
             disabled
             className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <span className="text-primary-foreground font-semibold text-xl">
-            Change Email
-          </span>
-          <div className="grid grid-cols-[82%_3%_15%]">
-            <Input
-              placeholder="Enter your new email"
-              value={user.tempEmail}
-              id="email"
-              onChange={(e) => setUser({ ...user, tempEmail: e.target.value })}
-              className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
-            />
-            <div></div>
-            <Button
-              size="xl"
-              className="text-primary-foreground text-xl p-8 bg-[hsl(232,40%,35%)]"
-              onClick={handleEmailChange}
-            >
-              Confirm
-            </Button>
-          </div>
         </div>
 
         {/* Change password */}

@@ -38,11 +38,48 @@ const menuItems = [
   {
     name: "Profile",
     group: "user",
-    link: "/user/:userId",
+    link: "/user/profile",
     layout: "RootLayout",
     icon: <User />,
     element: <UserDetail />,
     isPrivate: true,
+    children: [
+      {
+        name: "Owned",
+        link: "owned",
+        element: <UserNfts />,
+      },
+      {
+        name: "On Sale",
+        link: "onSale",
+        element: <UserNfts />,
+      },
+      {
+        name: "Collections",
+        link: "collections",
+        element: <UserCollections />,
+      },
+      {
+        name: "Created",
+        link: "created",
+        element: <UserNfts />,
+      },
+      {
+        name: "Activity",
+        link: "activity",
+        element: <UserActivities />,
+      },
+      {
+        name: "Sold",
+        link: "sold",
+        element: <UserNfts />,
+      },
+      {
+        name: "Liked",
+        link: "liked",
+        element: <UserNfts />,
+      },
+    ],
   },
   {
     name: "Favorites",
