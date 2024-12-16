@@ -5,9 +5,11 @@ import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import UserCard from "@/pages/marketplace/users/components/UserCard";
 import { Pagination } from "@/components/ui/pagination";
 import LoadingAnimation from "@/components/ui/loading";
+import SearchNfts from "../nfts/components/SearchNfts";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
-const usersApiEndpoint = "http://localhost:3000/api/v1/marketplace/list/creators";
+const usersApiEndpoint =
+  "http://localhost:3000/api/v1/marketplace/list/creators";
 
 function UsersMarketplace() {
   // const [searchValue, setSearchValue] = useState("");
@@ -47,8 +49,12 @@ function UsersMarketplace() {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
+        <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
+          <div className="flex-1">
+            <SearchNfts searchValue={""} />
+          </div>
+        </div>
         <div className="flex items-center justify-center w-full lg:w-auto gap-8 mt-4 lg:mt-0">
-          <Sort sortOption={sortOption} setSortOption={handleSort} />
           <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} />
         </div>
       </div>
@@ -65,7 +71,8 @@ function UsersMarketplace() {
         onPageChange={handlePageChange}
       />
       <div className="text-white">
-        Showing {startResult} to {endResult} of {usersData?.totalResults} results
+        Showing {startResult} to {endResult} of {usersData?.totalResults}{" "}
+        results
       </div>
     </div>
   );
