@@ -89,7 +89,7 @@ export default function NftCard({ stamp }) {
                 </div>
                 <div></div>
                 <div className="flex-1 text-right whitespace-nowrap">
-                  <h1>{stamp.price.$numberDecimal} ETH</h1>
+                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
                 </div>
               </div>
             </Link>
@@ -175,7 +175,7 @@ export function SmallNftCard({ stamp }) {
                 {stamp.title}
               </p>
               <p className="text-lg font-semibold text-right whitespace-nowrap ">
-                {stamp.price.$numberDecimal} ETH
+                <h1>{stamp.price?.$numberDecimal} ETH</h1>
               </p>
             </div>
           </Link>
@@ -211,8 +211,7 @@ export function BigNftCard({ stamp }) {
       if (result) {
         handleAddToCart(stamp.title);
       }
-    }
-    catch (error) {
+    } catch (error) {
       toast.error("Failed: " + error.message);
     }
   };
@@ -272,7 +271,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
                 <p className="text-lg font-semibold">
-                  {stamp.price.$numberDecimal} ETH
+                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
                 </p>
               </div>
             </div>
@@ -309,8 +308,7 @@ export function PreviewNftCard({ stamp }) {
       if (result) {
         handleAddToCart(stamp.title);
       }
-    }
-    catch (error) {
+    } catch (error) {
       toast.error("Failed: " + error.message);
     }
   };
@@ -368,7 +366,7 @@ export function PreviewNftCard({ stamp }) {
             <div className="flex-1 text-right ">
               {stamp.price?.$numberDecimal ? (
                 <p className="text-lg font-semibold whitespace-nowrap">
-                  {stamp.price.$numberDecimal} ETH
+                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
                 </p>
               ) : (
                 <p className="text-lg font-semibold whitespace-nowrap">

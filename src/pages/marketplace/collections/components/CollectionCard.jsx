@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 export default function CollectionCard({ collection = {} }) {
   const [isLiked, setIsLiked] = useState(false);
 
+  console.log("Collection: ", collection);
+
   // Extract values with fallback defaults
   const {
     _id = "unknown",

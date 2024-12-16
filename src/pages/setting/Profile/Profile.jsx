@@ -67,7 +67,7 @@ function Profile() {
         background: userData.userThumbnail,
         avatar: userData.avatarUrl || "",
         avatarUrl: userData.avatarUrl || "",
-        backgroundUrl: userData.userThumbnail || "",
+        backgroundUrl: userData.bgUrl || "",
       });
       console.log("Initial user data: ", initialUser);
     } catch (error) {
@@ -198,13 +198,13 @@ function Profile() {
         <div className="w-full rounded-xl overflow-hidden">
           <div className="relative  w-full">
             <FileBackgroundUpload
-              initialBackground={initialUser.background}
+              initialBackground={initialUser.backgroundUrl}
               onBackgroundChange={handleBackgroundChange}
             />
 
             <div className="-mt-28">
               <FileAvaUpload
-                initialAvatar={initialUser.avatar}
+                initialAvatar={initialUser.avatarUrl}
                 onAvatarChange={handleAvatarChange}
               />
             </div>

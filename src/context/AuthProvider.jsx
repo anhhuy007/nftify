@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import {
+  getUserApiEndpoint,
   loginApiEndpoint,
   logoutApiEndpoint,
   refreshTokenApiEndpoint,
@@ -21,9 +22,32 @@ const AuthProvider = ({ children }) => {
     localStorage.getItem("walletAddress") || ""
   );
 
-  const loginAction = async (data) => {
-    console.log("Logging in with data:", data);
+  // Fetch user data
+  const fetchUserData = async () => {
+    if (!isAuth) {
+      return;
+    }
 
+    try {
+      const response = await fetch(getUserApiEndpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      setUser(result);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      toast.error("Failed to fetch user data. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const loginAction = async (data) => {
     try {
       const response = await fetch(loginApiEndpoint, {
         method: "POST",
@@ -68,8 +92,6 @@ const AuthProvider = ({ children }) => {
       if (result.accessToken) {
         setToken(result.accessToken);
         localStorage.setItem("jwtToken", result.accessToken);
-
-        console.log("Token refreshed:", result);
 
         return result.accessToken;
       }
@@ -142,6 +164,14 @@ const AuthProvider = ({ children }) => {
       toast.error("Error connecting wallet");
     }
   };
+
+  if (!user) {
+    fetchUserData();
+  }
+
+  useEffect(() => {
+    console.log("Current user:", user);
+  }, [user]);
 
   return (
     <AuthContext.Provider

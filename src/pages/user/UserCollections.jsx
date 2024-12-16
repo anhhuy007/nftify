@@ -1,147 +1,120 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useQuery } from "react-query";
+import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import CollectionCard from "@/pages/marketplace/collections/components/CollectionCard";
-import { useOutletContext } from "react-router-dom";
+import LoadingAnimation from "@/components/ui/loading";
+import ErrorAnimation from "@/components/ui/error";
+import InfiniteScroll from "react-infinite-scroll-component";
+import FetchingMoreAnimation from "@/components/ui/fetching-more";
+import { fetcher, userCollectionsApiEndpoint } from "@/api/Endpoints";
 
-const fetchCollections = async (
-  searchValue,
-  currentPage,
-  limitCard,
-  userId
-) => {
-  try {
-    const response = await fetch("/api/collections", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        searchValue,
-        currentPage,
-        limitCard,
-        userId,
-      }),
-    });
+const UserCollections = () => {
+  const { userId } = useOutletContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
-    const data = await response.json();
-    return data.collections; // Assuming the API returns collections in 'collections'
-  } catch (error) {
-    console.error("Error fetching collections:", error);
-    return [];
-  }
-};
-
-function UserCollections() {
-  // Fetch location to determine the current path
-  const { userName, userId } = useOutletContext(); // Fetch user details from outlet context
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchValue, setSearchValue] = useState(
-    searchParams.get("search") || ""
-  );
+  const [searchValue, setSearchValue] = useState(new URLSearchParams(location.search).get("search") || "");
+  const [currentPage, setCurrentPage] = useState(parseInt(new URLSearchParams(location.search).get("page"), 10) || 1);
+  const [limitCard, setLimitCard] = useState(parseInt(new URLSearchParams(location.search).get("limit"), 10) || 12);
   const [collections, setCollections] = useState([]);
-  const [currentPage, setCurrentPage] = useState(
-    parseInt(searchParams.get("page")) || 1
+  const [hasMore, setHasMore] = useState(true);
+
+  const apiUrl = userCollectionsApiEndpoint.replace(":userId", userId);
+  const {
+    data: collectionsData,
+    error: collectionsError,
+    isLoading: collectionsLoading,
+    refetch,
+  } = useQuery(
+    [
+      "userCollections",
+      userId,
+      searchValue,
+      currentPage,
+      limitCard,
+    ],
+    () =>
+      fetcher(
+        `${apiUrl}?&title=${searchValue}&page=${currentPage}&limit=${limitCard}`
+      ),
+    {
+      keepPreviousData: true,
+      onSuccess: (data) => {
+        if (currentPage === 1) {
+          setCollections(data.items);
+        } else {
+          setCollections((prevCollections) => [...prevCollections, ...data.items]);
+        }
+        setHasMore(data.hasMore || data.items.length > 0);
+      },
+      enabled: !!userId,
+    }
   );
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalResults, setTotalResults] = useState(0); // Track total number of results
-  const limitCard = 12;
-
-  const handleSearch = (value) => setSearchValue(value);
-
-  const updateUrlParams = () => {
-    setSearchParams({ search: searchValue, page: currentPage });
-  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const collectionsData = await fetchCollections(
-        searchValue,
-        currentPage,
-        limitCard,
-        userId
-      );
-      setCollections(collectionsData);
+    setCurrentPage(1);
+    setCollections([]);
+    refetch();
+  }, [searchValue, refetch]);
 
-      // Assuming the API sends back the total count of collections
-      const totalCount = collectionsData.length;
-      setTotalResults(totalCount);
-      setTotalPages(Math.ceil(totalCount / limitCard));
-    };
-
-    // fetchData();
-    updateUrlParams();
-  }, [searchValue, currentPage]);
+  const updateQueryParams = (params) => {
+    const searchParams = new URLSearchParams({
+      ...Object.fromEntries(new URLSearchParams(location.search).entries()),
+      ...params,
+    });
+    navigate({ search: searchParams.toString() });
+  };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    updateQueryParams({ page: pageNumber });
   };
 
-  // Calculate start and end results based on current page and limit
-  const startResult = (currentPage - 1) * limitCard + 1;
-  const endResult = Math.min(currentPage * limitCard, totalResults);
+  const handleSearch = (value) => {
+    setSearchValue(value);
+    updateQueryParams({ search: value });
+    setCurrentPage(1);
+    setCollections([]);
+    refetch();
+  };
+
+  const fetchMoreData = () => {
+    handlePageChange(currentPage + 1);
+  };
+
+  if (collectionsLoading && currentPage === 1) return <LoadingAnimation />;
+  if (collectionsError) return <ErrorAnimation />;
+
+  console.log("UserCollections:", collections);
 
   return (
-    <>
-      <div className="flex flex-col gap-20">
-        {/* Display search input */}
-        <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
-
-        {/* Results info */}
-        {totalResults > 0 ? (
-          <p className="text-primary-foreground text-bold text-xl">
-            Showing {startResult} to {endResult} of {totalResults} results
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
+        <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
+          <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
+        </div>
+      </div>
+      <InfiniteScroll
+        dataLength={collections.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={<FetchingMoreAnimation />}
+        endMessage={
+          <p className="text-center text-white mt-20">
+            {collections.length > 0 ? "No more items to display" : "No items found"}
           </p>
-        ) : (
-          <p className="text-center text-primary-foreground text-bold text-xl">
-            No results found
-          </p>
-        )}
-
-        {/* Collection Cards */}
-        <div className="grid grid-cols-3 gap-4">
-          {collections.map((collection) => (
-            <CollectionCard key={collection.id} collection={collection} />
+        }
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:grid-cols-4">
+          {collections.map((collection, index) => (
+            <CollectionCard key={collection._id || index} collection={collection} />
           ))}
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-4 mt-4">
-            <button
-              className="px-4 py-2 bg-gray-300 rounded"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                className={`px-4 py-2 rounded ${
-                  currentPage === index + 1
-                    ? "bg-primary-500 text-white"
-                    : "bg-gray-300"
-                }`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-
-            <button
-              className="px-4 py-2 bg-gray-300 rounded"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        )}
-      </div>
-    </>
+      </InfiniteScroll>
+    </div>
   );
-}
+};
 
 export default UserCollections;
