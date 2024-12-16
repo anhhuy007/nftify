@@ -17,10 +17,7 @@ import {
 } from "@/pages/create/components/FileUpload";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/api/AuthHandler";
-import {
-  userApiEndpoint,
-  userSettingUploadApiEndpoint,
-} from "@/api/Endpoints";
+import { userApiEndpoint, userSettingUploadApiEndpoint } from "@/api/Endpoints";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -63,17 +60,16 @@ function Profile() {
       const result = await fetchWithAuth(userApiEndpoint);
       const userData = result[0];
 
-      console.log("User data: ", userData);
-
       // Update state with user data
       setInitialUser({
         name: userData.name || "",
         shortBio: userData.description || "",
-        background: userData.userThumbnail || "https://w0.peakpx.com/wallpaper/743/574/HD-wallpaper-monkey-nft-nft-monkey-crypto-artist-artwork-digital-art-others-artstation.jpg",
+        background: userData.userThumbnail,
         avatar: userData.avatarUrl || "",
         avatarUrl: userData.avatarUrl || "",
         backgroundUrl: userData.userThumbnail || "",
       });
+      console.log("Initial user data: ", initialUser);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
       toast.error("Failed to fetch user data. Please try again.");

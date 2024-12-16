@@ -14,10 +14,12 @@ import { Copy } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
-import { userProfileApiEndpoint } from "@/api/Endpoints";
+import { userDetailApiEndpoint } from "@/api/Endpoints";
 import { useAuthHandler } from "@/api/AuthHandler";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "@/context/AuthProvider";
 
 const user = {
   id: 1,
@@ -35,33 +37,55 @@ const user = {
 
 function UserDetail() {
   const navigate = useNavigate();
-  const { userId } = useParams();
+  const location = useLocation();
+  let id = 1;
+  if (location.pathname.includes("/profile")) {
+    const { isAuth, user } = useAuth();
+    console.log("User: ", user);
+    if (!isAuth) {
+      navigate("/");
+      toast.error("Please login to view your profile");
+      return;
+    }
+  } else {
+    const { userId } = useParams();
+    id = userId;
+  }
+  const userDetailItem = menuItems.find((item) => item.group === "userDetail");
+
+  console.log("User ID: ", id);
+  const [copied, setCopied] = useState(false);
+
   const [isExpanded, setIsExpanded] = useState(false);
   const { fetcher } = useAuthHandler();
 
-  const userDetailItem = menuItems.find((item) => item.group === "userDetail");
-  const { data: user, error, isLoading } = useQuery('userProfile', () => fetcher(userProfileApiEndpoint));
+  const {
+    data: userDetail,
+    error: userDetailError,
+    isLoading: userDetailLoading,
+  } = useQuery(
+    ["user-detail", id],
+    () => fetcher(userDetailApiEndpoint.replace(":userId", id)),
+    { enabled: !!id }
+  );
 
-  if (isLoading) return <LoadingAnimation />;
-  if (error) return <ErrorAnimation />;
+  console.log("User detail: ", userDetail);
+  useEffect(() => {
+    if (!window.location.pathname.includes("/owned")) {
+      navigate(`/user/${id}/owned`, { replace: true });
+    }
+  }, [id, navigate]);
 
-  // if (!userDetailItem || !userDetailItem.children) {
-  //   return null;
-  // }
+  if (userDetailLoading) return LoadingAnimation();
+  if (userDetailError) return ErrorAnimation();
 
   const copyAddress = () => {
     toast.success("Address copied to clipboard", {});
-    navigator.clipboard.writeText(user.address).then(() => {
+    navigator.clipboard.writeText(userDetail.wallet_address).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
-
-  useEffect(() => {
-    if (!window.location.pathname.includes("/owned")) {
-      navigate(`/user/${userId}/owned`, { replace: true });
-    }
-  }, [userId, navigate]);
 
   return (
     <>
@@ -69,7 +93,7 @@ function UserDetail() {
         <div className="w-full rounded-xl overflow-hidden">
           <div className="relative h-[350px] w-full">
             <img
-              src={user.background}
+              src={userDetail.userThumbnail}
               alt="Profile background"
               className="w-full h-full object-cover rounded-xl"
             />
@@ -77,20 +101,20 @@ function UserDetail() {
           <div className="-mt-20">
             <div className="relative">
               <img
-                src={user.avatar}
+                src={userDetail.avatarUrl}
                 alt="Profile avatar"
                 width={200}
                 height={200}
                 className="ml-6 rounded-xl object-cover aspect-square border-4 border-[#1a1b2e]"
               />
             </div>
-            <div className="flex gap-80 mt-6 space-y-4">
+            <div className="flex gap-80 mt-6 space-y-4 justify-between">
               <div className="">
                 <h1 className="text-5xl font-bold text-primary-foreground mb-6">
-                  {user.name}
+                  {userDetail.name}
                 </h1>
                 <p className={`text-gray-400 ${!isExpanded && "line-clamp-2"}`}>
-                  {user.description}
+                  {userDetail.description}
                 </p>
                 <Button
                   variant="link"
@@ -101,8 +125,8 @@ function UserDetail() {
                 </Button>
               </div>
 
-              <Card className="flex-1 p-4 space-y-4 bg-card text-primary-foreground border-none max-h-fit">
-                <div className="flex gap-28">
+              <Card className="p-4 space-y-4 bg-card text-primary-foreground border-none max-h-fit">
+                <div className="flex justify-between gap-28">
                   <span className="text-gray-400">Followers</span>
                   <span className="whitespace-nowrap">
                     {user.followers} ETH
@@ -115,10 +139,12 @@ function UserDetail() {
                   </span>
                 </div>
                 <Separator orientation="horizontal" className="w-full my-2" />
-                <div className="flex justify-between">
+                <div className="flex gap-10">
                   <span className="text-gray-400">Address</span>
                   <div className="flex items-center gap-2">
-                    <span>{user.address}</span>
+                    <span className="truncate max-w-[150px]">
+                      {userDetail.wallet_address}
+                    </span>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -136,7 +162,7 @@ function UserDetail() {
         <Tabs defaultValue="owned" className="w-full">
           <TabsList className="w-full justify-start gap-2 h-14 bg-transparent border-b border-foreground mb-6 rounded-none">
             {userDetailItem.children.map((child) => (
-              <Link to={`/user/${userId}/${child.link}`} key={`${child.link}`}>
+              <Link to={`/user/${id}/${child.link}`} key={`${child.link}`}>
                 <TabsTrigger
                   key={child.link}
                   value={child.link}
