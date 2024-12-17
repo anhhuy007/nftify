@@ -19,12 +19,35 @@ import CreateAccountDialog from "@/components/auth/CreateAccountDialog";
 import RecoverPasswordDialog from "./RecoverPassworDialog";
 
 export default function LoginDialog({ children }) {
-  const { loginAction, isAuth } = useAuth();
+  const { loginAction, isAuth, logoutAction } = useAuth();
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isCreateAccountDialogOpen, setIsCreateAccountDialogOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false); 
   const [isRecoverPasswordDialogOpen, setIsRecoverPasswordDialogOpen] = useState(false);
+
+  // State for newly connected users
+  const [isFirstTimeConnect, setIsFirstTimeConnect] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isAccepted, setIsAccepted] = useState(false);
+
+  // Function to check if the user has connected for the first time
+  const checkFirstTimeConnect = async () => {
+    // Replace this with your actual logic to determine if it's the first-time connection
+    // For example, you might check if the user has a profile or some other data
+    // associated with their account in your database or storage.
+    const isFirstConnect = localStorage.getItem("isFirstTimeConnect");
+    if (isFirstConnect === "true") {
+      setIsFirstTimeConnect(true);
+    } else {
+      setIsFirstTimeConnect(false);
+    }
+  };
+
+  useEffect(() => {
+    checkFirstTimeConnect();
+  }, [isAuth]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -58,13 +81,54 @@ export default function LoginDialog({ children }) {
     setIsLoginDialogOpen(true);
   }
 
+  const handleSignUp = (event) => {
+    event.preventDefault();
+    // Your sign-up logic here (e.g., send data to your backend)
+    // After successful sign-up, you'd typically:
+    // 1. Set isFirstTimeConnect to false
+    // 2. Update the user's profile or store relevant data
+    // 3. Potentially close the dialog or perform other actions
+    console.log("Sign up data:", { displayName, email, isAccepted });
+
+    // Assuming successful sign-up:
+    setIsFirstTimeConnect(false);
+    localStorage.setItem("isFirstTimeConnect", "false"); // Update the flag in local storage
+    toast.success("Sign up successful!");
+  };
+
+  const handleDisconnect = () => {
+    // Your disconnect logic here
+    // This will typically involve:
+    // 1. Clearing user session data (e.g., removing tokens, clearing context)
+    // 2. Disconnecting from MetaMask (if applicable)
+    // 3. Resetting state variables
+    console.log("Disconnecting...");
+    setIsFirstTimeConnect(false);
+    localStorage.removeItem("isFirstTimeConnect"); // Clear the flag from local storage
+    logoutAction(); // Call the logout action from your AuthProvider
+  };
+
+  // Function to simulate connecting with MetaMask
+  const handleConnectMetaMask = () => {
+    // Check if it's the first-time connection
+    const isFirstConnect = localStorage.getItem("isFirstTimeConnect");
+
+    if (!isFirstConnect || isFirstConnect === "false") {
+      // Set isFirstTimeConnect to true in local storage
+      localStorage.setItem("isFirstTimeConnect", "true");
+      setIsFirstTimeConnect(true);
+    }
+
+    // Rest of the MetaMask connection logic...
+  };
+
   return (
     <>
       <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent className="sm:max-w-[500px] p-10 text-primary-foreground">
-          {isAuth ? (
-            // Content for authenticated users (you might need to adjust this based on your logic)
+          {isFirstTimeConnect ? (
+            // Content for newly connected users
             <>
               <DialogHeader>
                 <DialogTitle>
@@ -128,9 +192,7 @@ export default function LoginDialog({ children }) {
               </form>
               <Button
                 className="w-full h-14 bg-background border-2"
-                onClick={() => {
-                  /* Your disconnect logic */
-                }}
+                onClick={handleDisconnect}
               >
                 Disconnect
               </Button>
@@ -145,7 +207,7 @@ export default function LoginDialog({ children }) {
                     <span className="text-3xl font-bold">
                       Connect to NFTify
                     </span>
-                    <Button className="h-16 bg-card">
+                    <Button className="h-16 bg-card" onClick={handleConnectMetaMask}>
                       <div className="flex items-center justify-center gap-5 p-5">
                         <img
                           src={"/Metamask.svg"}
