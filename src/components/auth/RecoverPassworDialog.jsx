@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Logo from "../../assets/logo.svg";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function RecoverPasswordDialog({ isOpen, onClose }) {
   const [email, setEmail] = useState("");
@@ -17,9 +18,19 @@ export default function RecoverPasswordDialog({ isOpen, onClose }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     // Add your password recovery logic here
-    console.log("Recovery email sent to:", email);
-    alert("If an account exists with this email, you will receive a recovery link.");
-    onClose();
+    try {
+      // Example (replace with your actual API call):
+      // const response = await sendPasswordResetEmail(email);
+
+      console.log("Recovery email sent to:", email);
+      toast.success(
+        "If an account exists with this email, you will receive a recovery link."
+      );
+      onClose();
+    } catch (error) {
+      console.error("Error sending recovery email:", error);
+      toast.error("Error sending recovery email. Please try again.");
+    }
   };
 
   return (
