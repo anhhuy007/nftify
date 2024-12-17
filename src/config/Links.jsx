@@ -32,6 +32,8 @@ import CreateCollection from "@/pages/create/CreateCollection";
 import Profile from "@/pages/setting/Profile/Profile";
 import Notification from "@/pages/setting/Notification/Notification";
 import Account from "@/pages/setting/Account/Account";
+import ChangePassword from "@/components/auth/ChangePassword";
+import PasswordResetSuccess from "@/components/auth/PasswordResetSuccess";
 
 const menuItems = [
   {
@@ -261,6 +263,22 @@ const menuItems = [
         name: "Liked",
         link: "liked",
         element: <UserNfts />,
+      },
+      {
+        name: "Change Password",
+        group: "auth",
+        link: "/auth/change-password",
+        layout: "AuthLayout", 
+        element: <ChangePassword />,
+        isPrivate: false, 
+      },
+      {
+        name: "Password Reset Success",
+        group: "auth",
+        link: "/auth/password-reset-success",
+        layout: "AuthLayout",
+        element: <PasswordResetSuccess />,
+        isPrivate: false,
       },
     ],
   },
