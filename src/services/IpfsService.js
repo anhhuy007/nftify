@@ -3,8 +3,8 @@ import { PinataSDK } from "pinata-web3";
 class IpfsService {
   constructor() {
     this.pinata = new PinataSDK({
-      pinataJwt: process.env.PINATA_JWT, // Lấy từ biến môi trường
-      pinataGateway: process.env.GATEWAY_URL, // Lấy từ biến môi trường
+      pinataJwt: process.env.PINATA_JWT,
+      pinataGateway: process.env.GATEWAY_URL,
     });
 
     this.initializeGroups();
@@ -14,6 +14,8 @@ class IpfsService {
     try {
       this.avatarImgGroup = await this.ensureGroupExists("AvatarImage");
       this.bgImgGroup = await this.ensureGroupExists("BgImage");
+      this.stampImgGroup = await this.ensureGroupExists("StampImage");
+      this.metedataGroup = await this.ensureGroupExists("StampMetadata");
     } catch (error) {
       console.error("Error initializing groups:", error);
     }
@@ -54,7 +56,6 @@ class IpfsService {
         },
       };
 
-      // Tải lên tệp bình thường (File)
       const upload = await this.pinata.upload.file(file, uploadOptions);
 
       setIsLoading(false);

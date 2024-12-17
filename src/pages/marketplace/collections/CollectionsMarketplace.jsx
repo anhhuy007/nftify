@@ -33,7 +33,7 @@ function CollectionsMarketplace() {
     ["collections", searchValue, currentPage, limitCard],
     () =>
       fetcher(
-        `${collectionsApiEndpoint}?name=${searchValue}page=${currentPage}&limit=${limitCard}`
+        `${collectionsApiEndpoint}?name=${searchValue}&page=${currentPage}&limit=${limitCard}`
       ),
     {
       keepPreviousData: true,
