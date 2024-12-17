@@ -33,7 +33,7 @@ function UsersMarketplace() {
     ["users", searchValue, currentPage, limitCard],
     () =>
       fetcher(
-        `${usersApiEndpoint}?title=${searchValue}page=${currentPage}&limit=${limitCard}`
+        `${usersApiEndpoint}?name=${searchValue}page=${currentPage}&limit=${limitCard}`
       ),
     {
       keepPreviousData: true,

@@ -13,20 +13,38 @@ import Logo from "../../assets/logo.svg";
 import { useAuth } from "@/context/AuthProvider";
 import LoginDialog from "@/components/auth/LoginDialog";
 import { User, ShoppingCart, Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
   const { isAuth } = useAuth();
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleSearch = (event) => {
+    setSearchValue(event.target.value);
+  };
+  const handleSubmit = (event) => {
+    if (searchValue.trim() !== "") {
+      navigate(`/marketplace/nfts?search=${searchValue}`);
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSubmit();
+    }
+  };
 
   useEffect(() => {
-    // This effect will run whenever isAuth changes
     console.log("Authentication state changed:", isAuth);
   }, [isAuth]);
 
   return (
-    <header className="fixed w-full top-0 left-0 right-0 bg-background border-b border-[var(--border)] z-50">
+    <header className="fixed w-full top-0 left-0 right-0 bg-background border-b border-[var(--border)] z-50 shadow-2xl">
       <div className="container mx-auto px-4">
-        <div className="h-16 flex items-center justify-between">
+        <div className=" h-20  flex items-center justify-between">
           <div className="flex items-center justify-start gap-4">
             <Link to="/" className="flex-shrink-0">
               <img src={Logo} alt="Logo" className="h-5" />
@@ -56,12 +74,16 @@ function Header() {
             <div className="relative">
               <Input
                 type="text"
+                value={searchValue}
+                onChange={handleSearch}
                 placeholder="Search items, collections..."
-                className="w-[320px] h-10 pl-4 pr-10 rounded-xl"
+                onKeyDown={handleKeyDown}
+                className="w-[350px] h-10 py-6 pl-4 pr-10 rounded-xl"
               />
               <Button
                 size="icon"
                 variant="ghost"
+                onClick={handleSubmit}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
               >
                 <Search className="h-4 w-4" />
@@ -101,7 +123,7 @@ function Header() {
                   </LoginDialog>
                 </>
               )}
-              <Cart />  
+              <Cart />
             </div>
             <Button
               variant="ghost"
@@ -139,7 +161,10 @@ function Header() {
               <Input
                 type="text"
                 placeholder="Search items, collections..."
-                className="w-full h-10 pl-4 pr-10 rounded-xl"
+                className="w-full h-20 pl-4 pr-10 rounded-xl"
+                value={searchValue}
+                onChange={handleSearch}
+                onKeyDown={handleKeyDown}
               />
             </div>
             <div className="mt-4 flex justify-between">

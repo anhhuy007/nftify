@@ -24,7 +24,7 @@ function UserDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   let id = 1;
-  
+
   if (location.pathname.includes("/profile")) {
     const { isAuth, user } = useAuth();
     if (!isAuth) {
@@ -55,7 +55,7 @@ function UserDetail() {
   );
 
   // Determine the active tab based on current URL
-  const activeTab = location.pathname.split('/').pop();
+  const activeTab = location.pathname.split("/").pop();
 
   useEffect(() => {
     console.log("Active tab:", activeTab);
@@ -113,21 +113,15 @@ function UserDetail() {
               <Card className="p-4 space-y-4 bg-card text-primary-foreground border-none max-h-fit">
                 <div className="flex justify-between gap-20">
                   <span className="text-gray-400">Status</span>
-                  <span className="whitespace-nowrap">
-                    {userDetail.status}
-                  </span>
+                  <span className="whitespace-nowrap">{userDetail.status}</span>
                 </div>
                 <div className="flex justify-between gap-20">
                   <span className="text-gray-400">Created NFTs</span>
-                  <span className="whitespace-nowrap">
-                    {} NFTs
-                  </span>
+                  <span className="whitespace-nowrap">{} NFTs</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Owned NFTs</span>
-                  <span className="whitespace-nowrap">
-                    {} NFTs
-                  </span>
+                  <span className="whitespace-nowrap">{} NFTs</span>
                 </div>
                 <Separator orientation="horizontal" className="w-full my-2" />
                 <div className="flex gap-10">
@@ -150,15 +144,15 @@ function UserDetail() {
             </div>
           </div>
         </div>
-        <Tabs 
-          defaultValue={activeTab || "owned"} 
-          value={activeTab} 
+        <Tabs
+          defaultValue={activeTab || "owned"}
+          value={activeTab}
           className="w-full"
         >
           <TabsList className="w-full justify-start gap-2 h-14 bg-transparent border-b border-foreground mb-6 rounded-none">
             {userDetailItem.children.map((child) => (
-              <Link 
-                to={`/user/${id}/${child.link}`} 
+              <Link
+                to={`/user/${id}/${child.link}`}
                 key={child.link}
                 className="contents"
               >
@@ -172,9 +166,11 @@ function UserDetail() {
             ))}
           </TabsList>
         </Tabs>
-        
+
         <div className="mb-20">
-          <Outlet context={{ userName: userDetail.name, userId: userDetail._id }} />
+          <Outlet
+            context={{ userName: userDetail.name, userId: userDetail._id }}
+          />
         </div>
       </div>
     </>
@@ -182,6 +178,3 @@ function UserDetail() {
 }
 
 export default UserDetail;
-
-
-
