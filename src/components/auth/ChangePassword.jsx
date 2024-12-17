@@ -8,7 +8,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useAuthHandler } from "@/api/AuthHandler";
 import { userChangePasswordApiEndpoint } from "@/api/Endpoints";
 import { useNavigate, useLocation } from "react-router-dom";
-import menuItems from "@/links"; // Import menuItems
+import menuItems from "@/config/Links";
 
 function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
