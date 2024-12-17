@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   DropdownMenu as UI_DropdownMenu,
   DropdownMenuTrigger,
@@ -35,10 +35,18 @@ function DropdownMenuComponent() {
   const location = useLocation();
   const { user, logoutAction } = useAuth();
 
+  useEffect(() => {
+    console.log("------ User In Profile ------");
+    console.log("UserID: ", user._id);
+    console.log("User", user);
+  }, [user]);
+
   const handleLogout = async () => {
     const result = await logoutAction();
 
-    if (result.status === 200) {
+    console.log("Logout result", result);
+
+    if (result.success === true) {
       // show dialog
       toast.success("Logout successfully");
     }
@@ -58,12 +66,21 @@ function DropdownMenuComponent() {
         <DropdownMenuSeparator className="my-2" />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link to={user ? `/user/${user._id}` : "/login"}>
-              <div className="flex flex-row w-full px-5 py-2 text-base cursor-pointer">
-                <User size={24} className="mr-4" />
-                Profile
-              </div>
-            </Link>
+            {user ? (
+              <Link to={`/user/${user._id}/owned`}>
+                <div className="flex flex-row w-full px-5 py-2 text-base cursor-pointer">
+                  <User size={24} className="mr-4" />
+                  Profile
+                </div>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <div className="flex flex-row w-full px-5 py-2 text-base cursor-pointer">
+                  <User size={24} className="mr-4" />
+                  Profile
+                </div>
+              </Link>
+            )}
           </DropdownMenuItem>
           <DropdownMenuItem>
             <div className="flex flex-row w-full px-5 py-2 text-base cursor-pointer">

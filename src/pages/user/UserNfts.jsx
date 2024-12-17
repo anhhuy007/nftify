@@ -54,10 +54,10 @@ const UserNfts = () => {
     setItems([]);
   }, [currentPath]);
 
-  useEffect(() => {
-    console.log("Type: ", typeData);
-    console.log("URL: ", apiUrl);
-  }, [typeData, apiUrl]);
+  // useEffect(() => {
+  //   console.log("Type: ", typeData);
+  //   console.log("URL: ", apiUrl);
+  // }, [typeData, apiUrl]);
 
   const {
     data: nftsData,

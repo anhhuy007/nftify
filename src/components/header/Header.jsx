@@ -18,11 +18,6 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuth } = useAuth();
 
-  useEffect(() => {
-    // This effect will run whenever isAuth changes
-    console.log("Authentication state changed:", isAuth);
-  }, [isAuth]);
-
   return (
     <header className="fixed w-full top-0 left-0 right-0 bg-background border-b border-[var(--border)] z-50">
       <div className="container mx-auto px-4">

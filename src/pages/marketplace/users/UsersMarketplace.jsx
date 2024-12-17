@@ -34,7 +34,6 @@ function UsersMarketplace() {
     setCurrentPage(pageNumber);
   };
 
-  const handleSort = (option) => setSortOption(option);
   const handleToggleGrid = (value) => setIsGrid(value);
 
   const startResult = (currentPage - 1) * limitCard + 1;

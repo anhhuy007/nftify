@@ -12,7 +12,18 @@ import { toast } from "react-hot-toast";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  // Parse user from localStorage with error handling
+  const getStoredUser = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing stored user:", error);
+      return null;
+    }
+  };
+
+  const [user, setUser] = useState(getStoredUser());
   const [token, setToken] = useState(localStorage.getItem("jwtToken") || "");
   const [refreshToken, setRefreshToken] = useState(
     localStorage.getItem("jwtRefreshToken") || ""
@@ -22,9 +33,25 @@ const AuthProvider = ({ children }) => {
     localStorage.getItem("walletAddress") || ""
   );
 
-  // Fetch user data
+  // Update localStorage when user changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
+  // Update fetchUserData
   const fetchUserData = async () => {
+    console.log("----- Fetching User Data -----");
+    if (user) {
+      console.log("User data already fetched:", user);
+      return;
+    }
+
     if (!isAuth) {
+      console.log("User not authenticated");
       return;
     }
 
@@ -36,16 +63,17 @@ const AuthProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      setUser(result);
+
+      if (result.success === false) {
+        throw new Error(result.message);
+      }
+
+      setUser(result.data);
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
-      toast.error("Failed to fetch user data. Please try again.");
+      console.error("Error fetching user data:", error);
+      setUser(null);
     }
   };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
 
   const loginAction = async (data) => {
     try {
@@ -59,17 +87,18 @@ const AuthProvider = ({ children }) => {
 
       const result = await response.json();
 
-      if (result.message === "Login successful") {
-        setUser(result.account);
-        setToken(result.accessToken);
-        setRefreshToken(result.refreshToken);
+      if (result.success === true) {
+        const data = result.data;
+
+        setUser(data.account);
+        setToken(data.accessToken);
+        setRefreshToken(data.refreshToken);
         setIsAuth(true);
-        localStorage.setItem("jwtToken", result.accessToken);
-        localStorage.setItem("jwtRefreshToken", result.refreshToken);
+        localStorage.setItem("jwtToken", data.accessToken);
+        localStorage.setItem("jwtRefreshToken", data.refreshToken);
+        localStorage.setItem("user", JSON.stringify(data.account));
 
-        console.log("Login successful:", result);
-
-        return result;
+        return data;
       }
 
       return { error: result.message };
@@ -89,23 +118,38 @@ const AuthProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      if (result.accessToken) {
-        setToken(result.accessToken);
-        localStorage.setItem("jwtToken", result.accessToken);
+      if (result.success === true) {
+        const data = result.data;
+        setToken(data);
+        localStorage.setItem("jwtToken", data);
 
-        return result.accessToken;
+        return data;
       }
       throw new Error("Token refresh failed:", result.message);
     } catch (error) {
-      console.error("Error refreshing token:", error);
       logoutAction();
       return { error: error.message };
     }
   };
 
   const logoutAction = async () => {
+    const cleanup = () => {
+      // Clear all local storage
+      localStorage.removeItem("jwtToken");
+      localStorage.removeItem("jwtRefreshToken");
+      localStorage.removeItem("walletAddress");
+      localStorage.removeItem("user");
+
+      // Reset all auth states
+      setIsAuth(false);
+      setUser(null);
+      setToken("");
+      setRefreshToken("");
+      setWalletAddress("");
+    };
+
     try {
-      const result = await fetch(logoutApiEndpoint, {
+      const response = await fetch(logoutApiEndpoint, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -113,20 +157,23 @@ const AuthProvider = ({ children }) => {
         },
       });
 
-      // clear local storage
-      localStorage.removeItem("jwtToken");
-      localStorage.removeItem("jwtRefreshToken");
-      localStorage.removeItem("walletAddress");
-      setIsAuth(false);
-      setUser(null);
-      setToken("");
-      setRefreshToken("");
-      setWalletAddress("");
+      // Handle both success and token expired cases
+      if (response.status === 401) {
+        cleanup();
+        return { success: true, message: "Logged out successfully" };
+      }
 
+      const result = await response.json();
+      cleanup();
       return result;
     } catch (error) {
-      console.error("Error logging out:", error);
-      return { error: error.message };
+      console.error("Logout error:", error);
+      cleanup(); // Ensure cleanup even on network errors
+      return {
+        success: true,
+        message: "Logged out successfully",
+        error: error.message,
+      };
     }
   };
 
@@ -156,8 +203,6 @@ const AuthProvider = ({ children }) => {
 
       setWalletAddress(address);
       localStorage.setItem("walletAddress", address);
-
-      console.log("Wallet connected:", address);
       return address;
     } catch (error) {
       console.error("Error connecting wallet:", error);
@@ -170,8 +215,14 @@ const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    console.log("Current user:", user);
-  }, [user]);
+    console.log("------ Auth State ------");
+    console.log("User:", user);
+    console.log("isAuth:", isAuth);
+    console.log("Wallet Address:", walletAddress);
+    console.log("Token:", token);
+    console.log("Refresh Token:", refreshToken);
+    console.log("------------------------");
+  }, [user, isAuth, walletAddress, token, refreshToken]);
 
   return (
     <AuthContext.Provider

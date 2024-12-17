@@ -1,3 +1,4 @@
+// filepath: /d:/Project/NFTify/nftify/src/pages/user/UserDetail.jsx
 import React, { useEffect, useState } from "react";
 import {
   Outlet,
@@ -23,23 +24,19 @@ import { useAuth } from "@/context/AuthProvider";
 function UserDetail() {
   const navigate = useNavigate();
   const location = useLocation();
-  let id = 1;
-  
-  if (location.pathname.includes("/profile")) {
-    const { isAuth, user } = useAuth();
-    if (!isAuth) {
+  const { userId: paramUserId } = useParams();
+  const { isAuth, user } = useAuth();
+  const [id, setId] = useState(paramUserId || (location.pathname.includes("/profile") ? user?._id : null));
+
+  useEffect(() => {
+    if (location.pathname.includes("/profile") && !isAuth) {
       navigate("/");
       toast.error("Please login to view your profile");
       return;
     }
-    id = user?._id; // Use logged-in user's ID for profile
-  } else {
-    const { userId } = useParams();
-    id = userId;
-  }
+  }, [isAuth, location.pathname, navigate]);
 
   const userDetailItem = menuItems.find((item) => item.group === "userDetail");
-
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { fetcher } = useAuthHandler();
@@ -54,19 +51,18 @@ function UserDetail() {
     { enabled: !!id }
   );
 
-  // Determine the active tab based on current URL
-  const activeTab = location.pathname.split('/').pop();
-
   useEffect(() => {
-    console.log("Active tab:", activeTab);
-  }, [activeTab]);
+    if (!location.pathname.includes("/owned")) {
+      navigate(`/user/${id}/owned`, { replace: true });
+    }
+  }, []);
 
-  if (userDetailLoading) return LoadingAnimation();
-  if (userDetailError) return ErrorAnimation();
+  if (userDetailLoading) return <LoadingAnimation />;
+  if (userDetailError) return <ErrorAnimation />;
 
   const copyAddress = () => {
+    toast.success("Address copied to clipboard", {});
     navigator.clipboard.writeText(userDetail.wallet_address).then(() => {
-      toast.success("Address copied to clipboard");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -120,13 +116,13 @@ function UserDetail() {
                 <div className="flex justify-between gap-20">
                   <span className="text-gray-400">Created NFTs</span>
                   <span className="whitespace-nowrap">
-                    {} NFTs
+                    {user.followers} NFTs
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Owned NFTs</span>
                   <span className="whitespace-nowrap">
-                    {} NFTs
+                    {user.following} NFTs
                   </span>
                 </div>
                 <Separator orientation="horizontal" className="w-full my-2" />
@@ -150,19 +146,12 @@ function UserDetail() {
             </div>
           </div>
         </div>
-        <Tabs 
-          defaultValue={activeTab || "owned"} 
-          value={activeTab} 
-          className="w-full"
-        >
+        <Tabs defaultValue="owned" className="w-full">
           <TabsList className="w-full justify-start gap-2 h-14 bg-transparent border-b border-foreground mb-6 rounded-none">
             {userDetailItem.children.map((child) => (
-              <Link 
-                to={`/user/${id}/${child.link}`} 
-                key={child.link}
-                className="contents"
-              >
+              <Link to={`/user/${id}/${child.link}`} key={`${child.link}`}>
                 <TabsTrigger
+                  key={child.link}
                   value={child.link}
                   className="text-lg data-[state=active]:border-b-[6px] data-[state=active]:border-foreground data-[state=active]:p-[11px] data-[state=active]:shadow-none rounded-none"
                 >
@@ -172,9 +161,8 @@ function UserDetail() {
             ))}
           </TabsList>
         </Tabs>
-        
         <div className="mb-20">
-          <Outlet context={{ userName: userDetail.name, userId: userDetail._id }} />
+          <Outlet context={{ userName: userDetail.name, userId: id }} />
         </div>
       </div>
     </>
@@ -182,6 +170,3 @@ function UserDetail() {
 }
 
 export default UserDetail;
-
-
-
