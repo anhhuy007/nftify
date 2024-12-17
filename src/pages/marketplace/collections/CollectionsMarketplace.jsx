@@ -60,19 +60,19 @@ function CollectionsMarketplace() {
         </div>
       </div>
       <div className="grid grid-cols-3 gap-4">
-        {collectionsData.items.length !== 0 &&
-          collectionsData.items.map((card, index) => (
+        {collectionsData.data.items.length !== 0 &&
+          collectionsData.data.items.map((card, index) => (
             <CollectionCard key={card._id || index} collection={card} />
           ))}
       </div>
       <Pagination
         currentPage={currentPage}
-        totalResults={collectionsData?.totalResults}
+        totalResults={collectionsData.data?.totalResults}
         resultsPerPage={limitCard}
         onPageChange={handlePageChange}
       />
       <div className="text-white">
-        Showing {startResult} to {endResult} of {collectionsData?.totalResults} results
+        Showing {startResult} to {endResult} of {collectionsData.data?.totalResults} results
       </div>
     </div>
   );

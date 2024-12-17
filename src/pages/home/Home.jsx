@@ -70,19 +70,19 @@ function Home() {
           <span className="text-5xl font-bold leading-normal text-gradient">
             Trending NFTs
           </span>
-          <NftCarousel data={trendingData} isLoading={trendingLoading} />
+          <NftCarousel data={trendingData.data} isLoading={trendingLoading} />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Collections
           </span>
-          <CollectionCarousel data={collectionsData} />
+          <CollectionCarousel data={collectionsData.data} />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Creators
           </span>
-          <CreatorCarousel data={creatorsData} isLoading={trendingLoading} />
+          <CreatorCarousel data={creatorsData.data} isLoading={trendingLoading} />
         </div>
         <Banner />
       </div>

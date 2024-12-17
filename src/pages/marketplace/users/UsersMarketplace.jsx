@@ -45,6 +45,8 @@ function UsersMarketplace() {
   if (usersLoading) return LoadingAnimation();
   if (usersError) return <div>Error: {usersError.message}</div>;
 
+  console.log(usersData.data);
+
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
@@ -58,19 +60,19 @@ function UsersMarketplace() {
         </div>
       </div>
       <div className="grid grid-cols-3 gap-4">
-        {usersData.items.length !== 0 &&
-          usersData.items.map((user, index) => (
+        {usersData.data.items.length !== 0 &&
+          usersData.data.items.map((user, index) => (
             <UserCard key={user._id || index} user={user} />
           ))}
       </div>
       <Pagination
         currentPage={currentPage}
-        totalResults={usersData?.totalResults}
+        totalResults={usersData.data?.totalResults}
         resultsPerPage={limitCard}
         onPageChange={handlePageChange}
       />
       <div className="text-white">
-        Showing {startResult} to {endResult} of {usersData?.totalResults}{" "}
+        Showing {startResult} to {endResult} of {usersData.data?.totalResults}{" "}
         results
       </div>
     </div>

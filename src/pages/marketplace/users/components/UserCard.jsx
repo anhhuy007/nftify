@@ -25,7 +25,7 @@ export default function UserCard({ user }) {
         {/* Banner Image */}
         <div className="h-52 p-4 bg-[#797da0]">
           <img
-            src={user.avatar}
+            src={user.bgUrl}
             alt=""
             className="h-full w-full rounded-xl object-cover transition-transform duration-300 group-hover:scale-105"
           />
@@ -35,7 +35,7 @@ export default function UserCard({ user }) {
         <div className="relative flex items-center justify-between gap-6 bg-[#797da0] p-6">
           {/* Avatar - Positioned to overlap banner */}
           <Avatar className="absolute -top-12 left-8 h-16 w-16 rounded-full">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={user.avatarUrl} alt={user.name} />
             <AvatarFallback className="bg-blue-500 text-2xl">
               {user.name}
             </AvatarFallback>

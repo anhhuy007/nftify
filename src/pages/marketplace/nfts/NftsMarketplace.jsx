@@ -66,7 +66,8 @@ function NftsMarketplace() {
       ),
     {
       keepPreviousData: true,
-      onSuccess: (data) => {
+      onSuccess: (response) => {
+        const data = response.data;
         // Append new items or reset based on page
         if (currentPage === 1) {
           setItems(data.items);
@@ -79,6 +80,10 @@ function NftsMarketplace() {
       },
       enabled: true, // Ensure query can be manually triggered
     }
+  );
+
+  console.log(
+    `${nftsApiEndpoint}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${currentPage}&limit=${limitCard}`
   );
 
   useEffect(() => {
