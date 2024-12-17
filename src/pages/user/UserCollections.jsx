@@ -23,7 +23,7 @@ const UserCollections = () => {
 
   const apiUrl = userCollectionsApiEndpoint.replace(":userId", userId);
   const {
-    data: collectionsData,
+    data,
     error: collectionsError,
     isLoading: collectionsLoading,
     refetch,
@@ -41,7 +41,9 @@ const UserCollections = () => {
       ),
     {
       keepPreviousData: true,
-      onSuccess: (data) => {
+      onSuccess: (response) => {
+        const data = response.data;
+        console.log("Collections Data:", data);
         if (currentPage === 1) {
           setCollections(data.items);
         } else {

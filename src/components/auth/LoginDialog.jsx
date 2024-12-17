@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import CreateAccountDialog from "@/components/auth/CreateAccountDialog";

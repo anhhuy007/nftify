@@ -35,11 +35,11 @@ function DropdownMenuComponent() {
   const location = useLocation();
   const { user, logoutAction } = useAuth();
 
-  useEffect(() => {
-    console.log("------ User In Profile ------");
-    console.log("UserID: ", user._id);
-    console.log("User", user);
-  }, [user]);
+  // useEffect(() => {
+  //   console.log("------ User In Profile ------");
+  //   console.log("UserID: ", user._id);
+  //   console.log("User", user);
+  // }, [user]);
 
   const handleLogout = async () => {
     const result = await logoutAction();

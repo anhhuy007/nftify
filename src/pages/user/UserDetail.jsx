@@ -42,7 +42,7 @@ function UserDetail() {
   const { fetcher } = useAuthHandler();
 
   const {
-    data: userDetail,
+    data,
     error: userDetailError,
     isLoading: userDetailLoading,
   } = useQuery(
@@ -68,6 +68,7 @@ function UserDetail() {
     });
   };
 
+  const userDetail = data.data;
   return (
     <>
       <div className="flex flex-col px-20 pt-10">
