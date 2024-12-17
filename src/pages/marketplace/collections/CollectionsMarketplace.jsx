@@ -51,13 +51,11 @@ function CollectionsMarketplace() {
     <div className="flex flex-col gap-10">
       <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
         <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
-          <Filter filter={filter} />
           <div className="flex-1">
             <SearchNfts searchValue={searchValue} />
           </div>
         </div>
         <div className="flex items-center justify-center w-full lg:w-auto gap-8 mt-4 lg:mt-0">
-          <Sort sortOption={sortOption} setSortOption={handleSort} />
           <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} />
         </div>
       </div>

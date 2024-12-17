@@ -10,8 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Logo from "../../assets/logo.svg";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { PasswordInput } from "@/components/ui/password-input";
 import CreateAccountDialog from "@/components/auth/CreateAccountDialog";
 import RecoverPasswordDialog from "./RecoverPassworDialog";
 
@@ -28,11 +31,11 @@ export default function LoginDialog({ children }) {
     const result = await loginAction({ username, password });
 
     if (result.error) {
-      alert("Error logging in: " + result.error);
+      toast.error(result.error);
       return;
     }
 
-    alert("Login successful");
+    toast.success("Login successful");
   };
 
   const openCreateAccount = () => {
@@ -178,12 +181,11 @@ export default function LoginDialog({ children }) {
                   <Label htmlFor="password" className="text-xl">
                     Password
                   </Label>
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type="password"
+                    value={password}
                     placeholder="Enter your password"
                     onChange={(e) => setPassword(e.target.value)}
-                    required
                     className="w-full h-14"
                   />
                 </div>

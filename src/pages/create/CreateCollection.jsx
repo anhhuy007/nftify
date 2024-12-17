@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FileLogoUpload } from "@/pages/create/components/FileUpload";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const user = {
   name: "John Doe",
@@ -71,9 +71,7 @@ function CreateCollection() {
 
   return (
     <>
-      <div>
-        <Toaster position="top-right" reverseOrder={false} />{" "}
-      </div>
+
       <div className="flex flex-col min-h-screen my-20 mx-56 ">
         <h1 className="text-primary-foreground text-6xl font-bold mb-10">
           Create New Collection

@@ -1,10 +1,13 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import {
+  getUserApiEndpoint,
   loginApiEndpoint,
   logoutApiEndpoint,
   refreshTokenApiEndpoint,
+  userApiEndpoint,
 } from "@/api/Endpoints";
 import { ethers } from "ethers";
+import { toast } from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -19,31 +22,32 @@ const AuthProvider = ({ children }) => {
     localStorage.getItem("walletAddress") || ""
   );
 
-  useEffect(() => {
-    if (token) {
-      fetchUserData(token);
+  // Fetch user data
+  const fetchUserData = async () => {
+    if (!isAuth) {
+      return;
     }
-  }, [token]);
 
-  const fetchUserData = async (token) => {
     try {
-      const response = await fetch("/api/user", {
+      const response = await fetch(getUserApiEndpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const data = await response.json();
-      setUser(data.user);
-      setIsAuth(true);
+      const result = await response.json();
+      setUser(result);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Failed to fetch user data:", error);
+      toast.error("Failed to fetch user data. Please try again.");
     }
   };
 
-  const loginAction = async (data) => {
-    console.log("Logging in with data:", data);
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
+  const loginAction = async (data) => {
     try {
       const response = await fetch(loginApiEndpoint, {
         method: "POST",
@@ -89,8 +93,6 @@ const AuthProvider = ({ children }) => {
         setToken(result.accessToken);
         localStorage.setItem("jwtToken", result.accessToken);
 
-        console.log("Token refreshed:", result);
-
         return result.accessToken;
       }
       throw new Error("Token refresh failed:", result.message);
@@ -114,7 +116,7 @@ const AuthProvider = ({ children }) => {
       // clear local storage
       localStorage.removeItem("jwtToken");
       localStorage.removeItem("jwtRefreshToken");
-      localStorage.removeItem("walletAddress"); 
+      localStorage.removeItem("walletAddress");
       setIsAuth(false);
       setUser(null);
       setToken("");
@@ -130,13 +132,15 @@ const AuthProvider = ({ children }) => {
 
   const connectWallet = async () => {
     if (!window.ethereum) {
-      alert("Please install MetaMask to connect your wallet");
+      toast.error("Please install MetaMask to connect your wallet");
       return;
     }
 
     try {
       // For ethers v6
-      const provider = window.ethereum ? new ethers.BrowserProvider(window.ethereum) : null;
+      const provider = window.ethereum
+        ? new ethers.BrowserProvider(window.ethereum)
+        : null;
       if (!provider) {
         throw new Error("Unable to create provider");
       }
@@ -157,9 +161,17 @@ const AuthProvider = ({ children }) => {
       return address;
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      alert("Failed to connect wallet: " + error.message);
+      toast.error("Error connecting wallet");
     }
   };
+
+  if (!user) {
+    fetchUserData();
+  }
+
+  useEffect(() => {
+    console.log("Current user:", user);
+  }, [user]);
 
   return (
     <AuthContext.Provider
@@ -170,7 +182,7 @@ const AuthProvider = ({ children }) => {
         logoutAction,
         refreshAccessToken,
         connectWallet,
-        walletAddress
+        walletAddress,
       }}
     >
       {children}

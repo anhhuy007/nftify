@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { X, Image, Upload } from "lucide-react";
@@ -266,23 +266,25 @@ export const FileBackgroundUpload = ({
   initialBackground,
   onBackgroundChange,
 }) => {
-  const [background, setBackground] = useState(initialBackground || null);
+  const [background, setBackground] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const isFirstRender = useRef(true);
 
   const accept = ["image/png", "image/jpeg", "image/webp"];
   const maxSize = 1024 * 1024 * 1024; // 20MB
 
+  useEffect(() => {
+    if (isFirstRender.current && initialBackground) {
+      setBackground(initialBackground);
+      isFirstRender.current = false;
+    }
+  }, [initialBackground]);
+
   const handleFileUpload = (e) => {
     const uploadedFile = e.target.files[0];
-    if (
-      uploadedFile &&
-      accept.includes(uploadedFile.type) &&
-      uploadedFile.size <= maxSize
-    ) {
+    if (uploadedFile) {
       setBackground(URL.createObjectURL(uploadedFile));
-      onBackgroundChange(URL.createObjectURL(uploadedFile));
-    } else {
-      alert("Invalid file type or size exceeds 20MB");
+      onBackgroundChange(uploadedFile);
     }
   };
 
@@ -315,23 +317,16 @@ export const FileBackgroundUpload = ({
     setIsDragging(false);
 
     const uploadedFile = e.dataTransfer.files[0];
-    if (
-      uploadedFile &&
-      accept.includes(uploadedFile.type) &&
-      uploadedFile.size <= maxSize
-    ) {
-      const fileURL = URL.createObjectURL(uploadedFile);
-      setBackground(fileURL);
-      onBackgroundChange(fileURL);
-    } else {
-      alert("Invalid file type or size exceeds 20MB");
+    if (uploadedFile) {
+      setBackground(URL.createObjectURL(uploadedFile));
+      onBackgroundChange(uploadedFile);
     }
   };
 
   return (
     <div className="relative">
       <div
-        className={`relative w-full aspect-[933/221] rounded-xl overflow-hidden transition-transform duration-300 ${
+        className={`relative w-full aspect-[933/210] rounded-xl overflow-hidden transition-transform duration-300 ${
           isDragging ? "opacity-80 " : ""
         }`}
         onDragEnter={handleDragEnter}
@@ -347,7 +342,7 @@ export const FileBackgroundUpload = ({
           />
         ) : (
           <div
-            className={`flex items-center justify-center h-full text-center bg-gray-200 transition-colors duration-300 ${
+            className={`flex items-center justify-center h-full text-center bg-background transition-colors duration-300 text-black ${
               isDragging ? "bg-accent/30" : "bg-muted"
             }`}
           >
@@ -373,33 +368,42 @@ export const FileBackgroundUpload = ({
 };
 
 export const FileAvaUpload = ({ initialAvatar, onAvatarChange }) => {
-  const [avatar, setAvatar] = useState(initialAvatar || "");
+  const [avatar, setAvatar] = useState("");
   const [isHovering, setIsHovering] = useState(false);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current && initialAvatar) {
+      setAvatar(initialAvatar);
+      isFirstRender.current = false;
+    }
+  }, [initialAvatar]);
 
   const accept = ["image/png", "image/jpeg", "image/webp"];
 
   const handleFileUpload = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
+      console.log(uploadedFile);
       setAvatar(URL.createObjectURL(uploadedFile));
-      onAvatarChange(URL.createObjectURL(uploadedFile));
+      onAvatarChange(uploadedFile);
     }
   };
 
   return (
     <div
-      className="relative group w-[110px] h-[110px] ml-6"
+      className="relative group w-[180px] h-[180px] ml-10 border-2 rounded-full"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       <img
         src={avatar}
         alt="Profile avatar"
-        className="w-full h-full rounded-xl object-cover border-4 border-[#1a1b2e] aspect-square"
+        className="w-full h-full rounded-full object-cover border-4 border-[#1a1b2e] aspect-square"
       />
 
       {isHovering && (
-        <div className="absolute hover:cursor-pointer inset-0 flex items-center justify-center bg-black/50 rounded-xl cursor-pointer">
+        <div className="absolute hover:cursor-pointer inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer">
           <label className="flex items-center justify-center text-white">
             <Image className="w-8 h-8" />
             <input

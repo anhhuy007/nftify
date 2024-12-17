@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import CollectionChooser from "./components/CollectionChooser";
 import { PreviewNftCard } from "@/components/NFT/NftCard";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const user = {
   name: "John Doe",
@@ -113,10 +113,6 @@ function CreateNft() {
 
   return (
     <>
-      <div>
-        <Toaster position="top-right" reverseOrder={false} />{" "}
-      </div>
-
       <div className="flex flex-col min-h-screen my-20 mx-72 ">
         <h1 className="text-primary-foreground text-6xl font-bold">
           Create New NFT

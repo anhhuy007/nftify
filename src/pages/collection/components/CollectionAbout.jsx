@@ -11,7 +11,7 @@ function CollectionAbout({ collection }) {
       <div className="w-full rounded-xl text-primary-foreground px-44 py-16">
         <div className="flex items-center gap-52">
           <div className="flex flex-col space-y-6">
-            <span className="font-bold text-5xl">{collection.author.name}</span>
+            <span className="font-bold text-5xl">{collection.ownerDetails.name}</span>
             <p>{collection.abstract}</p>
             <Button size="xl" variant="buy" className="text-xl">
               Follow
@@ -19,7 +19,7 @@ function CollectionAbout({ collection }) {
           </div>
           <div className="relative">
             <img
-              src={collection.imageUrl}
+              src={collection.thumbUrl}
               alt="NFT Image"
               className="w-full mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:w-[500px] aspect-square border-2 border-primary rounded-xl"
             />
@@ -36,7 +36,7 @@ function CollectionAbout({ collection }) {
               </DialogTrigger>
               <DialogContent className="max-w-2xl p-2">
                 <img
-                  src={collection.imageUrl}
+                  src={collection.thumbUrl}
                   alt="Full size NFT"
                   className="w-full h-full"
                 />

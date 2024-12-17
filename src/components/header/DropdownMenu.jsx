@@ -8,10 +8,11 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { User } from "lucide-react";
+import { Heart, LogOut, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import menuItems from "@/config/Links";
 import { useAuth } from "@/context/AuthProvider";
+import toast from "react-hot-toast";
 
 const renderMenuItems = (group, pathname) =>
   menuItems
@@ -32,16 +33,14 @@ const renderMenuItems = (group, pathname) =>
 
 function DropdownMenuComponent() {
   const location = useLocation();
-  const { logoutAction } = useAuth();
+  const { user, logoutAction } = useAuth();
 
   const handleLogout = async () => {
     const result = await logoutAction();
 
-    console.log("Logout result:", result);
-
     if (result.status === 200) {
       // show dialog
-      alert("You have been logged out");
+      toast.success("Logout successfully");
     }
   };
 
@@ -58,7 +57,20 @@ function DropdownMenuComponent() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="my-2" />
         <DropdownMenuGroup>
-          {renderMenuItems("user", location.pathname)}
+          <DropdownMenuItem>
+            <Link to={user ? `/user/${user._id}` : "/login"}>
+              <div className="flex flex-row w-full px-5 py-2 text-base cursor-pointer">
+                <User size={24} className="mr-4" />
+                Profile
+              </div>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <div className="flex flex-row w-full px-5 py-2 text-base cursor-pointer">
+              <Heart size={24} className="mr-4" />
+              Favourite
+            </div>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="my-2" />
         <DropdownMenuGroup>
@@ -67,8 +79,9 @@ function DropdownMenuComponent() {
         <DropdownMenuSeparator className="my-2" />
         <DropdownMenuGroup>
           <DropdownMenuItem onSelect={handleLogout}>
-            <div className="block w-full px-4 py-2 text-sm cursor-pointer">
-              Logout
+            <div className="flex flex-row w-full px-5 py-2 text-base cursor-pointer">
+              <LogOut size={24} className="mr-4" />
+              Log out
             </div>
           </DropdownMenuItem>
         </DropdownMenuGroup>

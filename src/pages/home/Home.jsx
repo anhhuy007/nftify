@@ -5,16 +5,9 @@ import Introduction from "@/pages/home/components/Introduction";
 import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
 import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
-import LoadingAnimation from "@/components/ui/loading";
-import {
-  trendingNftsApiEndpoint,
-  trendingCollectionsApiEndpoint,
-  trendingCreatorsApiEndpoint,
-  fetcher,
-} from "@/utils/endpoints";
 import ErrorAnimation from "@/components/ui/error";
-import { Toaster } from "react-hot-toast";
 import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
+import { fetcher, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, trendingNftsApiEndpoint } from "@/api/Endpoints";
 
 function Home() {
   const {
@@ -69,7 +62,6 @@ function Home() {
 
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col items-center justify-center">
         <Introduction />
       </div>

@@ -15,48 +15,181 @@ import {
   FileAvaUpload,
   FileBackgroundUpload,
 } from "@/pages/create/components/FileUpload";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthHandler } from "@/api/AuthHandler";
+import { userApiEndpoint, userSettingUploadApiEndpoint } from "@/api/Endpoints";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const data = {
-  background:
-    "https://asset.gecdesigns.com/img/wallpapers/fantasy-forest-wallpaper-inspired-by-avatar-pandora-planet-with-dark-mountains-and-glowing-creatures-background-sr03072407-cover.webp",
-  avatar: "https://avatars.githubusercontent.com/u/67442564",
-  name: "John Doe",
-  shortBio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  socialLink: [
-    { name: "Twitter", link: "https://twitter.com" },
-    { name: "Facebook", link: "https://facebook.com" },
-    { name: "Instagram", link: "https://instagram.com" },
-  ],
-};
+// Pinata SDK
+import IpfsService from "@/services/IpfsService";
+import LoadingAnimation from "@/components/ui/loading";
 
 function Profile() {
-  const [user, setUser] = useState({
-    name: data?.name || "",
-    shortBio: data?.shortBio || "",
-    socialLink: data?.socialLink || "",
-    background: data?.background || "",
-    avatar: data?.avatar || "",
+  const { isAuth } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  if (!isAuth) {
+    const navigate = useNavigate();
+    toast.error("Please login to create NFTs");
+    navigate("/");
+    return;
+  }
+  const { fetchWithAuth } = useAuthHandler();
+
+  const [initialUser, setInitialUser] = useState({
+    name: "",
+    shortBio: "",
+    background: "",
+    avatar: "",
+    avatarUrl: "",
+    backgroundUrl: "",
+  });
+  const [isImgChanged, setIsImgChanged] = useState({
+    background: false,
+    avatar: false,
   });
 
+  const fetchData = async () => {
+    if (!isAuth) {
+      toast("Please login to create NFTs");
+      return;
+    }
+
+    try {
+      const result = await fetchWithAuth(userApiEndpoint);
+      const userData = result[0];
+      console.log("User data:", userData);
+
+      // Update state with user data
+      setInitialUser({
+        name: userData.name || "",
+        shortBio: userData.description || "",
+        background: userData.bgUrl,
+        avatar: userData.avatarUrl || "",
+        avatarUrl: userData.avatarUrl || "",
+        backgroundUrl: userData.bgUrl || "",
+      });
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      toast.error("Failed to fetch user data. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuth) {
+      toast.error("Please login to create NFTs");
+      return;
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("Initial user data:", initialUser);
+  }, [initialUser]);
+
   const handleNameChange = (e) => {
-    setUser({ ...user, name: e.target.value });
+    setInitialUser((prev) => ({ ...prev, name: e.target.value }));
   };
 
   const handleShortBioChange = (e) => {
-    setUser({ ...user, shortBio: e.target.value });
+    setInitialUser((prev) => ({ ...prev, shortBio: e.target.value }));
   };
 
   const handleBackgroundChange = (file) => {
-    setUser({ ...user, background: file });
+    setInitialUser((prev) => ({ ...prev, background: file }));
+    setIsImgChanged((prev) => ({ ...prev, background: true }));
   };
 
   const handleAvatarChange = (file) => {
-    setUser({ ...user, avatar: file });
+    setInitialUser((prev) => ({ ...prev, avatar: file }));
+    setIsImgChanged((prev) => ({ ...prev, avatar: true }));
   };
 
-  const saveChanges = () => {
-    // Save user data to the database
-    console.log(user);
+  const saveChanges = async () => {
+    if (!isAuth) {
+      toast.error("Please login before changing details");
+      return;
+    }
+
+    try {
+      const updates = {};
+
+      const uploadTasks = [];
+
+      if (isImgChanged.avatar) {
+        if (!initialUser.avatar) {
+          throw new Error("Avatar is missing");
+        }
+
+        // Create a promise for uploading the avatar
+        const avatarUploadTask = IpfsService.uploadAvatarImage(
+          initialUser.avatar,
+          setIsLoading
+        ).then((avatarUpload) => {
+          if (avatarUpload) {
+            toast.success("Avatar uploaded on Pinata successfully");
+            updates.avatarUrl = avatarUpload.url; // Add the uploaded URL to updates
+          } else {
+            throw new Error("Failed to upload avatar");
+          }
+        });
+
+        uploadTasks.push(avatarUploadTask); // Add the promise to the array
+      }
+
+      if (isImgChanged.background) {
+        if (!initialUser.background) {
+          throw new Error("Background image is missing");
+        }
+
+        // Create a promise for uploading the background image
+        const bgUploadTask = IpfsService.uploadBackgroundImage(
+          initialUser.background,
+          setIsLoading
+        ).then((bgUpload) => {
+          if (bgUpload) {
+            toast.success("Background uploaded on Pinata successfully");
+            updates.bgUrl = bgUpload.url; // Add the uploaded URL to updates
+          } else {
+            throw new Error("Failed to upload background image");
+          }
+        });
+
+        uploadTasks.push(bgUploadTask); // Add the promise to the array
+      }
+
+      // Wait for all upload tasks to complete
+      await Promise.all(uploadTasks);
+
+      // Add additional fields (e.g., name and description) to the updates object
+      updates.name = initialUser.name;
+      updates.description = initialUser.shortBio;
+
+      // Send all updated data to the backend
+      const response = await fetchWithAuth(userSettingUploadApiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (response.status === "success") {
+        console.log("updates: ", updates);
+        toast.success("User data uploaded successfully");
+        // Update the local state with the new data
+        setInitialUser((prev) => ({ ...prev, ...updates }));
+      } else {
+        throw new Error(
+          "An error occurred while uploading data. Please try again later."
+        );
+      }
+    } catch (error) {
+      // Handle and display any errors that occur during the process
+      console.error("Error uploading image:", error);
+      toast.error(`An error occurred: ${error.message}`);
+    }
   };
 
   return (
@@ -66,19 +199,19 @@ function Profile() {
         <div className="w-full rounded-xl overflow-hidden">
           <div className="relative  w-full">
             <FileBackgroundUpload
-              initialBackground={user.background}
+              initialBackground={initialUser.backgroundUrl}
               onBackgroundChange={handleBackgroundChange}
             />
 
-            <div className="-mt-14">
+            <div className="-mt-28">
               <FileAvaUpload
-                initialAvatar={user.avatar}
+                initialAvatar={initialUser.avatarUrl}
                 onAvatarChange={handleAvatarChange}
               />
             </div>
           </div>
         </div>
-        {/* User generational information */}
+        {/* initialUser generational information */}
         {/* Display name */}
         <div className="flex flex-col gap-4">
           <span className="text-primary-foreground text-3xl font-bold">
@@ -86,7 +219,7 @@ function Profile() {
           </span>
           <Input
             placeholder="Enter token symbol"
-            value={user.name}
+            value={initialUser.name}
             onChange={handleNameChange}
             id="token"
             className={`pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
@@ -98,30 +231,11 @@ function Profile() {
             Short Bio
           </span>
           <Input
-            placeholder={`${user.name}'s bio`}
+            placeholder={`${initialUser.name}'s bio`}
             id="description"
             onChange={handleShortBioChange}
-            value={user.shortBio}
+            value={initialUser.shortBio}
             className={`pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
-          />
-        </div>
-        {/* Social Links */}
-        <div className="flex flex-col">
-          <span className="text-primary-foreground text-3xl font-bold">
-            Social Links
-          </span>
-          <span className="text-primary-foreground/50  text-lg">
-            Add your existing social links to build a stronger reputation
-          </span>
-        </div>
-        <div className="flex flex-col gap-4">
-          <span className="text-primary-foreground text-3xl font-bold">
-            Website URL
-          </span>
-          <Input
-            placeholder="http://example.com"
-            id="url"
-            className={`pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
           />
         </div>
         <Dialog>
@@ -129,6 +243,7 @@ function Profile() {
             <Button
               size="xl"
               className="text-black bg-primary-foreground w-fit text-xl p-8"
+              disabled={isLoading}
             >
               Save Changes
             </Button>
@@ -163,6 +278,13 @@ function Profile() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {isLoading && <LoadingAnimation />}
+        {isLoading && (
+          <>
+            <h1 className="text-3xl text-primary-foreground">Uploading...</h1>
+          </>
+        )}
       </div>
     </>
   );
