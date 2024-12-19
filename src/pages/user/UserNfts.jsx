@@ -11,7 +11,12 @@ import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, userOwnedNftsApiEndpoint, userOnSaleNftsApiEndpoint, userCreatedNftsApiEndpoint } from "@/api/Endpoints";
+import {
+  fetcher,
+  userOwnedNftsApiEndpoint,
+  userOnSaleNftsApiEndpoint,
+  userCreatedNftsApiEndpoint,
+} from "@/api/Endpoints";
 
 const UserNfts = () => {
   const { userId } = useOutletContext();
@@ -19,17 +24,26 @@ const UserNfts = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const [searchValue, setSearchValue] = useState(new URLSearchParams(location.search).get("search") || "");
-  const [sortOption, setSortOption] = useState(new URLSearchParams(location.search).get("sort") || "default");
+  const [searchValue, setSearchValue] = useState(
+    new URLSearchParams(location.search).get("search") || ""
+  );
+  const [sortOption, setSortOption] = useState(
+    new URLSearchParams(location.search).get("sort") || "default"
+  );
   const [filter, setFilter] = useState({
     lowestPrice: new URLSearchParams(location.search).get("minPrice") || "",
     highestPrice: new URLSearchParams(location.search).get("maxPrice") || "",
     status: new URLSearchParams(location.search).get("status") || "all",
-    collection: new URLSearchParams(location.search).get("collectionName") || "",
+    collection:
+      new URLSearchParams(location.search).get("collectionName") || "",
   });
   const [isGrid, setIsGrid] = useState(true);
-  const [currentPage, setCurrentPage] = useState(parseInt(new URLSearchParams(location.search).get("page"), 10) || 1);
-  const [limitCard, setLimitCard] = useState(parseInt(new URLSearchParams(location.search).get("limit"), 10) || 20);
+  const [currentPage, setCurrentPage] = useState(
+    parseInt(new URLSearchParams(location.search).get("page"), 10) || 1
+  );
+  const [limitCard, setLimitCard] = useState(
+    parseInt(new URLSearchParams(location.search).get("limit"), 10) || 20
+  );
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [apiUrl, setApiUrl] = useState("");
@@ -80,11 +94,15 @@ const UserNfts = () => {
     ],
     () =>
       fetcher(
-        `${apiUrl}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&page=${currentPage}&limit=${limitCard}`
+        `${apiUrl}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&collectionName=${filter.collection}&page=${currentPage}&limit=${limitCard}`
       ),
     {
       keepPreviousData: true,
       onSuccess: (response) => {
+        console.log(
+          `Request API: ${apiUrl}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&collectionName=${filter.collection}&page=${currentPage}&limit=${limitCard}`
+        );
+
         const data = response.data;
         if (currentPage === 1) {
           setItems(data.items);
