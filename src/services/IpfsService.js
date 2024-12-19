@@ -103,6 +103,37 @@ class IpfsService {
       throw new Error(`Không thể tải lên background: ${error.message}`);
     }
   }
+
+  async uploadStampMetadata(stamp) {
+    try {
+      const metadata = {
+        creatorId: stamp.creatorId,
+        title: stamp.title,
+        issuedBy: stamp.issuedBy,
+        function: stamp.function,
+        color: stamp.color,
+      };
+
+      const uploadOptions = {
+        pinataMetadata: {
+          name: `Stamp-${stamp._id}`,
+          groupId: this.metedataGroup.id,
+        },
+      };
+
+      const upload = await this.pinata.upload.json(metadata, uploadOptions);
+
+      return {
+        ipfsHash: upload.IpfsHash,
+        pinSize: upload.PinSize,
+        timestamp: upload.Timestamp,
+        url: `https://gateway.pinata.cloud/ipfs/${upload.IpfsHash}`,
+      };
+    } catch (error) {
+      console.error("Lỗi tải lên metadata:", error);
+      throw new Error(`Không thể tải lên metadata: ${error.message}`);
+    }
+  }
 }
 
 export default new IpfsService();

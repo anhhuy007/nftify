@@ -58,7 +58,7 @@ function Profile() {
 
     try {
       const result = await fetchWithAuth(userApiEndpoint);
-      const userData = result[0];
+      const userData = result.data[0];
       console.log("User data:", userData);
 
       // Update state with user data

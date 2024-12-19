@@ -54,10 +54,10 @@ const UserNfts = () => {
     setItems([]);
   }, [currentPath]);
 
-  useEffect(() => {
-    console.log("Type: ", typeData);
-    console.log("URL: ", apiUrl);
-  }, [typeData, apiUrl]);
+  // useEffect(() => {
+  //   console.log("Type: ", typeData);
+  //   console.log("URL: ", apiUrl);
+  // }, [typeData, apiUrl]);
 
   const {
     data: nftsData,
@@ -84,7 +84,8 @@ const UserNfts = () => {
       ),
     {
       keepPreviousData: true,
-      onSuccess: (data) => {
+      onSuccess: (response) => {
+        const data = response.data;
         if (currentPage === 1) {
           setItems(data.items);
         } else {
