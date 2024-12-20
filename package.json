@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "lint:fix": "eslint './src/**/*.{js,jsx,ts,tsx}' --quiet --fix"
+    "lint:fix": "eslint './src/**/*.{js,jsx,ts,tsx}' --quiet --fix",
+    "init-data": "node initData.js"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.1",
