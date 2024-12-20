@@ -5,16 +5,9 @@ import Introduction from "@/pages/home/components/Introduction";
 import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
 import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
-import LoadingAnimation from "@/components/ui/loading";
-import {
-  trendingNftsApiEndpoint,
-  trendingCollectionsApiEndpoint,
-  trendingCreatorsApiEndpoint,
-  fetcher,
-} from "@/utils/endpoints";
 import ErrorAnimation from "@/components/ui/error";
-import { Toaster } from "react-hot-toast";
 import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
+import { fetcher, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, trendingNftsApiEndpoint } from "@/api/Endpoints";
 
 function Home() {
   const {
@@ -69,7 +62,6 @@ function Home() {
 
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col items-center justify-center">
         <Introduction />
       </div>
@@ -78,19 +70,19 @@ function Home() {
           <span className="text-5xl font-bold leading-normal text-gradient">
             Trending NFTs
           </span>
-          <NftCarousel data={trendingData} isLoading={trendingLoading} />
+          <NftCarousel data={trendingData.data} isLoading={trendingLoading} />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Collections
           </span>
-          <CollectionCarousel data={collectionsData} />
+          <CollectionCarousel data={collectionsData.data} />
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Creators
           </span>
-          <CreatorCarousel data={creatorsData} isLoading={trendingLoading} />
+          <CreatorCarousel data={creatorsData.data} isLoading={trendingLoading} />
         </div>
         <Banner />
       </div>

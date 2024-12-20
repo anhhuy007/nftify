@@ -6,6 +6,7 @@ import menuItems from "@/config/Links";
 import PrivateRoute from "@/routes/PrivateRoute"; // Import PrivateRoute
 
 export const router = (
+  //
   <Routes>
     <Route path="/" element={<RootLayout />}>
       {menuItems

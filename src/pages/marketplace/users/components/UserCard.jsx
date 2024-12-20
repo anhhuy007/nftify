@@ -10,11 +10,11 @@ import { Link } from "react-router-dom";
 export default function UserCard({ user }) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-
+  console.log(user);
   return (
     <Link to={`/user/${user._id}`}>
       <Card
-        className={`relative w-[340px] overflow-hidden rounded-3xl group border-2 transition-all duration-300 ${
+        className={`relative w-[450px] overflow-hidden rounded-3xl group border-2 transition-all duration-300 ${
           isHovered
             ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 border-transparent"
             : "bg-card border-2"
@@ -23,9 +23,9 @@ export default function UserCard({ user }) {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Banner Image */}
-        <div className="h-52 p-4 bg-[#797da0]">
+        <div className="h-60 p-4 bg-[#797da0]">
           <img
-            src={user.avatar}
+            src={user.bgUrl}
             alt=""
             className="h-full w-full rounded-xl object-cover transition-transform duration-300 group-hover:scale-105"
           />
@@ -35,7 +35,7 @@ export default function UserCard({ user }) {
         <div className="relative flex items-center justify-between gap-6 bg-[#797da0] p-6">
           {/* Avatar - Positioned to overlap banner */}
           <Avatar className="absolute -top-12 left-8 h-16 w-16 rounded-full">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={user.avatarUrl} alt={user.name} />
             <AvatarFallback className="bg-blue-500 text-2xl">
               {user.name}
             </AvatarFallback>

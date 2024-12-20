@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 
 export default function CreatorCard({ creatorData }) {
   const creator = creatorData.creatorDetails;
-  // console.log("Creator Details: ", creator.name);
-
   const image1 = creatorData.creatorStamps[0];
   const image2 = creatorData.creatorStamps[1];
   const image3 = creatorData.creatorStamps[2];
@@ -12,7 +10,7 @@ export default function CreatorCard({ creatorData }) {
   const description = creator?.description || "No description available";
 
   return (
-    <Link to={`/user/${creator.id}`}>
+    <Link to={`/user/${creatorData._id}`}>
       <Card className="xl:w-[445px] xl:h-[470px] overflow-hidden">
         <CardContent className="p-4 pt-6">
           <div className="flex gap-4">
@@ -49,7 +47,7 @@ export default function CreatorCard({ creatorData }) {
         </CardContent>
         <CardFooter className="rounded-b-xl">
           <h3 className="text-xl font-semibold text-center w-full break-words">
-            {creatorName} - {description}
+            {creatorName}
           </h3>
         </CardFooter>
       </Card>

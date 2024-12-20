@@ -14,7 +14,6 @@ import {
 
 import CreateNft from "@/pages/create/CreateNft";
 import Help from "@/pages/help/Help";
-import Marketplace from "@/pages/marketplace/Marketplace";
 import Setting from "@/pages/setting/Setting";
 import SignIn from "@/pages/auth/sign-in/SignIn";
 import SignUp from "@/pages/auth/sign-up/SignUp";
@@ -43,6 +42,38 @@ const menuItems = [
     icon: <User />,
     element: <UserDetail />,
     isPrivate: true,
+    children: [
+      {
+        name: "Owned",
+        link: "owned",
+        element: <UserNfts />,
+      },
+      {
+        name: "On Sale",
+        link: "onSale",
+        element: <UserNfts />,
+      },
+      {
+        name: "Collections",
+        link: "collections",
+        element: <UserCollections />,
+      },
+      {
+        name: "Created",
+        link: "created",
+        element: <UserNfts />,
+      },
+      {
+        name: "Activity",
+        link: "activity",
+        element: <UserActivities />,
+      },
+      {
+        name: "Liked",
+        link: "liked",
+        element: <UserNfts />,
+      },
+    ],
   },
   {
     name: "Favorites",
@@ -189,7 +220,7 @@ const menuItems = [
   {
     name: "Collection Detail",
     group: "collection",
-    link: "/collection/:collectionId",
+    link: "/collection/:id",
     layout: "RootLayout",
     element: <CollectionDetail />,
     isPrivate: false,
@@ -225,11 +256,6 @@ const menuItems = [
         name: "Activity",
         link: "activity",
         element: <UserActivities />,
-      },
-      {
-        name: "Sold",
-        link: "sold",
-        element: <UserNfts />,
       },
       {
         name: "Liked",

@@ -12,7 +12,7 @@ function NftCarousel({ data }) {
   const stamps = data?.items || [];
 
   if (stamps.length === 0) {
-    return <div className="text-center text-xl">No NFTs found.</div>;
+    return <div className="text-center text-xl text-white">No NFTs found.</div>;
   }
 
   return (

@@ -1,41 +1,75 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { loginApiEndpoint, logoutApiEndpoint, refreshTokenApiEndpoint } from "@/api/Endpoints";
+import {
+  getUserApiEndpoint,
+  loginApiEndpoint,
+  logoutApiEndpoint,
+  refreshTokenApiEndpoint,
+} from "@/api/Endpoints";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  // Parse user from localStorage with error handling
+  const getStoredUser = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing stored user:", error);
+      return null;
+    }
+  };
+
+  const [user, setUser] = useState(getStoredUser());
   const [token, setToken] = useState(localStorage.getItem("jwtToken") || "");
   const [refreshToken, setRefreshToken] = useState(
     localStorage.getItem("jwtRefreshToken") || ""
   );
   const [isAuth, setIsAuth] = useState(!!token);
 
+  // Update localStorage when user changes
   useEffect(() => {
-    if (token) {
-      fetchUserData(token);
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
     }
-  }, [token]);
+  }, [user]);
 
-  const fetchUserData = async (token) => {
+  // Update fetchUserData
+  const fetchUserData = async () => {
+    console.log("----- Fetching User Data -----");
+    if (user) {
+      console.log("User data already fetched:", user);
+      return;
+    }
+
+    if (!isAuth) {
+      console.log("User not authenticated");
+      return;
+    }
+
     try {
-      const response = await fetch("/api/user", {
+      const response = await fetch(getUserApiEndpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const data = await response.json();
-      setUser(data.user);
-      setIsAuth(true);
+      const result = await response.json();
+
+      if (result.success === false) {
+        throw new Error(result.message);
+      }
+
+      setUser(result.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
+      setUser(null);
     }
   };
 
   const loginAction = async (data) => {
-    console.log("Logging in with data:", data);
-
     try {
       const response = await fetch(loginApiEndpoint, {
         method: "POST",
@@ -47,17 +81,18 @@ const AuthProvider = ({ children }) => {
 
       const result = await response.json();
 
-      if (result.message === "Login successful") {
-        setUser(result.account);
-        setToken(result.accessToken);
-        setRefreshToken(result.refreshToken);
+      if (result.success === true) {
+        const data = result.data;
+
+        setUser(data.account);
+        setToken(data.accessToken);
+        setRefreshToken(data.refreshToken);
         setIsAuth(true);
-        localStorage.setItem("jwtToken", result.accessToken);
-        localStorage.setItem("jwtRefreshToken", result.refreshToken);
+        localStorage.setItem("jwtToken", data.accessToken);
+        localStorage.setItem("jwtRefreshToken", data.refreshToken);
+        localStorage.setItem("user", JSON.stringify(data.account));
 
-        console.log("Login successful:", result);
-
-        return result;
+        return data;
       }
 
       return { error: result.message };
@@ -77,25 +112,36 @@ const AuthProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      if (result.accessToken) {
-        setToken(result.accessToken);
-        localStorage.setItem("jwtToken", result.accessToken);
+      if (result.success === true) {
+        const data = result.data;
+        setToken(data);
+        localStorage.setItem("jwtToken", data);
 
-        console.log("Token refreshed:", result);
-
-        return result.accessToken;
+        return data;
       }
       throw new Error("Token refresh failed:", result.message);
     } catch (error) {
-      console.error("Error refreshing token:", error);
       logoutAction();
       return { error: error.message };
     }
   };
 
   const logoutAction = async () => {
+    const cleanup = () => {
+      // Clear all local storage
+      localStorage.removeItem("jwtToken");
+      localStorage.removeItem("jwtRefreshToken");
+      localStorage.removeItem("user");
+
+      // Reset all auth states
+      setIsAuth(false);
+      setUser(null);
+      setToken("");
+      setRefreshToken("");
+    };
+
     try {
-      const result = await fetch(logoutApiEndpoint, {
+      const response = await fetch(logoutApiEndpoint, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -103,21 +149,40 @@ const AuthProvider = ({ children }) => {
         },
       });
 
-      // clear local storage
-      localStorage.removeItem("jwtToken");
-      localStorage.removeItem("jwtRefreshToken");
-      setIsAuth(false);
-      setUser(null);
+      // Handle both success and token expired cases
+      if (response.status === 401) {
+        cleanup();
+        return { success: true, message: "Logged out successfully" };
+      }
 
+      const result = await response.json();
+      cleanup();
       return result;
     } catch (error) {
-      console.error("Error logging out:", error);
-      return { error: error.message };
+      console.error("Logout error:", error);
+      cleanup(); // Ensure cleanup even on network errors
+      return {
+        success: true,
+        message: "Logged out successfully",
+        error: error.message,
+      };
     }
   };
 
+  if (!user) {
+    fetchUserData();
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isAuth, loginAction, logoutAction, refreshAccessToken }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuth,
+        loginAction,
+        logoutAction,
+        refreshAccessToken
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

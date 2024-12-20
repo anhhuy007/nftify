@@ -4,14 +4,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import { BigNftCard, SmallNftCard } from "@/components/NFT/NftCard";
 import LoadingAnimation from "@/components/ui/loading";
-import { fetcher, nftsApiEndpoint } from "@/utils/endpoints";
 import ErrorAnimation from "@/components/ui/error";
 import Filter from "@/pages/marketplace/nfts/components/Filter";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { Toaster } from "react-hot-toast";
+import { fetcher, nftsApiEndpoint } from "@/api/Endpoints";
 
 function NftsMarketplace() {
   const navigate = useNavigate();
@@ -67,7 +66,8 @@ function NftsMarketplace() {
       ),
     {
       keepPreviousData: true,
-      onSuccess: (data) => {
+      onSuccess: (response) => {
+        const data = response.data;
         // Append new items or reset based on page
         if (currentPage === 1) {
           setItems(data.items);
@@ -83,7 +83,6 @@ function NftsMarketplace() {
   );
 
   console.log(
-    "Calling API: ",
     `${nftsApiEndpoint}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${currentPage}&limit=${limitCard}`
   );
 
@@ -181,7 +180,6 @@ function NftsMarketplace() {
 
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col gap-10">
         <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
           <div className="flex w-full lg:w-auto gap-8 lg:flex-1">

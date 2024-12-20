@@ -18,4 +18,37 @@ export const trendingCreatorsApiEndpoint = `${baseUrl}/marketplace/list/trending
 // nfts marketplace endpoints
 export const nftsApiEndpoint = `${baseUrl}/marketplace/list/stamps`;
 
+// nft detail endpoints
+export const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp`;
+
+// cart endpoints
+export const cartApiEndpoint = `${baseUrl}/user/cart`;
+
+// test auth endpoint
 export const testEndpoint = `${baseUrl}/auth/posts`;
+
+// user setting endpoints
+export const getUserApiEndpoint = `${baseUrl}/user/`;
+export const userApiEndpoint = `${baseUrl}/user/settings`;
+export const userSettingApiEndpoint = `${baseUrl}/user/settings`;
+export const userSettingUploadApiEndpoint = `${baseUrl}/user/settings/upload`;
+export const userCheckPasswordApiEndpoint = `${baseUrl}/user/settings/check-password`;
+export const userChangePasswordApiEndpoint = `${baseUrl}/user/settings/change-password`;
+export const userChangeEmailApiEndpoint = `${baseUrl}/user/settings/change-email`;
+
+// collection detail endpoints
+export const collectionDetailApiEndpoint = `${baseUrl}/collection/:collectionId/detail`;
+export const collectionAboutApiEndpoint = `${baseUrl}/collection/:id/about`;
+export const collectionItemsApiEndpoint = `${baseUrl}/collection/:id/items`;
+
+// User detail endpoints
+export const userDetailApiEndpoint = `${baseUrl}/user/profile/:userId`;
+export const userOwnedNftsApiEndpoint = `${baseUrl}/user/profile/:userId/owned`;
+export const userOnSaleNftsApiEndpoint = `${baseUrl}/user/profile/:userId/on-sale`;
+export const userCreatedNftsApiEndpoint = `${baseUrl}/user/profile/:userId/created`;
+export const userLikedNftsApiEndpoint = `${baseUrl}/user/profile/:userId/liked`;
+export const userCollectionsApiEndpoint = `${baseUrl}/user/profile/:userId/collections`;
+
+// Marketplace endpoints
+export const usersApiEndpoint = `${baseUrl}/marketplace/list/creators`;
+export const collectionsApiEndpoint = `${baseUrl}/marketplace/list/collections`;

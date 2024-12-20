@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import userPlaceHolder from "@/assets/user-placeholder.png";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
+import { useCart } from "@/context/CartProvider";
 
 export const handleAddToCart = (title) => {
   toast.success(
@@ -19,6 +19,19 @@ export const handleAddToCart = (title) => {
 
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
+
   return (
     <>
       <div
@@ -76,7 +89,7 @@ export default function NftCard({ stamp }) {
                 </div>
                 <div></div>
                 <div className="flex-1 text-right whitespace-nowrap">
-                  <h1>{stamp.price.$numberDecimal} ETH</h1>
+                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
                 </div>
               </div>
             </Link>
@@ -95,7 +108,7 @@ export default function NftCard({ stamp }) {
                 <div></div>
                 <Button
                   className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                  onClick={() => handleAddToCart(stamp.title)}
+                  onClick={handleCartClick}
                 >
                   <ShoppingCart className="h-10 w-10" />
                 </Button>
@@ -110,6 +123,18 @@ export default function NftCard({ stamp }) {
 
 export function SmallNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
 
   return (
     <div
@@ -150,7 +175,7 @@ export function SmallNftCard({ stamp }) {
                 {stamp.title}
               </p>
               <p className="text-lg font-semibold text-right whitespace-nowrap ">
-                {stamp.price.$numberDecimal} ETH
+                <h1>{stamp.price?.$numberDecimal} ETH</h1>
               </p>
             </div>
           </Link>
@@ -164,7 +189,7 @@ export function SmallNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={handleCartClick}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -178,6 +203,18 @@ export function SmallNftCard({ stamp }) {
 
 export function BigNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
 
   return (
     <div
@@ -234,7 +271,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
                 <p className="text-lg font-semibold">
-                  {stamp.price.$numberDecimal} ETH
+                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
                 </p>
               </div>
             </div>
@@ -249,7 +286,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={handleCartClick}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -263,6 +300,18 @@ export function BigNftCard({ stamp }) {
 
 export function PreviewNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+
+  const handleCartClick = async () => {
+    try {
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
 
   return (
     <div
@@ -317,7 +366,7 @@ export function PreviewNftCard({ stamp }) {
             <div className="flex-1 text-right ">
               {stamp.price?.$numberDecimal ? (
                 <p className="text-lg font-semibold whitespace-nowrap">
-                  {stamp.price.$numberDecimal} ETH
+                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
                 </p>
               ) : (
                 <p className="text-lg font-semibold whitespace-nowrap">
@@ -334,7 +383,7 @@ export function PreviewNftCard({ stamp }) {
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-                onClick={() => handleAddToCart(stamp.title)}
+                onClick={handleCartClick}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>

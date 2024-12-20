@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   SheetContent,
   SheetDescription,
@@ -8,84 +8,126 @@ import {
   Sheet,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { ShoppingCart } from "lucide-react";
+import { CircleMinus, ShoppingCart } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
-
-const nfts = [
-  {
-    id: 1,
-    title: "NFT Title",
-    imgUrl:
-      "https://pyxis.nymag.com/v1/imgs/51b/28a/622789406b8850203e2637d657d5a0e0c3-avatar-rerelease.2x.rsocial.w600.jpg",
-    price: "0.01",
-  },
-  {
-    id: 2,
-    title: "NFT Title",
-    imgUrl:
-      "https://pyxis.nymag.com/v1/imgs/51b/28a/622789406b8850203e2637d657d5a0e0c3-avatar-rerelease.2x.rsocial.w600.jpg",
-    price: "0.01",
-  },
-  {
-    id: 3,
-    title: "NFT Title",
-    imgUrl:
-      "https://pyxis.nymag.com/v1/imgs/51b/28a/622789406b8850203e2637d657d5a0e0c3-avatar-rerelease.2x.rsocial.w600.jpg",
-    price: "0.01",
-  },
-];
+import { useCart } from "@/context/CartProvider";
+import toast from "react-hot-toast";
 
 function Cart() {
-  const calculateTotal = () => {
-    let total = 0;
-    nfts.forEach((nft) => {
-      total += parseFloat(nft.price);
-    });
-    return total;
-  };
+  const { isLoading, error, cart, removeItemFromCart } = useCart();
+  const [isOpen, setIsOpen] = useState(false);
+  const [removingItems, setRemovingItems] = useState(new Set());
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleCheckout = () => {
     // Call the checkout API here
   };
 
+  const handleRemoveItem = async (itemId) => {
+    try {
+      setRemovingItems((prev) => new Set([...prev, itemId]));
+      await removeItemFromCart(itemId);
+      toast.success("Item removed from cart");
+
+      // Close sheet if cart becomes empty
+      if (cart.items.length === 1) {
+        setIsOpen(false);
+      }
+    } catch (error) {
+      toast.error("Failed to remove item");
+    } finally {
+      setRemovingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(itemId);
+        return next;
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Sheet>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Your ShoppingCart</SheetTitle>
+          </SheetHeader>
+          <SheetDescription>Loading...</SheetDescription>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  if (error) {
+    return (
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Your ShoppingCart</SheetTitle>
+          </SheetHeader>
+          <SheetDescription>Error loading cart items</SheetDescription>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  
+
   return (
     <>
-      <Sheet>
-        <SheetTrigger>
-          <div className="flex items-center justify-center p-3 rounded-lg border-[var(--border)] transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
-            <ShoppingCart size={20} />
-          </div>
-        </SheetTrigger>
+      <div
+        className="flex items-center justify-center p-3 rounded-lg border-[var(--border)] transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]"
+        onClick={() => setIsOpen(true)}
+      >
+        <ShoppingCart size={20} />
+      </div>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent className="overflow-y-auto overflow-x-hidden flex flex-col">
           <SheetHeader>
             <SheetTitle>Your ShoppingCart</SheetTitle>
           </SheetHeader>
 
           <div className="flex flex-col gap-4 text-primary-foreground mt-8 flex-grow">
-            {nfts.map((nft) => (
-              <React.Fragment key={nft.id}>
-                <Link to={`/nft/${nft.id}`}>
-                  <div className="grid grid-cols-[18%_2%_60%_30%] items-center">
+            {cart.items.map((item) => (
+              <React.Fragment key={item._id}>
+                <Link to={`/nft/${item._id}`}>
+                  <div className="grid grid-cols-[18%_2%_50%_30%] items-center">
                     <img
-                      src={nft.imgUrl}
-                      alt={nft.title}
+                      src={item.imgUrl}
+                      alt={item.title}
                       className="w-12 h-12 rounded-lg"
                     />
                     <div></div>
-                    <span className="text-lg font-bold">{nft.title}</span>
-                    <span className="text-sm">{nft.price} ETH</span>
+                    <span className="text-lg font-bold">{item.title}</span>
+                    <span className="text-sm">{item.price} ETH</span>
                   </div>
                 </Link>
+                <Button
+                  className="w-full h-12 flex items-center justify-center"
+                  onClick={() => handleRemoveItem(item._id)}
+                  disabled={removingItems.has(item._id)}
+                >
+                  {removingItems.has(item._id) ? (
+                    <span>Removing...</span>
+                  ) : (
+                    <>
+                      <CircleMinus size={20} /> Remove
+                    </>
+                  )}
+                </Button>
                 <Separator className="w-full bg-muted" />
               </React.Fragment>
             ))}
           </div>
 
           <SheetFooter className="mt-auto">
-            <Button className="w-full h-14" onClick={handleCheckout}>
-              Checkout {calculateTotal()} ETH
+            <Button
+              className="w-full h-14"
+              onClick={handleCheckout}
+              disabled={cart.items.length === 0 || isCheckingOut}
+            >
+              Checkout {cart.totalPrice.$numberDecimal} ETH
             </Button>
           </SheetFooter>
         </SheetContent>

@@ -1,196 +1,139 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import Sort from "@/pages/marketplace/nfts/components/Sort";
-import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
-import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
 import { BigNftCard, SmallNftCard } from "@/components/NFT/NftCard";
-import Filter from "@/pages/marketplace/nfts/components/Filter";
+import LoadingAnimation from "@/components/ui/loading";
+import ErrorAnimation from "@/components/ui/error";
+import InfiniteScroll from "react-infinite-scroll-component";
+import FetchingMoreAnimation from "@/components/ui/fetching-more";
+import { fetcher, collectionItemsApiEndpoint } from "@/api/Endpoints";
+import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
+import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
+import Sort from "@/pages/marketplace/nfts/components/Sort";
 
-function CollectionItems({ collection }) {
-  const id = collection.id;
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [isGrid, setIsGrid] = useState(searchParams.get("isGrid") === "true");
-  const [sortOption, setSortOption] = useState(searchParams.get("sort") || "");
-  const [searchValue, setSearchValue] = useState(
-    searchParams.get("search") || ""
-  );
+function CollectionItems() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(useLocation().search);
+
+  const [isGrid, setIsGrid] = useState(queryParams.get("isGrid") === "true");
   const [currentPage, setCurrentPage] = useState(
-    parseInt(searchParams.get("page"), 10) || 1
+    parseInt(queryParams.get("page"), 10) || 1
   );
-  const [filter, setFilter] = useState({
-    status: searchParams.get("status") || "all",
-    user: searchParams.get("user") || "",
-    lowestPrice: searchParams.get("lowestPrice") || "",
-    highestPrice: searchParams.get("highestPrice") || "",
-  });
-  const [cards, setCards] = useState([]);
-  const [totalPages, setTotalPages] = useState(5);
-  const [totalResults, setTotalResults] = useState(0); // Total number of results
+  const [limitCard, setLimitCard] = useState(
+    parseInt(queryParams.get("limit"), 10) || 20
+  );
+  const [items, setItems] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [searchValue, setSearchValue] = useState(
+    queryParams.get("search") || ""
+  );
+  const [sortOption, setSortOption] = useState(
+    queryParams.get("sort") || "default"
+  );
 
-  // Determine card count per page based on isGrid state
-  const calculateCardCount = () => (isGrid ? 5 : 4); // 5 cards for grid, 4 for list
-  const [cardCount, setCardCount] = useState(calculateCardCount());
-  const [limitCard, setLimitCard] = useState(cardCount * 4);
+  const CardComponent = isGrid ? SmallNftCard : BigNftCard;
+  const url = collectionItemsApiEndpoint.replace(":id", id);
 
-  const fetchData = async () => {
-    try {
-      const payload = {
-        status: filter.status,
-        collection: id,
-        user: filter.user,
-        lowestPrice: filter.lowestPrice,
-        highestPrice: filter.highestPrice,
-        sort: sortOption,
-        search: searchValue,
-        page: currentPage,
-        limit: limitCard,
-      };
+  const { data, error, isLoading, refetch } = useQuery(
+    ["collectionItems", searchValue, sortOption, currentPage, limitCard],
+    () =>
+      fetcher(
+        `${url}?title=${searchValue}&sort=${sortOption}&page=${currentPage}&limit=${limitCard}`
+      ),
+    {
+      keepPreviousData: true,
+      onSuccess: (response) => {
+        const data = response.data;
+        // Append new items or reset based on page
+        if (currentPage === 1) {
+          setItems(data.items);
+        } else {
+          setItems((prevItems) => [...prevItems, ...data.items]);
+        }
 
-      const response = await fetch(`/api/collection/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-      setCards(result.data);
-      setTotalPages(Math.ceil(result.total / limitCard));
-      setTotalResults(result.total); // Store the total number of results
-    } catch (error) {
-      console.error("Error fetching filtered data:", error);
+        // Update hasMore based on API response
+        setHasMore(data.page < data.totalPages);
+      },
+      enabled: true, // Ensure query can be manually triggered
     }
-  };
+  );
 
-  // Update URL params when states change
-  const updateUrlParams = () => {
-    const newParams = {
-      search: searchValue,
-      sort: sortOption,
-      page: currentPage,
-      isGrid,
-      ...filter,
-      limit: limitCard,
-    };
-    setSearchParams(newParams);
-  };
-
-  // Update cardCount and limitCard when isGrid changes
   useEffect(() => {
-    const newCardCount = calculateCardCount();
-    setCardCount(newCardCount);
+    const newCardCount = isGrid ? 5 : 4;
     setLimitCard(newCardCount * 4);
-  }, [isGrid]);
+    // Reset pagination when view changes
+    setCurrentPage(1);
+    setItems([]);
+    refetch();
+  }, [isGrid, refetch]);
 
-  // Update URL params whenever relevant states change
-  useEffect(() => {
-    // fetchData();
-    updateUrlParams();
-  }, [searchValue, sortOption, currentPage, filter, isGrid, limitCard]);
-
-  // Update cards when currentPage changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const fetchMoreData = () => {
+    // Increment page and trigger refetch
+    setCurrentPage((prevPage) => prevPage + 1);
   };
 
-  const handleSearch = (value) => setSearchValue(value);
-  const handleSort = (option) => setSortOption(option);
-  const handleFilterChange = (newFilter) => setFilter(newFilter);
+  const updateQueryParams = (params) => {
+    const searchParams = new URLSearchParams({
+      ...Object.fromEntries(queryParams.entries()),
+      ...params,
+    });
+    navigate({ search: searchParams.toString() });
+  };
+
+  const handleSearch = (value) => {
+    setSearchValue(value);
+    updateQueryParams({ search: value });
+    // Reset pagination and items when searching
+    setCurrentPage(1);
+    setItems([]);
+    refetch();
+  };
+
+  const handleSort = (option) => {
+    setSortOption(option);
+    updateQueryParams({ sort: option });
+    setCurrentPage(1);
+    setItems([]);
+    refetch();
+  };
+
   const handleToggleGrid = (value) => setIsGrid(value);
 
-  const disabledFields = {
-    collection: { isDisabled: true, name: collection.name },
-    user: { isDisabled: true, name: collection.author.name },
-  };
+  if (isLoading && currentPage === 1) return <LoadingAnimation />;
+  if (error) return <ErrorAnimation />;
 
-  // Dynamically calculate the start and end result
-  const startResult = (currentPage - 1) * limitCard + 1;
-  const endResult = Math.min(currentPage * limitCard, totalResults);
   return (
-    <div className="flex flex-col gap-10">
-      {/* Filters and controls */}
-      <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
-        <div className="flex w-full lg:w-auto gap-8 lg:flex-1">
-          <Filter
-            filter={filter}
-            setFilter={handleFilterChange}
-            disabledFields={disabledFields}
-          />
-          <div className="flex-1">
-            <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
-          </div>
-        </div>
-        <div className="flex items-center justify-center w-full lg:w-auto gap-8 mt-4 lg:mt-0">
+    <>
+      <div className="flex flex-col gap-10">
+        <div className="flex items-center justify-center w-full gap-8 mt-4">
+          <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
           <Sort sortOption={sortOption} setSortOption={handleSort} />
-          <ToggleSwitch
-            isGrid={isGrid}
-            setIsGrid={handleToggleGrid}
-            disabledField={disabledFields}
-          />
+          <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} disabled />
         </div>
-      </div>
-
-      {/* Results info */}
-      {totalResults > 0 ? (
-        <p className=" text-primary-foreground text-bold text-xl">
-          Showing {startResult} to {endResult} of {totalResults} results
-        </p>
-      ) : (
-        <p className="text-center text-primary-foreground  text-bold text-xl">
-          No results found
-        </p>
-      )}
-
-      {/* Card list */}
-      <div
-        className={`text-primary-foreground grid gap-4 ${
-          isGrid ? "grid-cols-5" : "grid-cols-4"
-        }`}
-      >
-        {cards.length != 0 &&
-          cards.map((card, index) =>
-            cardCount === 4 ? (
-              <BigNftCard key={card.id || index} {...card} />
-            ) : (
-              <SmallNftCard key={card.id || index} {...card} />
-            )
-          )}
-      </div>
-
-      {/* Pagination only shows if there are cards */}
-      {cards.length > 0 && (
-        <Pagination>
-          <PaginationContent className="text-primary-foreground">
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  href="#"
-                  onClick={() => handlePageChange(index + 1)}
-                  isActive={currentPage === index + 1}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
+        <InfiniteScroll
+          dataLength={items.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={<FetchingMoreAnimation />}
+          endMessage={
+            <p className="text-center text-white mt-20">
+              {items.length > 0 ? "No more items to display" : "No items found"}
+            </p>
+          }
+        >
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 gap-2
+          ${isGrid ? "md:grid-cols-5" : "md:grid-cols-4"}
+          `}
+          >
+            {items.map((item) => (
+              <CardComponent key={item._id} stamp={item} />
             ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
-    </div>
+          </div>
+        </InfiniteScroll>
+      </div>
+    </>
   );
 }
 

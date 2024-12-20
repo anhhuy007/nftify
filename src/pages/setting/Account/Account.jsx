@@ -1,54 +1,130 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
-
-const initialData = {
-  email: "example@domain.com",
-  password: "password",
-  isConnected: true,
-  name: "John Doe",
-  address: "0x1234567890aksnfsd ",
-};
+import toast from "react-hot-toast";
+import { PasswordInput } from "@/components/ui/password-input";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthHandler } from "@/api/AuthHandler";
+import {
+  userApiEndpoint,
+  userSettingApiEndpoint,
+  userCheckPasswordApiEndpoint,
+  userChangePasswordApiEndpoint,
+  userSettingUploadApiEndpoint,
+  userChangeEmailApiEndpoint,
+} from "@/api/Endpoints";
+import { useNavigate } from "react-router-dom";
 
 function Account() {
-  const [email, setEmail] = useState(initialData.email);
+  const { isAuth } = useAuth();
+  if (!isAuth) {
+    const navigate = useNavigate();
+
+    toast("Please login to see your account settings");
+    navigate("/");
+    return;
+  }
+
   const [user, setUser] = useState({
-    tempEmail: initialData.email || "",
     currentPassword: "",
     newPassword: "",
+    email: "",
+    name: "",
+    username: "",
+    address: "",
   });
 
-  const [isConnected, setIsConnected] = useState(initialData.isConnected);
+  const { fetchWithAuth } = useAuthHandler();
 
-  const handleEmailChange = () => {
-    const isValidEmail = (email) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    };
-
-    if (!isValidEmail(user.tempEmail.trim())) {
-      toast.error("Please enter a valid email address.");
+  useEffect(() => {
+    if (!isAuth) {
+      toast("Please login to create NFTs");
       return;
     }
+    fetchData();
+  }, []);
 
-    initialData.email = user.tempEmail;
-    setEmail(user.tempEmail);
-    toast.success("Email has been successfully changed!");
+  const fetchData = async () => {
+    // Fetch user data
+    try {
+      const result = await fetchWithAuth(userApiEndpoint);
+      const userData = result.data[0];
+
+      console.log("User data: ", userData);
+
+      setUser({
+        ...user,
+        name: userData.name || "",
+        username: userData.username || "",
+        address: userData.userId || "",
+        email: userData.email || "",
+      });
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      toast.error("Failed to fetch user data. Please try again.");
+    }
   };
 
-  const handlePasswordChange = () => {
+  const [isConnected, setIsConnected] = useState(true);
+
+  const handlePasswordChange = async () => {
+    // Check if both current and new password are entered
     if (!user.currentPassword || !user.newPassword) {
       toast.error("Please enter both the current and new password.");
       return;
     }
-    if (user.currentPassword !== initialData.password) {
-      toast.error("The current password is incorrect.");
-      return;
+
+    // Check if the current password is correct
+    try {
+      const response = await fetchWithAuth(userCheckPasswordApiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          password: user.currentPassword,
+        }),
+      });
+
+      console.log(response);
+
+      if (response.status === "fail") {
+        toast.error("Incorrect password. Please try again.");
+        return;
+      }
+
+      // If password is correct, proceed to update the password
+      const updateResponse = await fetchWithAuth(
+        userChangePasswordApiEndpoint,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: user.newPassword,
+          }),
+        }
+      );
+
+      console.log(updateResponse);
+
+      if (!updateResponse.status === "success") {
+        toast.error("Failed to update password. Please try again.");
+        return;
+      } else {
+        // Success - Password changed
+        toast.success("Password has been successfully changed!");
+
+        // Clear password fields
+        setUser({ ...user, currentPassword: "", newPassword: "" });
+      }
+    } catch (error) {
+      console.error("Error checking or updating password:", error);
+      toast.error("An error occurred. Please try again.");
     }
-    initialData.password = user.newPassword;
-    toast.success("Password has been successfully changed!");
-    setUser({ ...user, currentPassword: "", newPassword: "" });
   };
 
   const handleWalletChange = () => {
@@ -62,11 +138,26 @@ function Account() {
 
   return (
     <>
-      <Toaster position="top-right" reverseOrder={true} />
       <div className="flex flex-col gap-10">
         <span className="text-primary-foreground text-3xl font-bold">
           Account management
         </span>
+
+        {/* Name */}
+        <div className="flex flex-col gap-2">
+          <span className="text-primary-foreground font-semibold text-xl">
+            Your username
+          </span>
+          <span className="text-primary-foreground/50">
+            This is your username for signing in
+          </span>
+          <Input
+            value={user.username}
+            id="username"
+            disabled
+            className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+          />
+        </div>
 
         {/* Email */}
         <div className="flex flex-col gap-2">
@@ -77,33 +168,11 @@ function Account() {
             Your email for marketplace notifications
           </span>
           <Input
-            value={email}
+            value={user.email}
             id="email"
             disabled
             className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <span className="text-primary-foreground font-semibold text-xl">
-            Change Email
-          </span>
-          <div className="grid grid-cols-[82%_3%_15%]">
-            <Input
-              placeholder="Enter your new email"
-              value={user.tempEmail}
-              id="email"
-              onChange={(e) => setUser({ ...user, tempEmail: e.target.value })}
-              className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
-            />
-            <div></div>
-            <Button
-              size="xl"
-              className="text-primary-foreground text-xl p-8 bg-[hsl(232,40%,35%)]"
-              onClick={handleEmailChange}
-            >
-              Confirm
-            </Button>
-          </div>
         </div>
 
         {/* Change password */}
@@ -112,9 +181,19 @@ function Account() {
             Change password
           </span>
           <div className="grid grid-cols-[82%]">
-            <Input
+            <PasswordInput
+              placeholder="Enter your current password"
+              id="current-password"
+              value={user.currentPassword}
+              onChange={(e) =>
+                setUser({ ...user, currentPassword: e.target.value })
+              }
+              className="pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+            />
+          </div>
+          <div className="grid grid-cols-[82%_3%_15%]">
+            <PasswordInput
               placeholder="Enter your new password"
-              type="password"
               id="new-password"
               value={user.newPassword}
               onChange={(e) =>
@@ -122,18 +201,7 @@ function Account() {
               }
               className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
             />
-          </div>
-          <div className="grid grid-cols-[82%_3%_15%]">
-            <Input
-              placeholder="Enter your current password"
-              id="current-password"
-              type="password"
-              value={user.currentPassword}
-              onChange={(e) =>
-                setUser({ ...user, currentPassword: e.target.value })
-              }
-              className="pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
-            />
+
             <div></div>
             <Button
               size="xl"
@@ -160,7 +228,7 @@ function Account() {
                 />
                 <div className="flex flex-col">
                   <span className="text-primary-foreground text-xl font-bold">
-                    {initialData.address}
+                    {user.address}
                   </span>
                   <span className="text-muted-foreground text-xl font-bold">
                     Ethereum

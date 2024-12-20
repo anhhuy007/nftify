@@ -5,7 +5,9 @@ import { Switch } from "@/components/ui/switch";
 import CollectionChooser from "./components/CollectionChooser";
 import { PreviewNftCard } from "@/components/NFT/NftCard";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 const user = {
   name: "John Doe",
@@ -20,28 +22,28 @@ const user = {
 };
 
 function CreateNft() {
+  const navigate = useNavigate();
   const [isOnMarketplace, setIsOnMarketplace] = useState(false);
   const [isCreated, setIsCreated] = useState(false);
 
-  // State to store nft information
-  // const [collection, setCollection] = useState(null);
-  // const [selectedFile, setSelectedFile] = useState(null);
-  // const [price, setPrice] = useState("");
-  // const [name, setName] = useState("");
-  // const [description, setDescription] = useState("");
+  const { isAuth, user } = useAuth();
+  if (!isAuth) {
+    toast.error("Please login to create NFTs");
+    navigate("/");
+  }
 
   const [nft, setNft] = useState({
-    _id: "1234567890",
     title: "",
     imgUrl: "",
-    price: {
-      $numberDecimal: "",
-    },
+    denom: "",
     ownerDetails: {
-      name: "John Doe",
-      avatarUrl:
-        "https://animetv-jp.net/wp-content/uploads/2024/01/atla-1280a-1687040323227.jpg",
+      name: user.name,
+      avatarUrl: user.avatarUrl,
+      id: user.id,
     },
+    issuedBy: "",
+    function: "",
+    color: "",
   });
 
   const handleFileSelect = (file) => {
@@ -53,21 +55,16 @@ function CreateNft() {
     setNft({ ...nft, collection });
   };
 
-  const handlePriceChange = (e) => {
-    setNft({
-      ...nft,
-      price: {
-        $numberDecimal: e.target.value,
-      },
-    });
+  const handleDenomChange = (e) => {
+    setNft((prev) => ({ ...prev, denom: e.target.value }));
   };
 
   const handleNameChange = (e) => {
-    setNft({ ...nft, title: e.target.value });
+    setNft((prev) => ({ ...prev, title: e.target.value }));
   };
 
   const handleDescriptionChange = (e) => {
-    setNft({ ...nft, description: e.target.value });
+    setNft((prev) => ({ ...prev, description: e.target.value }));
   };
 
   const handleCreateNft = () => {
@@ -92,7 +89,7 @@ function CreateNft() {
     }
 
     // Check if price is entered for marketplace
-    if (isOnMarketplace && !nft.price.$numberDecimal) {
+    if (isOnMarketplace && !nft.denom) {
       errors.push(
         "If you want to put it on marketplace, please enter a price for your NFT"
       );
@@ -113,10 +110,6 @@ function CreateNft() {
 
   return (
     <>
-      <div>
-        <Toaster position="top-right" reverseOrder={false} />{" "}
-      </div>
-
       <div className="flex flex-col min-h-screen my-20 mx-72 ">
         <h1 className="text-primary-foreground text-6xl font-bold">
           Create New NFT
@@ -186,11 +179,11 @@ function CreateNft() {
                   <Input
                     id="price"
                     placeholder="Enter price"
-                    value={nft.price.$numberDecimal}
-                    onChange={handlePriceChange}
+                    value={nft.denom}
+                    onChange={handleDenomChange}
                     className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
                       ${
-                        !nft.price.$numberDecimal && isOnMarketplace
+                        !nft.denom && isOnMarketplace
                           ? "border-destructive border-2"
                           : "border-2 border-primary"
                       }
