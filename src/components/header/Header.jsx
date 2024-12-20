@@ -14,12 +14,14 @@ import { useAuth } from "@/context/AuthProvider";
 import LoginDialog from "@/components/auth/LoginDialog";
 import { User, ShoppingCart, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { WalletButton } from "../ui/wallet-button";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { isAuth } = useAuth();
+  const { isAuth, connectWallet } = useAuth();
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = (event) => {
@@ -40,6 +42,17 @@ function Header() {
   useEffect(() => {
     console.log("Authentication state changed:", isAuth);
   }, [isAuth]);
+
+  const handleConnectWallet = async () => {
+    try {
+      const address = await connectWallet();
+      if (address) {
+        toast.success("Wallet connected successfully");
+      }
+    } catch (error) {
+      toast.error("Error connecting wallet");
+    }
+  };
 
   return (
     <header className="fixed w-full top-0 left-0 right-0 bg-background border-b border-[var(--border)] z-50 shadow-2xl">
@@ -95,21 +108,12 @@ function Header() {
             <div className="hidden md:flex items-center gap-4">
               {isAuth ? (
                 <>
+                  <WalletButton />
                   <DropdownMenuComponent />
                   <Notification />
                 </>
               ) : (
                 <>
-                  <Button
-                    variant="primary"
-                    className="bg-[hsl(214,84%,56%)] p-6"
-                  >
-                    <Link to="/auth/connect-wallet">
-                      <span className="text-primary-foreground">
-                        Connect Wallet
-                      </span>
-                    </Link>
-                  </Button>
                   <LoginDialog>
                     <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
                       <User size={20} />

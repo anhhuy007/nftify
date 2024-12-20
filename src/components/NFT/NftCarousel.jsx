@@ -9,7 +9,6 @@ import {
 import NftCard from "@/components/NFT/NftCard";
 
 function NftCarousel({ data }) {
-  console.log("Received data:", data);
   const stamps = data?.items || [];
 
   if (stamps.length === 0) {

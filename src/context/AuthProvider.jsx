@@ -4,10 +4,7 @@ import {
   loginApiEndpoint,
   logoutApiEndpoint,
   refreshTokenApiEndpoint,
-  userApiEndpoint,
 } from "@/api/Endpoints";
-import { ethers } from "ethers";
-import { toast } from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -29,9 +26,6 @@ const AuthProvider = ({ children }) => {
     localStorage.getItem("jwtRefreshToken") || ""
   );
   const [isAuth, setIsAuth] = useState(!!token);
-  const [walletAddress, setWalletAddress] = useState(
-    localStorage.getItem("walletAddress") || ""
-  );
 
   // Update localStorage when user changes
   useEffect(() => {
@@ -177,39 +171,6 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      toast.error("Please install MetaMask to connect your wallet");
-      return;
-    }
-
-    try {
-      // For ethers v6
-      const provider = window.ethereum
-        ? new ethers.BrowserProvider(window.ethereum)
-        : null;
-      if (!provider) {
-        throw new Error("Unable to create provider");
-      }
-
-      // Request account access
-      await provider.send("eth_requestAccounts", []);
-
-      // Get the signer
-      const signer = await provider.getSigner();
-
-      // Get wallet address
-      const address = await signer.getAddress();
-
-      setWalletAddress(address);
-      localStorage.setItem("walletAddress", address);
-      return address;
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      toast.error("Error connecting wallet");
-    }
-  };
-
   if (!user) {
     fetchUserData();
   }
@@ -231,9 +192,7 @@ const AuthProvider = ({ children }) => {
         isAuth,
         loginAction,
         logoutAction,
-        refreshAccessToken,
-        connectWallet,
-        walletAddress,
+        refreshAccessToken
       }}
     >
       {children}
