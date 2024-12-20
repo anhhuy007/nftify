@@ -64,7 +64,7 @@ class IpfsService {
         ipfsHash: upload.IpfsHash,
         pinSize: upload.PinSize,
         timestamp: upload.Timestamp,
-        url: `https://gateway.pinata.cloud/ipfs/${upload.IpfsHash}`,
+        url: `https://plum-glamorous-cephalopod-335.mypinata.cloud/ipfs/${upload.IpfsHash}`,
       };
     } catch (error) {
       console.error("Lỗi tải lên avatar:", error);
@@ -96,7 +96,7 @@ class IpfsService {
         ipfsHash: upload.IpfsHash,
         pinSize: upload.PinSize,
         timestamp: upload.Timestamp,
-        url: `https://gateway.pinata.cloud/ipfs/${upload.IpfsHash}`,
+        url: `https://plum-glamorous-cephalopod-335.mypinata.cloud/ipfs/${upload.IpfsHash}`,
       };
     } catch (error) {
       console.error("Lỗi tải lên background:", error);
@@ -127,7 +127,7 @@ class IpfsService {
         ipfsHash: upload.IpfsHash,
         pinSize: upload.PinSize,
         timestamp: upload.Timestamp,
-        url: `https://gateway.pinata.cloud/ipfs/${upload.IpfsHash}`,
+        url: `https://plum-glamorous-cephalopod-335.mypinata.cloud/ipfs/${upload.IpfsHash}`,
       };
     } catch (error) {
       console.error("Lỗi tải lên metadata:", error);
