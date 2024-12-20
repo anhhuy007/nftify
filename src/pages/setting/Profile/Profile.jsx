@@ -217,25 +217,29 @@ function Profile() {
           <span className="text-primary-foreground text-3xl font-bold">
             Display Name
           </span>
-          <Input
+          <textarea
             placeholder="Enter token symbol"
             value={initialUser.name}
             onChange={handleNameChange}
             id="token"
-            className={`pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
+            className={`w-full pl-5 py-2 border-0 text-lg text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] resize-none overflow-hidden`} 
           />
         </div>
         {/* Short Bio */}
         <div className="space-y-4">
-          <span className="text-primary-foreground  text-3xl font-bold">
+          <span className="text-primary-foreground text-3xl font-bold">
             Short Bio
           </span>
-          <Input
+          <textarea
             placeholder={`${initialUser.name}'s bio`}
             id="description"
-            onChange={handleShortBioChange}
+            onChange={(e) => {
+              handleShortBioChange(e);
+              e.target.style.height = 'inherit';
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
             value={initialUser.shortBio}
-            className={`pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]`}
+            className={`w-full pl-5 py-2 border-0 text-lg text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] resize-none overflow-hidden`}
           />
         </div>
         <Dialog>
