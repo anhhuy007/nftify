@@ -43,7 +43,8 @@ function CollectionItems() {
       ),
     {
       keepPreviousData: true,
-      onSuccess: (data) => {
+      onSuccess: (response) => {
+        const data = response.data;
         // Append new items or reset based on page
         if (currentPage === 1) {
           setItems(data.items);

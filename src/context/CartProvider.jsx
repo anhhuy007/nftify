@@ -61,6 +61,8 @@ const CartProvider = ({ children }) => {
                 body: JSON.stringify({ itemId: nftId }),
             });
 
+            console.log("Remove from cart response:", response);
+
             if (!response.success) {
                 throw new Error(response.message);
             }

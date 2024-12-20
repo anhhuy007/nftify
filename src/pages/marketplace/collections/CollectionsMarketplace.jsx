@@ -37,7 +37,8 @@ function CollectionsMarketplace() {
       ),
     {
       keepPreviousData: true,
-      onSuccess: (data) => {
+      onSuccess: (response) => {
+        const data = response.data;
         if (currentPage === 1) {
           setItems(data.items);
         } else {

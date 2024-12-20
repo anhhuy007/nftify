@@ -16,11 +16,14 @@ function CollectionDetail() {
   const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: collection, error: aboutError, isLoading: aboutLoading } = useQuery('collection-about', () => fetcher(collectionAboutApiEndpoint.replace(":id", id)));
-  const { data: collectionItems, error: itemsError, isLoading: itemsLoading } = useQuery('collection-items', () => fetcher(collectionItemsApiEndpoint.replace(":id", id)));
+  const { data: collectionResponse, error: aboutError, isLoading: aboutLoading } = useQuery('collection-about', () => fetcher(collectionAboutApiEndpoint.replace(":id", id)));
+  const { data: collectionItemsResponse, error: itemsError, isLoading: itemsLoading } = useQuery('collection-items', () => fetcher(collectionItemsApiEndpoint.replace(":id", id)));
 
   if (aboutLoading || itemsLoading) return <LoadingAnimation />;
   if (aboutError || itemsError) return <ErrorAnimation />;
+
+  const collection = collectionResponse.data;
+  const collectionItems = collectionItemsResponse.data;
 
   return (
     <div className="w-full flex flex-col my-20 p-0 md:px-32 items-center justify-center gap-10">
