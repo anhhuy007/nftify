@@ -37,7 +37,7 @@ function CreateNft() {
     imgUrl: "",
     denom: "",
     ownerDetails: {
-      name: user.name,
+      username: user.username,
       avatarUrl: user.avatarUrl,
       id: user.id,
     },
