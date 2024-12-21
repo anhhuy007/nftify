@@ -56,7 +56,7 @@ class IpfsService {
         },
       };
 
-      const upload = await this.pinata.upload.file(file, uploadOptions);
+      const upload = await this.pinata.upload.file(file, uploadOptions).group(this.avatarImgGroup.id);
 
       setIsLoading(false);
 
@@ -88,7 +88,7 @@ class IpfsService {
       };
 
       // Tải lên tệp bình thường (File)
-      const upload = await this.pinata.upload.file(file, uploadOptions);
+      const upload = await this.pinata.upload.file(file, uploadOptions).group(this.bgImgGroup.id);
 
       setIsLoading(false);
 
@@ -121,7 +121,7 @@ class IpfsService {
         },
       };
 
-      const upload = await this.pinata.upload.json(metadata, uploadOptions);
+      const upload = await this.pinata.upload.json(metadata, uploadOptions).group(this.metedataGroup.id);
 
       return {
         ipfsHash: upload.IpfsHash,
