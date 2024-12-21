@@ -20,7 +20,8 @@ const formatAddress = (address) => {
 };
 
 export function WalletButton() {
-  const { isConnected, address, balance, connectWallet } = useWallet();
+  const { isConnected, address, balance, connectWallet, disconnectWallet } =
+    useWallet();
 
   if (!isConnected) {
     return (
@@ -76,7 +77,10 @@ export function WalletButton() {
           </button>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-zinc-700" />
-        <DropdownMenuItem className="text-red-500 cursor-pointer">
+        <DropdownMenuItem
+          className="text-red-500 cursor-pointer"
+          onClick={disconnectWallet}
+        >
           Disconnect
         </DropdownMenuItem>
       </DropdownMenuContent>
