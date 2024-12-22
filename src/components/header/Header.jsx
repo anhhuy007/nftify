@@ -21,7 +21,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { isAuth, connectWallet } = useAuth();
+  const { isAuth } = useAuth();
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = (event) => {
