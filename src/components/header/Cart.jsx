@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useCart } from "@/context/CartProvider";
 import toast from "react-hot-toast";
+import CheckoutModal from "@/pages/checkout/CheckoutModal";
 
 function Cart() {
   const { isLoading, error, cart, removeItemFromCart } = useCart();
