@@ -19,6 +19,10 @@ const formatAddress = (address) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
+const formatBalance = (balance) => {
+  return parseFloat(balance).toFixed(4);
+};
+
 export function WalletButton() {
   const { isConnected, address, balance, connectWallet, disconnectWallet } =
     useWallet();
@@ -64,7 +68,7 @@ export function WalletButton() {
           Wallet Balance
         </DropdownMenuLabel>
         <DropdownMenuItem className="text-white font-medium">
-          {balance}
+          {formatBalance(balance)} ETH
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-zinc-700" />
         <DropdownMenuItem className="flex items-center justify-between text-zinc-400">
