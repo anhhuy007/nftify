@@ -52,3 +52,7 @@ export const userCollectionsApiEndpoint = `${baseUrl}/user/profile/:userId/colle
 // Marketplace endpoints
 export const usersApiEndpoint = `${baseUrl}/marketplace/list/creators`;
 export const collectionsApiEndpoint = `${baseUrl}/marketplace/list/collections`;
+
+// NFT creation endpoints
+export const createNftApiEndpoint = `${baseUrl}/user/nft/create`;
+export const createCollectionApiEndpoint = `${baseUrl}/user/collection/create`;

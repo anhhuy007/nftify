@@ -18,6 +18,8 @@ const CartProvider = ({ children }) => {
                 throw new Error("Invalid cart data received");
             }
 
+            console.log("Cart response:", response);
+
             setCart(response.data);
             setError(null);
         } catch (error) {

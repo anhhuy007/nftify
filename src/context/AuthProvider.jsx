@@ -139,7 +139,6 @@ const AuthProvider = ({ children }) => {
       setUser(null);
       setToken("");
       setRefreshToken("");
-      setWalletAddress("");
     };
 
     try {

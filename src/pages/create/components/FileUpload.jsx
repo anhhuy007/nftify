@@ -19,7 +19,7 @@ const FileUpload = ({ onFileSelect }) => {
     console.log(uploadedFile);
     if (uploadedFile) {
       setFile(URL.createObjectURL(uploadedFile));
-      onFileSelect(URL.createObjectURL(uploadedFile));
+      onFileSelect(uploadedFile);
     }
   };
 

@@ -21,7 +21,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { isAuth, connectWallet } = useAuth();
+  const { isAuth, logoutAction } = useAuth();
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = (event) => {
@@ -41,6 +41,7 @@ function Header() {
 
   useEffect(() => {
     console.log("Authentication state changed:", isAuth);
+    // logoutAction();
   }, [isAuth]);
 
   const handleConnectWallet = async () => {

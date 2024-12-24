@@ -89,7 +89,7 @@ export default function NftCard({ stamp }) {
                 </div>
                 <div></div>
                 <div className="flex-1 text-right whitespace-nowrap">
-                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
+                  {stamp.price.$numberDecimal ?? "Not for sale"} ETH
                 </div>
               </div>
             </Link>
@@ -175,7 +175,7 @@ export function SmallNftCard({ stamp }) {
                 {stamp.title}
               </p>
               <p className="text-lg font-semibold text-right whitespace-nowrap ">
-                <h1>{stamp.price?.$numberDecimal} ETH</h1>
+                {stamp.price?.$numberDecimal} ETH
               </p>
             </div>
           </Link>
@@ -271,7 +271,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
                 <p className="text-lg font-semibold">
-                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
+                  {stamp.price.$numberDecimal ?? "Not for sale"} ETH
                 </p>
               </div>
             </div>
@@ -299,6 +299,19 @@ export function BigNftCard({ stamp }) {
 }
 
 export function PreviewNftCard({ stamp }) {
+  let img;
+
+  if (stamp.imgUrl instanceof Blob || stamp.imgUrl instanceof File) {
+    img = URL.createObjectURL(stamp.imgUrl);
+  } else if (typeof stamp.imgUrl === "string") {
+    img = stamp.imgUrl;
+  } else {
+    console.error(
+      "Invalid imgUrl format. Expected Blob, File, or URL:",
+      stamp.imgUrl
+    );
+  }
+
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
 
@@ -338,7 +351,7 @@ export function PreviewNftCard({ stamp }) {
           }`}
         >
           <img
-            src={stamp.imgUrl ?? userPlaceHolder}
+            src={img ?? userPlaceHolder}
             alt="Stamp"
             className="w-full h-full object-cover shadow-sm rounded-xl transition-all duration-300"
           />
@@ -351,12 +364,12 @@ export function PreviewNftCard({ stamp }) {
           <div className="grid grid-cols-[20%_54%_5%_20%]  items-center">
             <img
               src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder}
-              alt={stamp?.ownerDetails?.name || "Unknown"}
+              alt={stamp?.ownerDetails?.username || "Unknown"}
               className="w-12 h-12 rounded-sm border-2"
             />
             <div className="flex flex-col">
               <p className="text-xl font-bold text-zinc-400 dark:text-zinc-400 line-clamp-1 truncate w-full">
-                {stamp?.ownerDetails?.name || "Unknown"}
+                {stamp?.ownerDetails?.username || "Unknown"}
               </p>
               <p className="text-lg font-semibold line-clamp-1">
                 {stamp.title}
@@ -364,9 +377,9 @@ export function PreviewNftCard({ stamp }) {
             </div>
             <div></div>
             <div className="flex-1 text-right ">
-              {stamp.price?.$numberDecimal ? (
+              {stamp.price ? (
                 <p className="text-lg font-semibold whitespace-nowrap">
-                  <h1>{stamp.price.$numberDecimal ?? "Not for sale"} ETH</h1>
+                  {stamp.price ?? "Not for sale"} ETH
                 </p>
               ) : (
                 <p className="text-lg font-semibold whitespace-nowrap">

@@ -48,15 +48,10 @@ function Introduction() {
             <button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-foreground rounded-lg font-medium transition-colors">
               <Link to="/marketplace/nfts">Explore</Link>
             </button>
-            {
-              <button
-                onClick={handleCreate}
-                className="px-8 py-3 border border-gray-700 hover:border-gray-600 text-foreground rounded-lg font-medium transition-colors"
-              >
-                {/* <Link to="/create">Create</Link> */}
-                Create
-              </button>
-            }
+
+            <button className="px-8 py-3 border border-gray-700 hover:border-gray-600 text-foreground rounded-lg font-medium transition-colors">
+              <Link to="/create/nft">Create</Link>
+            </button>
           </div>
         </div>
       </div>
