@@ -1,12 +1,15 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
+import NFTService from "@/services/NFTService";
+import NFTMarketplace from "../../contract/NFTMarketplace.json";
 
 const WalletContext = createContext();
 
 const WalletProvider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
+  const [contract, setContract] = useState(null);
   const [address, setAddress] = useState("");
   const [balance, setBalance] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
@@ -23,12 +26,29 @@ const WalletProvider = ({ children }) => {
     }
 
     try {
-      // For ethers v6
       const provider = window.ethereum
         ? new ethers.BrowserProvider(window.ethereum)
         : null;
       if (!provider) {
         throw new Error("Unable to create provider");
+      }
+
+      // Validate network
+      const network = await provider.getNetwork();
+      const chainId = Number(network.chainId);
+
+      // Assuming local hardhat network (chainId 31337)
+      if (chainId !== 31337) {
+        toast.error("Please connect to your local network");
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x7A69" }], // 31337 in hex
+          });
+        } catch (error) {
+          toast.error("Failed to switch network");
+          return;
+        }
       }
 
       // Request account access
@@ -38,15 +58,23 @@ const WalletProvider = ({ children }) => {
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
       const balance = await getBalance(provider, address);
+      const contract = new ethers.Contract(
+        "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+        NFTMarketplace.abi,
+        signer
+      );
+
+      NFTService.connect(contract);
 
       setProvider(provider);
       setSigner(signer);
+      setContract(contract);
       setAddress(address);
       setBalance(balance);
       setIsConnected(true);
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      toast.error("Error connecting wallet: " + error);
+      toast.error(`Error connecting wallet: ${error.message}`);
     }
   };
 

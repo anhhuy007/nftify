@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
-import { useAuthHandler } from "@/api/AuthHandler";
-import { testEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { testEndpoint } from "@/handlers/Endpoints";
 import { toast } from "react-hot-toast";
 
 function Introduction() {

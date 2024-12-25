@@ -6,7 +6,7 @@ import SearchNfts from "../nfts/components/SearchNfts";
 import { useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, usersApiEndpoint } from "@/api/Endpoints";
+import { fetcher, usersApiEndpoint } from "@/handlers/Endpoints";
 import { useLocation } from "react-router-dom";
 import ErrorAnimation from "@/components/ui/error";
 

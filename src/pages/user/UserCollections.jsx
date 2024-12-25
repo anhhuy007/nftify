@@ -7,7 +7,7 @@ import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, userCollectionsApiEndpoint } from "@/api/Endpoints";
+import { fetcher, userCollectionsApiEndpoint } from "@/handlers/Endpoints";
 
 const UserCollections = () => {
   const { userId } = useOutletContext();

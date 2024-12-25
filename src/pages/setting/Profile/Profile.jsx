@@ -16,8 +16,8 @@ import {
   FileBackgroundUpload,
 } from "@/pages/create/components/FileUpload";
 import { useAuth } from "@/context/AuthProvider";
-import { useAuthHandler } from "@/api/AuthHandler";
-import { userApiEndpoint, userSettingUploadApiEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { userApiEndpoint, userSettingUploadApiEndpoint } from "@/handlers/Endpoints";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 

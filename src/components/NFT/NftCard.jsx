@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartProvider";
+import { useWallet } from "@/context/WalletProvider";
 
 export const handleAddToCart = (title) => {
   toast.success(
@@ -20,9 +21,23 @@ export const handleAddToCart = (title) => {
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.insight.verifyStatus === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
 
   const handleCartClick = async () => {
     try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
       const result = await addItemToCart(stamp._id);
       if (result) {
         handleAddToCart(stamp.title);
@@ -94,11 +109,6 @@ export default function NftCard({ stamp }) {
               </div>
             </Link>
             {isHovered && (
-              // <div className="flex justify-center">
-              //   <Button className="text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-              //     Collect now!
-              //   </Button>
-              // </div>
               <div className="grid grid-cols-[80%_5%_15%]">
                 <Link to={`/nft/${stamp._id}`}>
                   <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
@@ -124,9 +134,23 @@ export default function NftCard({ stamp }) {
 export function SmallNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.status === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
 
   const handleCartClick = async () => {
     try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
       const result = await addItemToCart(stamp._id);
       if (result) {
         handleAddToCart(stamp.title);
@@ -204,9 +228,23 @@ export function SmallNftCard({ stamp }) {
 export function BigNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.insight?.verifyStatus === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
 
   const handleCartClick = async () => {
     try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
       const result = await addItemToCart(stamp._id);
       if (result) {
         handleAddToCart(stamp.title);

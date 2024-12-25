@@ -10,7 +10,7 @@ import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, nftsApiEndpoint } from "@/api/Endpoints";
+import { fetcher, nftsApiEndpoint } from "@/handlers/Endpoints";
 
 function NftsMarketplace() {
   const navigate = useNavigate();

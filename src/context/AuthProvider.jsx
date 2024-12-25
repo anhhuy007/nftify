@@ -4,7 +4,7 @@ import {
   loginApiEndpoint,
   logoutApiEndpoint,
   refreshTokenApiEndpoint,
-} from "@/api/Endpoints";
+} from "@/handlers/Endpoints";
 
 const AuthContext = createContext();
 

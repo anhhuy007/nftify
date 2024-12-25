@@ -9,9 +9,11 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { handleAddToCart } from "@/components/NFT/NftCard";
 import { useCart } from "@/context/CartProvider";
+import { useWallet } from "@/context/WalletProvider";
 
 export default function NftGeneralInformation({ data: stamp }) {
   const { addItemToCart } = useCart();
+  const { address } = useWallet();
 
   const handleCartClick = async () => {
     try {
@@ -19,11 +21,15 @@ export default function NftGeneralInformation({ data: stamp }) {
       if (result) {
         handleAddToCart(stamp.title);
       }
-    }
-    catch (error) {
+    } catch (error) {
       toast.error("Failed: " + error.message);
     }
   };
+
+  let isBuyable = false;
+  if (stamp.insight.verifyStatus === "selling" && stamp.ownerDetails?.wallet_address !== address) {
+    isBuyable = true;
+  }
 
   const handleBuyNow = () => {
     // Call the buy now API here and show the success toast
@@ -125,26 +131,40 @@ export default function NftGeneralInformation({ data: stamp }) {
 
             <div className="grid grid-cols-[80%_5%_15%]">
               <Button
-                className="w-full bg-white text-black hover:bg-gray-400 font-semibold py-6"
-                onClick={handleBuyNow}
+                className={`w-full font-semibold py-6 ${
+                  isBuyable
+                    ? "bg-white text-black hover:bg-gray-400"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={isBuyable ? handleBuyNow : undefined}
+                disabled={!isBuyable}
               >
-                Buy now for {stamp.price.price.$numberDecimal} ETH
+                {isBuyable
+                  ? `Buy now for ${stamp.price.price.$numberDecimal} ETH`
+                  : "Not available for purchase"}
               </Button>
               <div></div>
               <Button
-                className="w-full bg-white text-black hover:bg-gray-400 font-semibold py-6"
-                onClick={() => handleCartClick(stamp._id)}
+                className={`w-full font-semibold py-6 ${
+                  isBuyable
+                    ? "bg-white text-black hover:bg-gray-400"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={
+                  isBuyable ? () => handleCartClick(stamp._id) : undefined
+                }
+                disabled={!isBuyable}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
+              <Button
+                variant="outline"
+                className="w-full border-none py-6 bg-card mt-2"
+                disabled={!isBuyable}
+              >
+                Place a bid
+              </Button>
             </div>
-
-            <Button
-              variant="outline"
-              className="w-full border-none  py-6 bg-card"
-            >
-              Place a bid
-            </Button>
           </div>
 
           <Separator className="bg-secondary my-4 md:my-6" />

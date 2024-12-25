@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/context/AuthProvider";
-import { useAuthHandler } from "@/api/AuthHandler";
+import { useAuthHandler } from "@/handlers/AuthHandler";
 import {
   userApiEndpoint,
   userSettingApiEndpoint,
@@ -14,7 +14,7 @@ import {
   userChangePasswordApiEndpoint,
   userSettingUploadApiEndpoint,
   userChangeEmailApiEndpoint,
-} from "@/api/Endpoints";
+} from "@/handlers/Endpoints";
 import { useNavigate } from "react-router-dom";
 
 function Account() {

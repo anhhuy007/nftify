@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useAuthHandler } from "@/api/AuthHandler";
-import { cartApiEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { cartApiEndpoint } from "@/handlers/Endpoints";
 
 const CartContext = createContext();
 
@@ -61,8 +61,6 @@ const CartProvider = ({ children }) => {
                 body: JSON.stringify({ itemId: nftId }),
             });
 
-            console.log("Remove from cart response:", response);
-
             if (!response.success) {
                 throw new Error(response.message);
             }
@@ -75,6 +73,46 @@ const CartProvider = ({ children }) => {
         }
     };
 
+    const clearCart = async () => {
+        try {
+            const response = await fetchWithAuth(`${cartApiEndpoint}/clear`, {
+                method: "DELETE",
+            });
+
+            if (!response.success) {
+                throw new Error(response.message);
+            }
+
+            fetchCartItems();
+            return true;
+        } catch (error) {
+            console.error("Clear cart error:", error);
+            throw error;
+        }
+    };
+
+    const checkoutCart = async () => {
+        try {
+            const response = await fetchWithAuth(`${cartApiEndpoint}/checkout`, {
+                method: "POST",
+            });
+
+            console.log("Checkout cart response:", response);
+
+            if (!response.success) {
+                throw new Error(response.message);
+            }
+
+            clearCart();
+            fetchCartItems();
+
+            return true;
+        } catch (error) {
+            console.error("Checkout cart error:", error);
+            throw error;
+        }
+    };
+
     return (
         <CartContext.Provider 
             value={{
@@ -83,7 +121,9 @@ const CartProvider = ({ children }) => {
                 error,
                 addItemToCart,
                 removeItemFromCart,
-                refreshCart: fetchCartItems
+                refreshCart: fetchCartItems,
+                clearCart,
+                checkoutCart
             }}
         >
             {children}

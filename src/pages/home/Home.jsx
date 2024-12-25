@@ -7,7 +7,7 @@ import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
 import ErrorAnimation from "@/components/ui/error";
 import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
-import { fetcher, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, trendingNftsApiEndpoint } from "@/api/Endpoints";
+import { fetcher, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, trendingNftsApiEndpoint } from "@/handlers/Endpoints";
 
 function Home() {
   const {

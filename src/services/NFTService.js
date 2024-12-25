@@ -1,66 +1,20 @@
 import { ethers } from "ethers";
-import NFTMarketplace from "../../contract/artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json" assert { type: "json" };
-
+import NFTMarketplace from "../../contract/NFTMarketplace.json";
 class NFTService {
-  constructor() {
-    this.provider = new ethers.JsonRpcProvider("http://localhost:8545");
-    this.contract = null;
-    this.signer = null;
+  async connect(contract) {
+    this.contract = contract;
   }
 
-  async init() {
-    try {
-      const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-
-      // Use hardhat's first account private key
-      const privateKey =
-        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-
-      // Create wallet and connect to provider
-      this.signer = new ethers.Wallet(privateKey, this.provider);
-
-      // Initialize contract with wallet
-      this.contract = new ethers.Contract(
-        contractAddress,
-        NFTMarketplace.abi,
-        this.signer
-      );
-
-      return true;
-    } catch (error) {
-      console.error("Failed to initialize NFT service:", error);
-      throw error;
-    }
-  }
-
-  async initializeNFTs(nftData) {
-    if (!this.contract) {
-      await this.init();
-    }
-
-    try {
-      const formattedNFTs = nftData.map((nft) => ({
-        owner: nft.metamaskAddress,
-        tokenURI: nft.cid,
-        price: ethers.parseEther(nft.price.toString()),
-        isListed: nft.sellingStatus,
-      }));
-
-      console.log("Formatted NFTs:", formattedNFTs);
-
-      const tx = await this.contract.bulkInitializeNFTs(formattedNFTs, {
-        gasLimit: 5000000,
-      });
-
-      return await tx.wait();
-    } catch (error) {
-      console.error("NFT initialization failed:", error);
-      throw error;
-    }
+  isInitialized() {
+    return this.contract !== undefined
   }
 
   async createToken(tokenURI, price, currentlyListed = false) {
     try {
+      if (!this.contract) {
+        throw new Error("Contract not initialized");
+      }
+
       const listPrice = await this.contract.getListPrice();
       const tx = await this.contract.createToken(
         tokenURI,
@@ -75,14 +29,58 @@ class NFTService {
     }
   }
 
-  async executeSale(tokenId, price) {
+  async executeSale(tokenId) {
     try {
-      const tx = await this.contract.excuteSale(tokenId, {
-        value: ethers.parseEther(price.toString()),
+      if (!this.contract) {
+        throw new Error("Contract not initialized");
+      }
+
+      const nft = await this.contract.getListedTokenForId(tokenId);
+      const price = nft.price_;
+
+      console.log("Executing sale for token:", nft.price_);
+
+      const tx = await this.contract.executeSale(tokenId, {
+        value: price,
+        gasLimit: 5000000,
       });
-      return await tx.wait();
+
+      const receipt = await tx.wait();
+
+      const event = receipt.logs
+        .map((log) => {
+          try {
+            return this.contract.interface.parseLog(log);
+          } catch (error) {
+            return null;
+          }
+        })
+        .find((event) => event && event.name === "TokenSold");
+
+      return {
+        success: true,
+        transaction: receipt,
+        event: event,
+      };
     } catch (error) {
       console.error("Sale execution failed:", error);
+      throw error;
+    }
+  }
+
+  async checkoutCart(cartItems) {
+    try {
+      const results = [];
+
+      for (const item of cartItems) {
+        const response = await this.executeSale(item.tokenID);
+        results.push(response);
+        console.log("Checkout result:", response);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Checkout failed:", error);
       throw error;
     }
   }
