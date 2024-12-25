@@ -9,13 +9,11 @@ import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import {
   userApiEndpoint,
-  userSettingApiEndpoint,
   userCheckPasswordApiEndpoint,
   userChangePasswordApiEndpoint,
-  userSettingUploadApiEndpoint,
-  userChangeEmailApiEndpoint,
 } from "@/handlers/Endpoints";
 import { useNavigate } from "react-router-dom";
+import { useWallet } from "@/context/WalletProvider";
 
 function Account() {
   const { isAuth } = useAuth();
@@ -67,7 +65,7 @@ function Account() {
     }
   };
 
-  const [isConnected, setIsConnected] = useState(true);
+  const { isConnected, connectWallet, disconnectWallet, address } = useWallet();
 
   const handlePasswordChange = async () => {
     // Check if both current and new password are entered
@@ -128,8 +126,7 @@ function Account() {
   };
 
   const handleWalletChange = () => {
-    setIsConnected(!isConnected);
-    toast.success(isConnected ? "Wallet disconnected" : "Wallet connected");
+    isConnected ? disconnectWallet() : connectWallet();
   };
 
   const handleDeleteAccount = () => {
@@ -228,7 +225,7 @@ function Account() {
                 />
                 <div className="flex flex-col">
                   <span className="text-primary-foreground text-xl font-bold">
-                    {user.address}
+                    {isConnected ? address : "Not connected"}
                   </span>
                   <span className="text-muted-foreground text-xl font-bold">
                     Ethereum
@@ -251,9 +248,9 @@ function Account() {
           <Button
             size="xl"
             className="text-primary-foreground text-xl w-fit p-8 bg-[hsl(232,40%,35%)]"
-            onClick={handlePasswordChange}
+            onClick={handleWalletChange}
           >
-            Change Wallet
+            {isConnected ? "Disconnect" : "Connect"}
           </Button>
         </div>
 

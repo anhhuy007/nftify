@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { handleAddToCart } from "@/components/NFT/NftCard";
 import { useCart } from "@/context/CartProvider";
 import { useWallet } from "@/context/WalletProvider";
+import NFTService from "@/services/NFTService";
 
 export default function NftGeneralInformation({ data: stamp }) {
   const { addItemToCart } = useCart();
@@ -27,35 +28,45 @@ export default function NftGeneralInformation({ data: stamp }) {
   };
 
   let isBuyable = false;
-  if (stamp.insight.verifyStatus === "selling" && stamp.ownerDetails?.wallet_address !== address) {
+  if (
+    stamp.insight.verifyStatus === "selling" &&
+    stamp.ownerDetails?.wallet_address !== address
+  ) {
     isBuyable = true;
   }
 
-  const handleBuyNow = () => {
-    // Call the buy now API here and show the success toast
-    toast.success(
-      <>
-        <div className="flex flex-col items-center justify-center">
-          <span>"{stamp.title}" bought successfully 🎉.</span>
-          <span className="whitespace-nowrap">
-            Please check your new stamp at{" "}
-            <Link
-              to="/user/:userId/owned"
-              style={{ color: "lightblue", textDecoration: "underline" }}
-            >
-              here
-            </Link>
-            .
-          </span>
-        </div>
-      </>
-    );
+  const handleBuyNow = async () => {
+    try {
+      const result = await NFTService.executeSale(stamp.tokenID);
+
+      if (result.success) {
+        toast.success(
+          <>
+            <div className="flex flex-col items-center justify-center">
+              <span>"{stamp.title}" bought successfully 🎉.</span>
+              <span className="whitespace-nowrap">
+                Please check your new stamp at{" "}
+                <Link
+                  to="/user/:userId/owned"
+                  style={{ color: "lightblue", textDecoration: "underline" }}
+                >
+                  here
+                </Link>
+                .
+              </span>
+            </div>
+          </>
+        );
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
   };
   return (
     <>
       <Card className="w-full max-w-md bg-transparent shadow-none mx-auto md:mx-0 border-none">
         <CardContent className="">
-          <Link to={`/collection/${stamp.collection?.id}`} className="group">
+          <Link to={`/collection/${stamp.collection?._id}`} className="group">
             <div className="flex items-center gap-3 ">
               <Avatar className="h-10 w-10 group-hover:opacity-75 transition-opacity duration-200">
                 <AvatarImage
@@ -72,7 +83,7 @@ export default function NftGeneralInformation({ data: stamp }) {
           <h1 className="text-4xl font-bold my-6 md:my-10">{stamp.title}</h1>
 
           <div className="flex gap-20">
-            <Link to={`/user/${stamp.creatorDetails?.id}`} className="group">
+            <Link to={`/user/${stamp.creatorDetails?._id}`} className="group">
               <div className="flex items-center gap-3">
                 <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
                   <AvatarImage src={stamp.creatorDetails?.avatarUrl} />
@@ -87,7 +98,7 @@ export default function NftGeneralInformation({ data: stamp }) {
               </div>
             </Link>
 
-            <Link to={`/user/${stamp.ownerDetails?.id}`} className="group">
+            <Link to={`/user/${stamp.ownerDetails?._id}`} className="group">
               <div className="flex items-center gap-3">
                 <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
                   <AvatarImage src={stamp.ownerDetails?.avatarUrl} />

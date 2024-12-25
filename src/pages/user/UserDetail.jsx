@@ -62,15 +62,10 @@ function UserDetail() {
   if (userDetailLoading) return <LoadingAnimation />;
   if (userDetailError) return <ErrorAnimation />;
 
-  const copyAddress = () => {
-    toast.success("Address copied to clipboard", {});
-    navigator.clipboard.writeText(userDetail.wallet_address).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  const userDetail = data.data;
+  const totalCreatedNFTs = data.data.totalCreatedStamps;
+  const totalOwnedNFTs = data.data.totalOwnedStamps;
+  const userDetail = data.data.user;
+  console.log("User detail:", userDetail);
   return (
     <>
       <div className="flex flex-col px-20 pt-10">
@@ -93,7 +88,7 @@ function UserDetail() {
               />
             </div>
             <div className="flex gap-60 mt-6 space-y-4 justify-between">
-              <div className="">
+              <div>
                 <h1 className="text-5xl font-bold text-primary-foreground mb-6">
                   {userDetail.name}
                 </h1>
@@ -117,31 +112,14 @@ function UserDetail() {
                 <div className="flex justify-between gap-20">
                   <span className="text-gray-400">Created NFTs</span>
                   <span className="whitespace-nowrap">
-                    {user.followers} NFTs
+                    {totalCreatedNFTs} NFTs
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Owned NFTs</span>
                   <span className="whitespace-nowrap">
-                    {user.following} NFTs
+                    {totalOwnedNFTs} NFTs
                   </span>
-                </div>
-                <Separator orientation="horizontal" className="w-full my-2" />
-                <div className="flex gap-10">
-                  <span className="text-gray-400">Address</span>
-                  <div className="flex items-center gap-2">
-                    <span className="truncate max-w-[200px]">
-                      {userDetail.wallet_address}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4"
-                      onClick={copyAddress}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
               </Card>
             </div>
