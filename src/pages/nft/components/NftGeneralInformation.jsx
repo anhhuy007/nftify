@@ -1,5 +1,3 @@
-"use client";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,11 +10,11 @@ import { useCart } from "@/context/CartProvider";
 import { useWallet } from "@/context/WalletProvider";
 import NFTService from "@/services/NFTService";
 import { useAuth } from "@/context/AuthProvider";
+import CheckoutModal from "@/pages/checkout/CheckoutModal";
 
 export default function NftGeneralInformation({ data: stamp }) {
-  const { addItemToCart } = useCart();
+  const { addItemToCart, removeItemFromCart } = useCart();
   const { address } = useWallet();
-  const { user } = useAuth();
 
   const handleCartClick = async () => {
     try {
@@ -28,7 +26,7 @@ export default function NftGeneralInformation({ data: stamp }) {
       toast.error("Failed: " + error.message);
     }
   };
-  
+
   let isBuyable = false;
   if (
     stamp.insight.verifyStatus === "selling" &&
@@ -39,27 +37,7 @@ export default function NftGeneralInformation({ data: stamp }) {
 
   const handleBuyNow = async () => {
     try {
-      const result = await NFTService.executeSale(stamp.tokenID);
-
-      if (result.success) {
-        toast.success(
-          <>
-            <div className="flex flex-col items-center justify-center">
-              <span>"{stamp.title}" bought successfully 🎉.</span>
-              <span className="whitespace-nowrap">
-                Please check your new stamp at{" "}
-                <Link
-                  to={`/user/${user._id}/owned`}
-                  style={{ color: "lightblue", textDecoration: "underline" }}
-                >
-                  here
-                </Link>
-                .
-              </span>
-            </div>
-          </>
-        );
-      }
+      await addItemToCart(stamp._id);
     } catch (error) {
       if (error.message === "Contract not initialized") {
         toast.error("Please connect your wallet first");
@@ -68,6 +46,15 @@ export default function NftGeneralInformation({ data: stamp }) {
       }
     }
   };
+
+  const handleCancel = async () => {
+    try {
+      await removeItemFromCart(stamp._id);
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  }
+
   return (
     <>
       <Card className="w-full max-w-md bg-transparent shadow-none mx-auto md:mx-0 border-none">
@@ -140,26 +127,30 @@ export default function NftGeneralInformation({ data: stamp }) {
           <div className="space-y-4 border-2 rounded-lg p-4 mt-5">
             <div className=" p-4 rounded-xl bg-card">
               <p className=" mb-1">Price</p>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-bold mt-2">
                 {stamp.price.price.$numberDecimal} ETH
               </p>
-              <p className="">$262</p>
+              <p className="">${stamp.price.usdPrice} USD</p>
             </div>
 
             <div className="grid grid-cols-[80%_5%_15%]">
-              <Button
-                className={`w-full font-semibold py-6 ${
-                  isBuyable
-                    ? "bg-white text-black hover:bg-gray-400"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-                onClick={isBuyable ? handleBuyNow : undefined}
-                disabled={!isBuyable}
-              >
-                {isBuyable
-                  ? `Buy now for ${stamp.price.price.$numberDecimal} ETH`
-                  : "Not available for purchase"}
-              </Button>
+              {isBuyable ? (
+                <CheckoutModal
+                  style="w-full font-semibold py-6 bg-white text-black hover:bg-gray-400"
+                  content={`Buy now for ${stamp.price.price.$numberDecimal} ETH`}
+                  preprocess={handleBuyNow}
+                  cancelCheckout={handleCancel}
+                />
+              ) : (
+                <Button
+                  className={
+                    "w-full font-semibold py-6 bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }
+                  disabled={!isBuyable}
+                >
+                  Not available for sale
+                </Button>
+              )}
               <div></div>
               <Button
                 className={`w-full font-semibold py-6 ${
@@ -188,7 +179,7 @@ export default function NftGeneralInformation({ data: stamp }) {
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
                 <span className="text-gray-400 font-normal">Release Date</span>
-                <span>{stamp.date || "N/A"}</span>
+                <span>{formatDate(stamp.date) || "N/A"}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
                 <span className="text-gray-400 font-normal">Function</span>
@@ -208,4 +199,12 @@ export default function NftGeneralInformation({ data: stamp }) {
       </Card>
     </>
   );
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }

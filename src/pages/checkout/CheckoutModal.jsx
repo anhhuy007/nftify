@@ -12,7 +12,12 @@ import NFTService from "@/services/NFTService";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartProvider";
 
-export default function CheckoutModal() {
+export default function CheckoutModal({
+  preprocess,
+  cancelCheckout, 
+  style,
+  content = "Checkout",
+}) {
   const { cart, checkoutCart } = useCart();
   const [open, setOpen] = useState(false);
 
@@ -20,6 +25,25 @@ export default function CheckoutModal() {
   const subtotal = cart?.items?.reduce((acc, item) => acc + item.price, 0) || 0;
   const protocolFee = 0.1; // 0.1 ETH fixed fee
   const total = subtotal + protocolFee;
+
+  const handleOpenChange = (isOpen) => {
+    if (!isOpen && cancelCheckout) {
+      cancelCheckout();
+    }
+    setOpen(isOpen);
+  };
+
+  const handleDialogTrigger = async () => {
+    try {
+      if (preprocess) {
+        await preprocess();
+      }
+      setOpen(true);
+    } catch (error) {
+      toast.error(error.message || "Failed to process item");
+      return;
+    }
+  };
 
   const handleCheckout = async () => {
     try {
@@ -32,30 +56,35 @@ export default function CheckoutModal() {
         const result_checkout = await checkoutCart();
         if (result_checkout) {
           toast.success("Checkout successful");
-        }
-        else {
+          setOpen(false);
+        } else {
           toast.error("Failed to checkout");
         }
-      }
-      else {
+      } else {
         toast.error("Failed to checkout");
       }
-
     } catch (error) {
       if (error.message === "Contract not initialized") {
         toast.error("Please connect your wallet first");
-      }
-      else {
+      } else {
         toast.error("Failed to process purchase");
       }
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full" disabled={!cart?.items?.length}>
-          Checkout
+        <Button
+          className={`w-full ${
+            style || "bg-white text-black hover:bg-white/90"
+          }`}
+          onClick={(e) => {
+            e.preventDefault();
+            handleDialogTrigger();
+          }}
+        >
+          {content}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-[#0D0F1D] border-none text-white">
@@ -91,7 +120,11 @@ export default function CheckoutModal() {
               />
               <span>Ethereum</span>
             </div>
-            { NFTService.contract ? <span className="text-green-500">Connected</span> : <span className="text-red-500">Not connected</span> }
+            {NFTService.contract ? (
+              <span className="text-green-500">Connected</span>
+            ) : (
+              <span className="text-red-500">Not connected</span>
+            )}
           </div>
 
           <Separator className="my-4 bg-white/20" />
