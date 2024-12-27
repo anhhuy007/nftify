@@ -38,8 +38,6 @@ class NFTService {
       const nft = await this.contract.getListedTokenForId(tokenId);
       const price = nft.price_;
 
-      console.log("Executing sale for token:", nft.price_);
-
       const tx = await this.contract.executeSale(tokenId, {
         value: price,
         gasLimit: 5000000,

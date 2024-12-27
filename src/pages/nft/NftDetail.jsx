@@ -65,7 +65,6 @@ export default function NftDetail() {
       },
       // Directly use the data from API response
       onSuccess: (data) => {
-        console.log("More from creator data:", data);
         if (data) {
           setCreatorNfts(data);
         }

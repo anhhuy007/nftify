@@ -1,4 +1,3 @@
-// filepath: /d:/Project/NFTify/nftify/src/pages/user/UserNfts.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
@@ -67,11 +66,6 @@ const UserNfts = () => {
     setCurrentPage(1);
     setItems([]);
   }, [currentPath]);
-
-  // useEffect(() => {
-  //   console.log("Type: ", typeData);
-  //   console.log("URL: ", apiUrl);
-  // }, [typeData, apiUrl]);
 
   const {
     data: nftsData,

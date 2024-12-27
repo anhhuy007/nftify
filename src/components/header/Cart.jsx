@@ -20,8 +20,6 @@ function Cart() {
   const { isLoading, error, cart, removeItemFromCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [removingItems, setRemovingItems] = useState(new Set());
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
   const handleRemoveItem = async (itemId) => {
     try {

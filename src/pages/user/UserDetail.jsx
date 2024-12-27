@@ -8,11 +8,9 @@ import {
   useLocation,
 } from "react-router-dom";
 import menuItems from "@/config/Links";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Copy } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import { userDetailApiEndpoint } from "@/handlers/Endpoints";
@@ -65,7 +63,6 @@ function UserDetail() {
   const totalCreatedNFTs = data.data.totalCreatedStamps;
   const totalOwnedNFTs = data.data.totalOwnedStamps;
   const userDetail = data.data.user;
-  console.log("User detail:", userDetail);
   return (
     <>
       <div className="flex flex-col px-20 pt-10">

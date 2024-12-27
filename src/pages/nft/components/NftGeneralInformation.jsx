@@ -11,10 +11,12 @@ import { handleAddToCart } from "@/components/NFT/NftCard";
 import { useCart } from "@/context/CartProvider";
 import { useWallet } from "@/context/WalletProvider";
 import NFTService from "@/services/NFTService";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function NftGeneralInformation({ data: stamp }) {
   const { addItemToCart } = useCart();
   const { address } = useWallet();
+  const { user } = useAuth();
 
   const handleCartClick = async () => {
     try {
@@ -26,7 +28,7 @@ export default function NftGeneralInformation({ data: stamp }) {
       toast.error("Failed: " + error.message);
     }
   };
-
+  
   let isBuyable = false;
   if (
     stamp.insight.verifyStatus === "selling" &&
@@ -47,7 +49,7 @@ export default function NftGeneralInformation({ data: stamp }) {
               <span className="whitespace-nowrap">
                 Please check your new stamp at{" "}
                 <Link
-                  to="/user/:userId/owned"
+                  to={`/user/${user._id}/owned`}
                   style={{ color: "lightblue", textDecoration: "underline" }}
                 >
                   here
@@ -59,7 +61,11 @@ export default function NftGeneralInformation({ data: stamp }) {
         );
       }
     } catch (error) {
-      toast.error("Failed: " + error.message);
+      if (error.message === "Contract not initialized") {
+        toast.error("Please connect your wallet first");
+      } else {
+        toast.error("Failed to process purchase: " + error.message);
+      }
     }
   };
   return (
@@ -167,13 +173,6 @@ export default function NftGeneralInformation({ data: stamp }) {
                 disabled={!isBuyable}
               >
                 <ShoppingCart className="h-10 w-10" />
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full border-none py-6 bg-card mt-2"
-                disabled={!isBuyable}
-              >
-                Place a bid
               </Button>
             </div>
           </div>

@@ -125,6 +125,30 @@ function Account() {
     }
   };
 
+  const handleConnectWallet = async () => {
+    try {
+      const connected = await connectWallet(user.wallet_address);
+      if (!connected) {
+        throw new Error("Failed to connect wallet");
+      }
+
+      // init user wallet address
+      if (!user.wallet_address) {
+        const result = await fetchWithAuth(userInitWalletApiEndpoint, {
+          method: "POST",
+          body: JSON.stringify({ walletAddress: address }),
+        });
+
+        if (result.success) {
+          toast.success("Wallet address initialized successfully");
+        }
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast.error(`Error connecting wallet: ${error.message}`);
+    }
+  };
+
   const handleWalletChange = () => {
     isConnected ? disconnectWallet() : connectWallet();
   };

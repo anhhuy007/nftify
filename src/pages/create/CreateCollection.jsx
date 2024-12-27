@@ -3,6 +3,7 @@ import { FileLogoUpload } from "@/pages/create/components/FileUpload";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import { useWallet } from "@/context/WalletProvider";
 
 const user = {
   name: "John Doe",
@@ -69,6 +70,8 @@ function CreateCollection() {
     console.log("Description", collection.description);
   };
 
+  const { isConnected, address } = useWallet();
+
   return (
     <>
 
@@ -93,7 +96,7 @@ function CreateCollection() {
                   />
                   <div className="flex flex-col">
                     <span className="text-primary-foreground text-2xl font-bold">
-                      {user.address}
+                      {address}
                     </span>
                     <span className="text-muted-foreground text-2xl font-bold">
                       Ethereum
@@ -101,7 +104,7 @@ function CreateCollection() {
                   </div>
                 </div>
                 <div>
-                  {user.isConnected ? (
+                  {isConnected ? (
                     <div className="bg-green-500 text-white px-4 py-2 rounded">
                       Connected
                     </div>

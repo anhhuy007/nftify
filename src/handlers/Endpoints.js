@@ -5,6 +5,7 @@ export const baseUrl = `${protocol}://${host}/api/v1`;
 export const fetcher = (url) => fetch(url).then((res) => res.json());
 
 // authentification endpoints
+export const registerApiEndpoint = `${baseUrl}/auth/register`;  
 export const loginApiEndpoint = `${baseUrl}/auth/login`;
 export const signupApiEndpoint = `${baseUrl}/auth/signup`;
 export const refreshTokenApiEndpoint = `${baseUrl}/auth/refresh-token`;
@@ -35,6 +36,7 @@ export const userSettingUploadApiEndpoint = `${baseUrl}/user/settings/upload`;
 export const userCheckPasswordApiEndpoint = `${baseUrl}/user/settings/check-password`;
 export const userChangePasswordApiEndpoint = `${baseUrl}/user/settings/change-password`;
 export const userChangeEmailApiEndpoint = `${baseUrl}/user/settings/change-email`;
+export const userInitWalletApiEndpoint = `${baseUrl}/user/init-wallet`;
 
 // collection detail endpoints
 export const collectionDetailApiEndpoint = `${baseUrl}/collection/:collectionId/detail`;
