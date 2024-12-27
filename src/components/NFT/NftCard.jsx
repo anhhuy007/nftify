@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartProvider";
+import { useWallet } from "@/context/WalletProvider";
 
 export const handleAddToCart = (title) => {
   toast.success(
@@ -20,10 +21,23 @@ export const handleAddToCart = (title) => {
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
-  
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.insight.verifyStatus === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
 
   const handleCartClick = async () => {
     try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
       const result = await addItemToCart(stamp._id);
       if (result) {
         handleAddToCart(stamp.title);
@@ -95,11 +109,6 @@ export default function NftCard({ stamp }) {
               </div>
             </Link>
             {isHovered && (
-              // <div className="flex justify-center">
-              //   <Button className="text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-              //     Collect now!
-              //   </Button>
-              // </div>
               <div className="grid grid-cols-[80%_5%_15%]">
                 <Link to={`/nft/${stamp._id}`}>
                   <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
@@ -125,9 +134,23 @@ export default function NftCard({ stamp }) {
 export function SmallNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.status === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
 
   const handleCartClick = async () => {
     try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
       const result = await addItemToCart(stamp._id);
       if (result) {
         handleAddToCart(stamp.title);
@@ -205,9 +228,23 @@ export function SmallNftCard({ stamp }) {
 export function BigNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.insight?.verifyStatus === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
 
   const handleCartClick = async () => {
     try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
       const result = await addItemToCart(stamp._id);
       if (result) {
         handleAddToCart(stamp.title);
@@ -401,6 +438,211 @@ export function PreviewNftCard({ stamp }) {
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export function SmallEditNftCard({ stamp }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.status === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
+
+  const handleCartClick = async () => {
+    try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
+
+  return (
+    <div
+      className={`w-[16vw] h-[370px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
+        ${
+          isHovered
+            ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[#ebcef8] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
+            : "bg-card"
+        }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Card
+        className={`w-full h-full p-0 overflow-hidden bg-card border-2 transition-all duration-300
+          ${
+            isHovered
+              ? "shadow-[0_-5px_10px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.2)]"
+              : ""
+          }`}
+      >
+        <Link to={`/nft/${stamp._id}`}>
+          <CardHeader
+            className={`px-3 pt-5 pb-0 transition-all duration-300 ${
+              isHovered ? "h-[265px]" : "h-[320px]"
+            }`}
+          >
+            <img
+              src={stamp.imgUrl ?? userPlaceHolder}
+              alt="Stamp"
+              className="w-full h-full object-cover shadow-sm rounded-xl transition-all duration-300"
+            />
+          </CardHeader>
+        </Link>
+        <CardContent className={`px-3 pt-2 transition-all duration-300`}>
+          <Link to={`/nft/${stamp._id}`}>
+            <div className="flex justify-between items-center gap-4">
+              <p className="text-lg font-semibold line-clamp-1">
+                {stamp.title}
+              </p>
+              <p className="text-lg font-semibold text-right whitespace-nowrap ">
+                {stamp.price?.$numberDecimal} ETH
+              </p>
+            </div>
+          </Link>
+          {isHovered && (
+            // <div className="grid grid-cols-[80%_5%_15%]">
+            //   <Link to={`/nft/${stamp._id}`}>
+            //     <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
+            //       Collect now!
+            //     </Button>
+            //   </Link>
+            //   <div></div>
+            //   <Button
+            //     className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
+            //     onClick={handleCartClick}
+            //   >
+            //     <ShoppingCart className="h-10 w-10" />
+            //   </Button>
+            // </div>
+            <div className="">
+              <Link to={`/nft/${stamp._id}`}>
+                <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
+                  Edit
+                </Button>
+              </Link>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export function BigEditNftCard({ stamp }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const { addItemToCart } = useCart();
+  const { address } = useWallet();
+
+  let isBuyable = false;
+  if (
+    stamp.insight?.verifyStatus === "selling" &&
+    stamp.ownerDetails.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
+
+  const handleCartClick = async () => {
+    try {
+      if (!isBuyable) {
+        toast.error("This stamp is not for sale");
+        return;
+      }
+
+      const result = await addItemToCart(stamp._id);
+      if (result) {
+        handleAddToCart(stamp.title);
+      }
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  };
+
+  return (
+    <div
+      className={`w-[20vw] h-[440px] p-[2px] rounded-xl transition-all duration-300 ease-in-out
+        ${
+          isHovered
+            ? "bg-gradient-to-r from-[hsl(166,75%,66%)] via-[hsl(281,76%,89%)] to-[hsl(247,85%,64%)] shadow-[0_0_15px_5px_rgba(255,255,255,0.5)]"
+            : "bg-card"
+        }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Card
+        className={`w-full h-full p-0 overflow-hidden bg-card border-2 transition-all duration-300
+         ${
+           isHovered
+             ? "shadow-[0_-5px_10px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.2)]"
+             : ""
+         }`}
+      >
+        <Link to={`/nft/${stamp._id}`}>
+          <CardHeader
+            className={`px-3 pt-3 pb-0 transition-all duration-300 ${
+              isHovered ? "h-[310px]" : "h-[360px]"
+            }`}
+          >
+            <img
+              src={stamp.imgUrl ?? userPlaceHolder}
+              alt="Stamp"
+              className="w-full h-full object-cover shadow-sm rounded-xl transition-all duration-300"
+            />
+          </CardHeader>
+        </Link>
+        <CardContent
+          className={`px-3 pt-2 transition-all duration-300 ${
+            isHovered ? "h-[150px]" : "h-[90px]"
+          }`}
+        >
+          <Link to={`/nft/${stamp._id}`}>
+            <div className="grid grid-cols-[20%_49%_1%_20%]  items-center">
+              <img
+                src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder}
+                alt={stamp?.ownerDetails?.name || "Unknown"}
+                className="w-12 h-12 rounded-sm border-2"
+              />
+              <div className="flex flex-col">
+                <p className="text-xl font-bold text-zinc-400 dark:text-zinc-400 line-clamp-1">
+                  {stamp?.ownerDetails?.name || "Unknown"}
+                </p>
+                <p className="text-lg font-semibold line-clamp-1">
+                  {stamp.title}
+                </p>
+              </div>
+              <div></div>
+              <div className="flex-1 text-right whitespace-nowrap">
+                <p className="text-lg font-semibold">
+                  {stamp.price.$numberDecimal ?? "Not for sale"} ETH
+                </p>
+              </div>
+            </div>
+          </Link>
+          {isHovered && (
+            <div className="">
+              <Link to={`/nft/${stamp._id}`}>
+                <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
+                  Edit
+                </Button>
+              </Link>
             </div>
           )}
         </CardContent>

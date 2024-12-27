@@ -4,7 +4,8 @@ import {
   loginApiEndpoint,
   logoutApiEndpoint,
   refreshTokenApiEndpoint,
-} from "@/api/Endpoints";
+  registerApiEndpoint,
+} from "@/handlers/Endpoints";
 
 const AuthContext = createContext();
 
@@ -38,12 +39,6 @@ const AuthProvider = ({ children }) => {
 
   // Update fetchUserData
   const fetchUserData = async () => {
-    console.log("----- Fetching User Data -----");
-    if (user) {
-      console.log("User data already fetched:", user);
-      return;
-    }
-
     if (!isAuth) {
       console.log("User not authenticated");
       return;
@@ -63,9 +58,32 @@ const AuthProvider = ({ children }) => {
       }
 
       setUser(result.data);
+      localStorage.setItem("user", JSON.stringify(result.data));
     } catch (error) {
       console.error("Error fetching user data:", error);
       setUser(null);
+    }
+  };
+
+  const registerAction = async (data) => {
+    try {
+      const response = await fetch(registerApiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success === true) {
+        return result;
+      }
+
+      return { error: result.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -84,13 +102,13 @@ const AuthProvider = ({ children }) => {
       if (result.success === true) {
         const data = result.data;
 
-        setUser(data.account);
+        // fetch user data
+        await fetchUserData();
         setToken(data.accessToken);
         setRefreshToken(data.refreshToken);
         setIsAuth(true);
         localStorage.setItem("jwtToken", data.accessToken);
         localStorage.setItem("jwtRefreshToken", data.refreshToken);
-        localStorage.setItem("user", JSON.stringify(data.account));
 
         return data;
       }
@@ -172,15 +190,17 @@ const AuthProvider = ({ children }) => {
   if (!user) {
     fetchUserData();
   }
-
+  
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuth,
+        registerAction,
         loginAction,
         logoutAction,
-        refreshAccessToken
+        refreshAccessToken,
+        fetchUserData,
       }}
     >
       {children}

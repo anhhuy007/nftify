@@ -19,10 +19,9 @@ import {
 } from "@/components/ui/select";
 import CustomDateInput from "@/components/ui/date-input";
 import IpfsService from "@/services/IpfsService";
-import { useAuthHandler } from "@/api/AuthHandler";
+import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useWallet } from "@/context/WalletProvider";
-import { userCollection } from "@/api/Endpoints";
-import { createNftApiEndpoint } from "@/api/Endpoints";
+import { userCollection, createNftApiEndpoint } from "@/handlers/Endpoints";
 
 function CreateNft() {
   const navigate = useNavigate();

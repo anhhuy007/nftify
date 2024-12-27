@@ -12,10 +12,10 @@ import { Input } from "@/components/ui/input";
 import Logo from "../../assets/logo.svg";
 import { useAuth } from "@/context/AuthProvider";
 import LoginDialog from "@/components/auth/LoginDialog";
-import { User, ShoppingCart, Bell } from "lucide-react";
+import { User, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 import { WalletButton } from "../ui/wallet-button";
+import CreateAccountDialog from "../auth/CreateAccountDialog";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,22 +36,6 @@ function Header() {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       handleSubmit();
-    }
-  };
-
-  useEffect(() => {
-    console.log("Authentication state changed:", isAuth);
-    // logoutAction();
-  }, [isAuth]);
-
-  const handleConnectWallet = async () => {
-    try {
-      const address = await connectWallet();
-      if (address) {
-        toast.success("Wallet connected successfully");
-      }
-    } catch (error) {
-      toast.error("Error connecting wallet");
     }
   };
 
@@ -112,23 +96,25 @@ function Header() {
                   <WalletButton />
                   <DropdownMenuComponent />
                   <Notification />
+                  <Cart />
                 </>
               ) : (
                 <>
-                  <LoginDialog>
-                    <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
-                      <User size={20} />
-                    </div>
-                  </LoginDialog>
+                  <div className="flex items-center gap-2"> 
+                    <LoginDialog>
+                      <div className="flex items-center justify-center py-3 px-4 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
+                        Login
+                      </div>
+                    </LoginDialog>
 
-                  <LoginDialog>
-                    <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
-                      <Bell size={20} />
-                    </div>
-                  </LoginDialog>
+                    <CreateAccountDialog>
+                      <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer bg-purple-600 hover:bg-purple-700 text-white">
+                        Create Account
+                      </div>
+                    </CreateAccountDialog>
+                  </div>
                 </>
               )}
-              <Cart />
             </div>
             <Button
               variant="ghost"

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import CollectionGeneralInformation from "@/pages/collection/components/CollectionGeneralInformation";
 import CollectionDetailTabs from "@/pages/collection/components/CollectionDetailTabs";
 import { Description } from "@radix-ui/react-dialog";
-import { collectionAboutApiEndpoint, collectionItemsApiEndpoint, fetcher } from "@/api/Endpoints";
+import { collectionAboutApiEndpoint, collectionItemsApiEndpoint, fetcher } from "@/handlers/Endpoints";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { useQuery } from "react-query";

@@ -16,8 +16,11 @@ import {
   FileBackgroundUpload,
 } from "@/pages/create/components/FileUpload";
 import { useAuth } from "@/context/AuthProvider";
-import { useAuthHandler } from "@/api/AuthHandler";
-import { userApiEndpoint, userSettingUploadApiEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import {
+  userApiEndpoint,
+  userSettingUploadApiEndpoint,
+} from "@/handlers/Endpoints";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -213,7 +216,7 @@ function Profile() {
             value={initialUser.name}
             onChange={handleNameChange}
             id="token"
-            className={`w-full pl-5 py-2 border-0 text-lg text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] resize-none overflow-hidden`} 
+            className={`w-full pl-5 py-2 border-0 text-lg text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] resize-none overflow-hidden`}
           />
         </div>
         {/* Short Bio */}
@@ -226,7 +229,7 @@ function Profile() {
             id="description"
             onChange={(e) => {
               handleShortBioChange(e);
-              e.target.style.height = 'inherit';
+              e.target.style.height = "inherit";
               e.target.style.height = `${e.target.scrollHeight}px`;
             }}
             value={initialUser.shortBio}

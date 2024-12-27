@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useWallet } from "@/context/WalletProvider";
 import IpfsService from "@/services/IpfsService";
-import { useAuthHandler } from "@/api/AuthHandler";
-import { createCollectionApiEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { createCollectionApiEndpoint } from "@/handlers/Endpoints";
 
 function CreateCollection() {
   const [collection, setCollection] = useState({

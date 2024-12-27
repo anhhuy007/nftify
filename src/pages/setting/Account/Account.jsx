@@ -6,16 +6,14 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/context/AuthProvider";
-import { useAuthHandler } from "@/api/AuthHandler";
+import { useAuthHandler } from "@/handlers/AuthHandler";
 import {
   userApiEndpoint,
-  userSettingApiEndpoint,
   userCheckPasswordApiEndpoint,
   userChangePasswordApiEndpoint,
-  userSettingUploadApiEndpoint,
-  userChangeEmailApiEndpoint,
-} from "@/api/Endpoints";
+} from "@/handlers/Endpoints";
 import { useNavigate } from "react-router-dom";
+import { useWallet } from "@/context/WalletProvider";
 
 function Account() {
   const { isAuth } = useAuth();
@@ -67,7 +65,7 @@ function Account() {
     }
   };
 
-  const [isConnected, setIsConnected] = useState(true);
+  const { isConnected, connectWallet, disconnectWallet, address } = useWallet();
 
   const handlePasswordChange = async () => {
     // Check if both current and new password are entered
@@ -127,9 +125,32 @@ function Account() {
     }
   };
 
+  const handleConnectWallet = async () => {
+    try {
+      const connected = await connectWallet(user.wallet_address);
+      if (!connected) {
+        throw new Error("Failed to connect wallet");
+      }
+
+      // init user wallet address
+      if (!user.wallet_address) {
+        const result = await fetchWithAuth(userInitWalletApiEndpoint, {
+          method: "POST",
+          body: JSON.stringify({ walletAddress: address }),
+        });
+
+        if (result.success) {
+          toast.success("Wallet address initialized successfully");
+        }
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast.error(`Error connecting wallet: ${error.message}`);
+    }
+  };
+
   const handleWalletChange = () => {
-    setIsConnected(!isConnected);
-    toast.success(isConnected ? "Wallet disconnected" : "Wallet connected");
+    isConnected ? disconnectWallet() : connectWallet();
   };
 
   const handleDeleteAccount = () => {
@@ -228,7 +249,7 @@ function Account() {
                 />
                 <div className="flex flex-col">
                   <span className="text-primary-foreground text-xl font-bold">
-                    {user.address}
+                    {isConnected ? address : "Not connected"}
                   </span>
                   <span className="text-muted-foreground text-xl font-bold">
                     Ethereum
@@ -251,9 +272,9 @@ function Account() {
           <Button
             size="xl"
             className="text-primary-foreground text-xl w-fit p-8 bg-[hsl(232,40%,35%)]"
-            onClick={handlePasswordChange}
+            onClick={handleWalletChange}
           >
-            Change Wallet
+            {isConnected ? "Disconnect" : "Connect"}
           </Button>
         </div>
 

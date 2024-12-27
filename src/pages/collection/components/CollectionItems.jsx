@@ -6,7 +6,7 @@ import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, collectionItemsApiEndpoint } from "@/api/Endpoints";
+import { fetcher, collectionItemsApiEndpoint } from "@/handlers/Endpoints";
 import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";

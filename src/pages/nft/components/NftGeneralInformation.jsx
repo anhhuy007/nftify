@@ -1,5 +1,3 @@
-"use client";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,9 +7,14 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { handleAddToCart } from "@/components/NFT/NftCard";
 import { useCart } from "@/context/CartProvider";
+import { useWallet } from "@/context/WalletProvider";
+import NFTService from "@/services/NFTService";
+import { useAuth } from "@/context/AuthProvider";
+import CheckoutModal from "@/pages/checkout/CheckoutModal";
 
 export default function NftGeneralInformation({ data: stamp }) {
-  const { addItemToCart } = useCart();
+  const { addItemToCart, removeItemFromCart } = useCart();
+  const { address } = useWallet();
 
   const handleCartClick = async () => {
     try {
@@ -19,37 +22,44 @@ export default function NftGeneralInformation({ data: stamp }) {
       if (result) {
         handleAddToCart(stamp.title);
       }
-    }
-    catch (error) {
+    } catch (error) {
       toast.error("Failed: " + error.message);
     }
   };
 
-  const handleBuyNow = () => {
-    // Call the buy now API here and show the success toast
-    toast.success(
-      <>
-        <div className="flex flex-col items-center justify-center">
-          <span>"{stamp.title}" bought successfully 🎉.</span>
-          <span className="whitespace-nowrap">
-            Please check your new stamp at{" "}
-            <Link
-              to="/user/:userId/owned"
-              style={{ color: "lightblue", textDecoration: "underline" }}
-            >
-              here
-            </Link>
-            .
-          </span>
-        </div>
-      </>
-    );
+  let isBuyable = false;
+  if (
+    stamp.insight.verifyStatus === "selling" &&
+    stamp.ownerDetails?.wallet_address !== address
+  ) {
+    isBuyable = true;
+  }
+
+  const handleBuyNow = async () => {
+    try {
+      await addItemToCart(stamp._id);
+    } catch (error) {
+      if (error.message === "Contract not initialized") {
+        toast.error("Please connect your wallet first");
+      } else {
+        toast.error("Failed to process purchase: " + error.message);
+      }
+    }
   };
+
+  const handleCancel = async () => {
+    try {
+      await removeItemFromCart(stamp._id);
+    } catch (error) {
+      toast.error("Failed: " + error.message);
+    }
+  }
+
   return (
     <>
       <Card className="w-full max-w-md bg-transparent shadow-none mx-auto md:mx-0 border-none">
         <CardContent className="">
-          <Link to={`/collection/${stamp.collection?.id}`} className="group">
+          <Link to={`/collection/${stamp.collection?._id}`} className="group">
             <div className="flex items-center gap-3 ">
               <Avatar className="h-10 w-10 group-hover:opacity-75 transition-opacity duration-200">
                 <AvatarImage
@@ -66,7 +76,7 @@ export default function NftGeneralInformation({ data: stamp }) {
           <h1 className="text-4xl font-bold my-6 md:my-10">{stamp.title}</h1>
 
           <div className="flex gap-20">
-            <Link to={`/user/${stamp.creatorDetails?.id}`} className="group">
+            <Link to={`/user/${stamp.creatorDetails?._id}`} className="group">
               <div className="flex items-center gap-3">
                 <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
                   <AvatarImage src={stamp.creatorDetails?.avatarUrl} />
@@ -81,7 +91,7 @@ export default function NftGeneralInformation({ data: stamp }) {
               </div>
             </Link>
 
-            <Link to={`/user/${stamp.ownerDetails?.id}`} className="group">
+            <Link to={`/user/${stamp.ownerDetails?._id}`} className="group">
               <div className="flex items-center gap-3">
                 <Avatar className="group-hover:opacity-75 transition-opacity duration-200">
                   <AvatarImage src={stamp.ownerDetails?.avatarUrl} />
@@ -117,34 +127,45 @@ export default function NftGeneralInformation({ data: stamp }) {
           <div className="space-y-4 border-2 rounded-lg p-4 mt-5">
             <div className=" p-4 rounded-xl bg-card">
               <p className=" mb-1">Price</p>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-bold mt-2">
                 {stamp.price.price.$numberDecimal} ETH
               </p>
-              <p className="">$262</p>
+              <p className="">${stamp.price.usdPrice} USD</p>
             </div>
 
             <div className="grid grid-cols-[80%_5%_15%]">
-              <Button
-                className="w-full bg-white text-black hover:bg-gray-400 font-semibold py-6"
-                onClick={handleBuyNow}
-              >
-                Buy now for {stamp.price.price.$numberDecimal} ETH
-              </Button>
+              {isBuyable ? (
+                <CheckoutModal
+                  style="w-full font-semibold py-6 bg-white text-black hover:bg-gray-400"
+                  content={`Buy now for ${stamp.price.price.$numberDecimal} ETH`}
+                  preprocess={handleBuyNow}
+                  cancelCheckout={handleCancel}
+                />
+              ) : (
+                <Button
+                  className={
+                    "w-full font-semibold py-6 bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }
+                  disabled={!isBuyable}
+                >
+                  Not available for sale
+                </Button>
+              )}
               <div></div>
               <Button
-                className="w-full bg-white text-black hover:bg-gray-400 font-semibold py-6"
-                onClick={() => handleCartClick(stamp._id)}
+                className={`w-full font-semibold py-6 ${
+                  isBuyable
+                    ? "bg-white text-black hover:bg-gray-400"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={
+                  isBuyable ? () => handleCartClick(stamp._id) : undefined
+                }
+                disabled={!isBuyable}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
             </div>
-
-            <Button
-              variant="outline"
-              className="w-full border-none  py-6 bg-card"
-            >
-              Place a bid
-            </Button>
           </div>
 
           <Separator className="bg-secondary my-4 md:my-6" />
@@ -158,7 +179,7 @@ export default function NftGeneralInformation({ data: stamp }) {
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
                 <span className="text-gray-400 font-normal">Release Date</span>
-                <span>{stamp.date || "N/A"}</span>
+                <span>{formatDate(stamp.date) || "N/A"}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
                 <span className="text-gray-400 font-normal">Function</span>
@@ -178,4 +199,12 @@ export default function NftGeneralInformation({ data: stamp }) {
       </Card>
     </>
   );
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }

@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { Maximize2 } from "lucide-react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -15,8 +14,8 @@ import { useQuery } from "react-query";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { Link } from "react-router-dom";
-import { useAuthHandler } from "@/api/AuthHandler";
-import { stampDetailApiEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { stampDetailApiEndpoint } from "@/handlers/Endpoints";
 
 export default function NftDetail() {
   const { nftId } = useParams();
@@ -66,7 +65,6 @@ export default function NftDetail() {
       },
       // Directly use the data from API response
       onSuccess: (data) => {
-        console.log("More from creator data:", data);
         if (data) {
           setCreatorNfts(data);
         }
@@ -136,7 +134,7 @@ export default function NftDetail() {
               Retry
             </button>
           </div>
-        ) : creatorNfts.items.length > 0 ? (
+        ) : creatorNfts?.items?.length > 0 ? (
           <NftCarousel data={creatorNfts} />
         ) : (
           <p className="text-gray-500">No additional NFTs from this creator</p>

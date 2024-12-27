@@ -1,12 +1,15 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
+import NFTService from "@/services/NFTService";
+import NFTMarketplace from "../../contract/NFTMarketplace.json";
 
 const WalletContext = createContext();
 
 const WalletProvider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
+  const [contract, setContract] = useState(null);
   const [address, setAddress] = useState("");
   const [balance, setBalance] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
@@ -16,19 +19,33 @@ const WalletProvider = ({ children }) => {
     return ethers.formatEther(balance);
   };
 
-  const connectWallet = async () => {
+  const connectWallet = async (userAddress) => {
     if (!window.ethereum) {
-      toast.error("Please install MetaMask to connect your wallet");
-      return;
+      throw new Error("Please install MetaMask");
     }
 
     try {
-      // For ethers v6
       const provider = window.ethereum
         ? new ethers.BrowserProvider(window.ethereum)
         : null;
       if (!provider) {
-        throw new Error("Unable to create provider");
+        throw new Error("Unable to connect to MetaMask");
+      }
+
+      // Validate network
+      const network = await provider.getNetwork();
+      const chainId = Number(network.chainId);
+
+      // Assuming local hardhat network (chainId 31337)
+      if (chainId !== 31337) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x7A69" }], // 31337 in hex
+          });
+        } catch (error) {
+          throw new Error("Please switch to the local network");
+        }
       }
 
       // Request account access
@@ -38,15 +55,29 @@ const WalletProvider = ({ children }) => {
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
       const balance = await getBalance(provider, address);
+      const contract = new ethers.Contract(
+        process.env.CONTRACT_ADDRESS,
+        NFTMarketplace.abi,
+        signer
+      );
 
+      // if user address is different from the connected address, show error
+      if (userAddress && userAddress !== address) {
+        throw new Error("Connected wallet address does not match user address");
+      }
+
+      NFTService.connect(contract);
       setProvider(provider);
       setSigner(signer);
+      setContract(contract);
       setAddress(address);
       setBalance(balance);
       setIsConnected(true);
+
+      return address;
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      toast.error("Error connecting wallet: " + error);
+      throw error;
     }
   };
 
@@ -70,19 +101,12 @@ const WalletProvider = ({ children }) => {
       setIsConnected(false);
 
       // Show success message
-      toast.success("Wallet disconnected successfully");
+      return true;
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
-      toast.error("Failed to disconnect wallet");
+      throw error;
     }
   };
-
-  console.log("WalletProvider:", {
-    provider,
-    signer,
-    address,
-    balance,
-  });
 
   return (
     <WalletContext.Provider

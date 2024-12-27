@@ -13,8 +13,9 @@ import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider"
 import { useState } from "react";
+import toast from "react-hot-toast";
 
-export default function CreateAccountDialog({ isOpen, onClose }) {
+export default function CreateAccountDialog({ children, isOpen, onClose }) {
   const { registerAction } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -25,16 +26,17 @@ export default function CreateAccountDialog({ isOpen, onClose }) {
     const result = await registerAction({ email, username, password });
 
     if (result.error) {
-      alert("Error creating account: " + result.error);
+      toast.error(result.error);
       return;
     }
 
-    alert("Account created successfully");
+    toast.success("Account created successfully");
     if (onClose) onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogTrigger>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[500px] p-10 text-primary-foreground">
         <DialogHeader>
           <DialogTitle>

@@ -20,11 +20,6 @@ function Cart() {
   const { isLoading, error, cart, removeItemFromCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [removingItems, setRemovingItems] = useState(new Set());
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  const handleCheckout = () => {
-    // Call the checkout API here
-  };
 
   const handleRemoveItem = async (itemId) => {
     try {
@@ -72,8 +67,6 @@ function Cart() {
       </Sheet>
     );
   }
-
-  
 
   return (
     <>
@@ -123,13 +116,7 @@ function Cart() {
           </div>
 
           <SheetFooter className="mt-auto">
-            <Button
-              className="w-full h-14"
-              onClick={handleCheckout}
-              disabled={cart.items.length === 0 || isCheckingOut}
-            >
-              Checkout {cart.totalPrice.$numberDecimal} ETH
-            </Button>
+            <CheckoutModal />
           </SheetFooter>
         </SheetContent>
       </Sheet>

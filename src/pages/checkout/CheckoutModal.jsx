@@ -1,43 +1,97 @@
-import { useState } from "react"
-import { X } from 'lucide-react'
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import NFTService from "@/services/NFTService";
+import toast from "react-hot-toast";
+import { useCart } from "@/context/CartProvider";
 
-export default function CheckoutModal({ cart }) {
-  const [open, setOpen] = useState(false)
+export default function CheckoutModal({
+  preprocess,
+  cancelCheckout, 
+  style,
+  content = "Checkout",
+}) {
+  const { cart, checkoutCart } = useCart();
+  const [open, setOpen] = useState(false);
 
   // Safely calculate totals with null checks
-  const subtotal = cart?.items?.reduce((sum, item) => sum + parseFloat(item?.price || 0), 0) || 0
-  const protocolFee = 0.1 // 0.1 ETH fixed fee
-  const total = subtotal + protocolFee
+  const subtotal = cart?.items?.reduce((acc, item) => acc + item.price, 0) || 0;
+  const protocolFee = 0.1; // 0.1 ETH fixed fee
+  const total = subtotal + protocolFee;
+
+  const handleOpenChange = (isOpen) => {
+    if (!isOpen && cancelCheckout) {
+      cancelCheckout();
+    }
+    setOpen(isOpen);
+  };
+
+  const handleDialogTrigger = async () => {
+    try {
+      if (preprocess) {
+        await preprocess();
+      }
+      setOpen(true);
+    } catch (error) {
+      toast.error(error.message || "Failed to process item");
+      return;
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      // Call the checkout API here
+      console.log("Processing purchase...");
+      const result = await NFTService.checkoutCart(cart.items);
+
+      // If successful, log the result
+      if (result) {
+        const result_checkout = await checkoutCart();
+        if (result_checkout) {
+          toast.success("Checkout successful");
+          setOpen(false);
+        } else {
+          toast.error("Failed to checkout");
+        }
+      } else {
+        toast.error("Failed to checkout");
+      }
+    } catch (error) {
+      if (error.message === "Contract not initialized") {
+        toast.error("Please connect your wallet first");
+      } else {
+        toast.error("Failed to process purchase");
+      }
+    }
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button 
-          className="w-full" 
-          disabled={!cart?.items?.length}
+        <Button
+          className={`w-full ${
+            style || "bg-white text-black hover:bg-white/90"
+          }`}
+          onClick={(e) => {
+            e.preventDefault();
+            handleDialogTrigger();
+          }}
         >
-          Checkout
+          {content}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-[#0D0F1D] border-none text-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-white">Check out</DialogTitle>
-          <Button
-            variant="ghost"
-            className="absolute right-4 top-4 text-white hover:text-white/80 hover:bg-white/10"
-            onClick={() => setOpen(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <DialogTitle className="text-2xl font-bold text-white">
+            Check out
+          </DialogTitle>
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
@@ -66,7 +120,11 @@ export default function CheckoutModal({ cart }) {
               />
               <span>Ethereum</span>
             </div>
-            <span className="text-green-500">Connected</span>
+            {NFTService.contract ? (
+              <span className="text-green-500">Connected</span>
+            ) : (
+              <span className="text-red-500">Not connected</span>
+            )}
           </div>
 
           <Separator className="my-4 bg-white/20" />
@@ -87,17 +145,14 @@ export default function CheckoutModal({ cart }) {
             </div>
           </div>
 
-          <Button 
-            className="mt-6 w-full bg-white text-black hover:bg-white/90" 
-            onClick={() => {
-              // Handle purchase logic here
-              console.log("Processing purchase...")
-            }}
+          <Button
+            className="mt-6 w-full bg-white text-black hover:bg-white/90"
+            onClick={handleCheckout}
           >
             Purchase
           </Button>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
