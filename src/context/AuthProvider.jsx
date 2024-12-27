@@ -131,7 +131,6 @@ const AuthProvider = ({ children }) => {
       // Clear all local storage
       localStorage.removeItem("jwtToken");
       localStorage.removeItem("jwtRefreshToken");
-      localStorage.removeItem("walletAddress");
       localStorage.removeItem("user");
 
       // Reset all auth states
@@ -173,16 +172,6 @@ const AuthProvider = ({ children }) => {
   if (!user) {
     fetchUserData();
   }
-
-  // useEffect(() => {
-  //   console.log("------ Auth State ------");
-  //   console.log("User:", user);
-  //   console.log("isAuth:", isAuth);
-  //   console.log("Wallet Address:", walletAddress);
-  //   console.log("Token:", token);
-  //   console.log("Refresh Token:", refreshToken);
-  //   console.log("------------------------");
-  // }, [user, isAuth, walletAddress, token, refreshToken]);
 
   return (
     <AuthContext.Provider

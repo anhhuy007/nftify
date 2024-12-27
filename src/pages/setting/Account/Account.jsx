@@ -155,7 +155,7 @@ function Account() {
             value={user.username}
             id="username"
             disabled
-            className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+            className="pl-5 border-0 py-7 text-4x text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
           />
         </div>
 
@@ -171,7 +171,7 @@ function Account() {
             value={user.email}
             id="email"
             disabled
-            className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+            className="pl-5 border-0 py-7 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
           />
         </div>
 
@@ -188,7 +188,7 @@ function Account() {
               onChange={(e) =>
                 setUser({ ...user, currentPassword: e.target.value })
               }
-              className="pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+              className="pl-5 py-7 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
             />
           </div>
           <div className="grid grid-cols-[82%_3%_15%]">
@@ -199,7 +199,7 @@ function Account() {
               onChange={(e) =>
                 setUser({ ...user, newPassword: e.target.value })
               }
-              className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+              className="pl-5 border-0 py-7 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
             />
 
             <div></div>

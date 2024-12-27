@@ -20,6 +20,7 @@ export const handleAddToCart = (title) => {
 export default function NftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItemToCart } = useCart();
+  
 
   const handleCartClick = async () => {
     try {

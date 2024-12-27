@@ -14,7 +14,7 @@ const WalletProvider = ({ children }) => {
   const getBalance = async (provider, address) => {
     const balance = await provider.getBalance(address);
     return ethers.formatEther(balance);
-  }
+  };
 
   const connectWallet = async () => {
     if (!window.ethereum) {
@@ -50,6 +50,33 @@ const WalletProvider = ({ children }) => {
     }
   };
 
+  const disconnectWallet = async () => {
+    try {
+      // Remove MetaMask event listeners
+      if (window.ethereum) {
+        window.ethereum.removeAllListeners("accountsChanged");
+        window.ethereum.removeAllListeners("chainChanged");
+        window.ethereum.removeAllListeners("disconnect");
+      }
+
+      // Clear local storage if needed
+      localStorage.removeItem("walletAddress");
+
+      // Reset all state
+      setProvider(null);
+      setSigner(null);
+      setAddress("");
+      setBalance(0);
+      setIsConnected(false);
+
+      // Show success message
+      toast.success("Wallet disconnected successfully");
+    } catch (error) {
+      console.error("Error disconnecting wallet:", error);
+      toast.error("Failed to disconnect wallet");
+    }
+  };
+
   console.log("WalletProvider:", {
     provider,
     signer,
@@ -66,6 +93,7 @@ const WalletProvider = ({ children }) => {
         balance,
         isConnected,
         connectWallet,
+        disconnectWallet,
       }}
     >
       {children}

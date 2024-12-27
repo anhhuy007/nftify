@@ -16,6 +16,7 @@ class IpfsService {
       this.bgImgGroup = await this.ensureGroupExists("BgImage");
       this.stampImgGroup = await this.ensureGroupExists("StampImage");
       this.metedataGroup = await this.ensureGroupExists("StampMetadata");
+      this.collectionGroup = await this.ensureGroupExists("CollectionImage");
     } catch (error) {
       console.error("Error initializing groups:", error);
     }
@@ -80,7 +81,12 @@ class IpfsService {
         },
       };
 
-      const upload = await this.pinata.upload.file(file, uploadOptions);
+      // Tải lên tệp bình thường (File)
+      const upload = await this.pinata.upload
+        .file(file, uploadOptions)
+        .group(this.bgImgGroup.id);
+
+      setIsLoading(false);
 
       return {
         ipfsHash: upload.IpfsHash,
@@ -107,7 +113,9 @@ class IpfsService {
         },
       };
 
-      const upload = await this.pinata.upload.file(file, uploadOptions);
+      const upload = await this.pinata.upload
+        .file(file, uploadOptions)
+        .group(this.stampImgGroup.id);
 
       return {
         ipfsHash: upload.IpfsHash,
@@ -135,8 +143,12 @@ class IpfsService {
         },
       };
 
-      const upload = await this.pinata.upload.json(metadata, uploadOptions);
-      console.log("Upload metadata:", upload);
+      const upload = await this.pinata.upload
+        .json(metadata, uploadOptions)
+        .group(this.metedataGroup.id);
+
+      // Console.log what is uploaded
+      console.log("Uploaded metadata:", upload);
 
       return {
         ipfsHash: upload.IpfsHash,
@@ -147,6 +159,35 @@ class IpfsService {
     } catch (error) {
       console.error("Lỗi tải lên metadata:", error);
       throw new Error(`Không thể tải lên metadata: ${error.message}`);
+    }
+  }
+
+  async uploadCollectionImage(file) {
+    try {
+      if (!(file instanceof File)) {
+        throw new Error("Input không phải là tệp hợp lệ");
+      }
+
+      const uploadOptions = {
+        pinataMetadata: {
+          name: `Collection-${Date.now()}`,
+          groupId: this.stampImgGroup.id,
+        },
+      };
+
+      const upload = await this.pinata.upload
+        .file(file, uploadOptions)
+        .group(this.stampImgGroup.id);
+
+      return {
+        ipfsHash: upload.IpfsHash,
+        pinSize: upload.PinSize,
+        timestamp: upload.Timestamp,
+        url: `https://plum-glamorous-cephalopod-335.mypinata.cloud/ipfs/${upload.IpfsHash}`,
+      };
+    } catch (error) {
+      console.error("Lỗi tải lên collection:", error);
+      throw new Error(`Không thể tải lên collection: ${error.message}`);
     }
   }
 }

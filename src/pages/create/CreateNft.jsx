@@ -20,6 +20,9 @@ import {
 import CustomDateInput from "@/components/ui/date-input";
 import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/api/AuthHandler";
+import { useWallet } from "@/context/WalletProvider";
+import { userCollection } from "@/api/Endpoints";
+import { createNftApiEndpoint } from "@/api/Endpoints";
 
 function CreateNft() {
   const navigate = useNavigate();
@@ -27,13 +30,30 @@ function CreateNft() {
   const [isCreated, setIsCreated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { fetchWithAuth } = useAuthHandler();
+  const [collection, setCollection] = useState([]);
+  const [selectedCollection, setSelectedCollection] = useState(null);
 
   const { isAuth, user } = useAuth();
-  console.log(user);
   if (!isAuth) {
     toast.error("Please login to create NFTs");
     navigate("/");
   }
+
+  const fetchCollections = async () => {
+    try {
+      const result = await fetchWithAuth(userCollection);
+      console.log("Collections", result);
+      setCollection(result.data);
+    } catch (error) {
+      console.error("Error fetching collections", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
+
+  const wallet = useWallet();
 
   const [nft, setNft] = useState({
     title: "",
@@ -49,7 +69,7 @@ function CreateNft() {
     function: "",
     color: "",
     releasedDate: "",
-    metadata: "",
+    cid: "",
   });
 
   const handleFileSelect = (file) => {
@@ -72,84 +92,101 @@ function CreateNft() {
   const handleCreateNft = async () => {
     console.log("Creating NFT", nft);
 
-    // Validate NFT fields
-    if (
-      !nft.title ||
-      !nft.imgUrl ||
-      !nft.description ||
-      !nft.issuedBy ||
-      !nft.denom ||
-      !nft.color ||
-      !nft.releasedDate ||
-      !nft.function
-    ) {
+    const requiredFields = [
+      "title",
+      "imgUrl",
+      "description",
+      "issuedBy",
+      "denom",
+      "color",
+      "releasedDate",
+      "function",
+    ];
+    const missingFields = requiredFields.filter((field) => !nft[field]);
+
+    if (missingFields.length > 0) {
       toast.error("Please fill all required fields");
       return;
     }
 
     setIsLoading(true);
+
+    let pinataImgUrl, pinataCid, pinataMetadataUrl;
+
     try {
-      const updates = {};
-      const uploadTasks = [];
+      // Upload image
+      const stampImgUpload = await IpfsService.uploadStampImage(nft.imgUrl);
+      if (!stampImgUpload || !stampImgUpload.url) {
+        throw new Error("Error uploading image to IPFS");
+      }
+      pinataImgUrl = stampImgUpload.url;
+      toast.success("Image uploaded on Pinata successfully");
 
-      // Upload image to IPFS
-      const stampImgUploadTask = IpfsService.uploadStampImage(nft.imgUrl).then(
-        (stampImg) => {
-          if (stampImg) {
-            updates.imgUrl = stampImg.url;
-            toast.success("Image uploaded on Pinata successfully");
-          } else {
-            throw new Error("Failed to upload image");
-          }
-        }
-      );
-
-      uploadTasks.push(stampImgUploadTask);
-
-      await Promise.all(uploadTasks);
-
-      // Upload metadata to IPFS
+      // Upload metadata
       const metadata = {
-        creatorId: user.id,
+        creatorId: user._id,
         title: nft.title,
         issuedBy: nft.issuedBy,
         function: nft.function,
         color: nft.color,
         date: nft.releasedDate,
         denom: nft.denom,
-        color: nft.color,
-        imgUrl: updates.imgUrl,
+        imgUrl: pinataImgUrl,
       };
 
-      const metadataUploadTask = IpfsService.uploadStampMetadata(metadata).then(
-        (metadataUpload) => {
-          if (metadataUpload) {
-            updates.metadata = metadataUpload.ipfsHash;
-            console.log(metadataUpload);
-            toast.success("Metadata uploaded on Pinata successfully");
-          } else {
-            throw new Error("Failed to upload metadata");
-          }
-        }
-      );
-
-      uploadTasks.push(metadataUploadTask);
-
-      // Wait for all uploads to finish
-      await Promise.all(uploadTasks);
-
-      console.log("Updates", updates);
-
-      setNft((prev) => ({
-        ...prev,
-        imgUrl: updates.imgUrl,
-        metadataUrl: updates.metadataUrl,
-      }));
+      const metadataUpload = await IpfsService.uploadStampMetadata(metadata);
+      if (!metadataUpload || !metadataUpload.url) {
+        throw new Error("Error uploading metadata to IPFS");
+      }
+      pinataCid = metadataUpload.ipfsHash;
+      pinataMetadataUrl = metadataUpload.url;
+      toast.success("Metadata uploaded on Pinata successfully");
 
       // Upload NFT to backend
+      const nftData = {
+        creatorId: user._id,
+        title: nft.title,
+        issuedBy: nft.issuedBy,
+        function: nft.function,
+        color: nft.color,
+        date: nft.releasedDate,
+        denom: nft.denom,
+        imgUrl: pinataImgUrl,
+        tokenID: pinataCid,
+        price: nft.price,
+        tokenUrl: pinataMetadataUrl,
+        description: nft.description,
+        collection: selectedCollection,
+      };
+
+      console.log("NFT Data", nftData);
+
+      const result = await fetchWithAuth(createNftApiEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nftData),
+      });
+
+      if (result.success !== true) {
+        throw new Error(result.message || "Error creating NFT on backend");
+      }
+
+      toast.success("NFT created successfully");
+
+      setNft({
+        title: "",
+        imgUrl: "",
+        description: "",
+        issuedBy: "",
+        denom: "",
+        color: "",
+        releasedDate: "",
+        function: "",
+        price: "",
+      });
     } catch (error) {
-      console.error("Error uploading to IPFS:", error);
-      toast.error("Error uploading to IPFS");
+      console.error(error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -187,7 +224,7 @@ function CreateNft() {
                   </div>
                 </div>
                 <div>
-                  {/* {user.isConnected ? (
+                  {wallet.isConnected ? (
                     <div className="bg-green-500 text-white px-4 py-2 rounded">
                       Connected
                     </div>
@@ -195,7 +232,7 @@ function CreateNft() {
                     <div className="bg-red-500 text-white px-4 py-2 rounded">
                       Not Connected
                     </div>
-                  )} */}
+                  )}
                 </div>
               </div>
             </div>
@@ -244,12 +281,12 @@ function CreateNft() {
             )}
 
             {/* Collection */}
-            {/* <div className="space-y-4">
+            <div className="space-y-4">
               <CollectionChooser
-                collections={user.collections}
-                onCollectionSelect={handleCollectionSelect}
+                collections={collection}
+                onCollectionSelect={setSelectedCollection}
               />
-            </div> */}
+            </div>
             {/* Name */}
             <div className="space-y-4">
               <span className="text-primary-foreground text-3xl font-bold">

@@ -146,6 +146,34 @@ export default function NftGeneralInformation({ data: stamp }) {
               Place a bid
             </Button>
           </div>
+
+          <Separator className="bg-secondary my-4 md:my-6" />
+
+          <div className="mt-5">
+            <h3 className="text-2xl font-bold mb-3">Attributes</h3>
+            <div className="bg-card rounded-lg border-2 p-4 space-y-2">
+              <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
+                <span className="text-gray-400 font-normal">Issued By</span>
+                <span>{stamp.issuedBy || "N/A"}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
+                <span className="text-gray-400 font-normal">Release Date</span>
+                <span>{stamp.date || "N/A"}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
+                <span className="text-gray-400 font-normal">Function</span>
+                <span>{stamp.function || "N/A"}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-400/70">
+                <span className="text-gray-400 font-normal">Face value</span>
+                <span>{stamp.denom ? stamp.denom.$numberDecimal : "N/A"}</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-400 font-normal">Color</span>
+                <span>{stamp.color || "N/A"}</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </>
