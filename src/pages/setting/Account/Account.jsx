@@ -7,14 +7,9 @@ import toast from "react-hot-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import {
-  userApiEndpoint,
-  userCheckPasswordApiEndpoint,
-  userChangePasswordApiEndpoint,
-} from "@/handlers/Endpoints";
 import { useNavigate } from "react-router-dom";
 import { useWallet } from "@/context/WalletProvider";
-import { userInitWalletApiEndpoint } from "../../../handlers/Endpoints";
+import { USER_ENDPOINTS } from "../../../handlers/Endpoints";
 
 function Account() {
   const { isAuth, user } = useAuth();
@@ -49,7 +44,7 @@ function Account() {
   const fetchData = async () => {
     // Fetch user data
     try {
-      const result = await fetchWithAuth(userApiEndpoint);
+      const result = await fetchWithAuth(USER_ENDPOINTS.GET_USER);
       const userData = result.data[0];
 
       console.log("User data: ", userData);
@@ -78,7 +73,7 @@ function Account() {
 
     // Check if the current password is correct
     try {
-      const response = await fetchWithAuth(userCheckPasswordApiEndpoint, {
+      const response = await fetchWithAuth(USER_ENDPOINTS.CHECK_PASSWORD, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +132,7 @@ function Account() {
 
       // init user wallet address
       if (!user.wallet_address) {
-        const result = await fetchWithAuth(userInitWalletApiEndpoint, {
+        const result = await fetchWithAuth(USER_ENDPOINTS.INIT_WALLET, {
           method: "POST",
           body: JSON.stringify({ walletAddress: connectedAddress }),
         });

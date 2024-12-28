@@ -1,29 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/context/AuthProvider";
-import { useAuthHandler } from "@/handlers/AuthHandler";
-import { testEndpoint } from "@/handlers/Endpoints";
-import { toast } from "react-hot-toast";
 
 function Introduction() {
-  const { fetchWithAuth } = useAuthHandler();
-
-  const handleCreate = async () => {
-    try {
-      const result = await fetchWithAuth(testEndpoint);
-
-      console.log("Test endpoint result: ", result);
-      alert("Test endpoint result: " + JSON.stringify(result));
-    } catch (error) {
-      console.error("Test endpoint error: ", error);
-      alert("Test endpoint error: " + error.message);
-    }
-    if (!isAuth) {
-      toast("Please login to create NFTs");
-      return;
-    }
-  };
-
   return (
     <div className="min-h-[600px] w-full flex items-center">
       <div className="container mx-auto px-4 py-16">

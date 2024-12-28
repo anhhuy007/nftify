@@ -15,73 +15,107 @@ import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import {
-  fetcher,
-  userOwnedNftsApiEndpoint,
-  userOnSaleNftsApiEndpoint,
-  userCreatedNftsApiEndpoint,
-} from "@/handlers/Endpoints";
-import { useAuth } from "@/context/AuthProvider";
+import { fetcher, USER_ENDPOINTS } from "../../handlers/Endpoints";
 
-const UserNfts = () => {
+const ITEMS_PER_ROW = {
+  GRID: 5,
+  LIST: 4,
+};
+
+const DEFAULT_FILTER_STATE = {
+  lowestPrice: "",
+  highestPrice: "",
+  status: "all",
+  collection: "",
+};
+
+function getInitialStateFromURL(searchParams, paramName, defaultValue) {
+  return searchParams.get(paramName) || defaultValue;
+}
+
+function getCardComponent(currentPath, isGrid) {
+  return currentPath.includes("liked")
+    ? isGrid
+      ? SmallNftCard
+      : BigNftCard
+    : isGrid
+    ? SmallEditNftCard
+    : BigEditNftCard;
+}
+
+function buildApiEndpoint(currentPath, userId) {
+  const pathSegments = currentPath.split("/");
+  const profileId = pathSegments[2];
+
+  if (currentPath.includes("owned")) {
+    return {
+      type: "owned",
+      url: USER_ENDPOINTS.PROFILE.OWNED_NFTS.replace(":userId", profileId),
+    };
+  } else if (currentPath.includes("onSale")) {
+    return {
+      type: "onSale",
+      url: USER_ENDPOINTS.PROFILE.ON_SALE_NFTS.replace(":userId", profileId),
+    };
+  } else if (currentPath.includes("created")) {
+    return {
+      type: "created",
+      url: USER_ENDPOINTS.PROFILE.CREATED_NFTS.replace(":userId", profileId),
+    };
+  }
+  return { type: "", url: "" };
+}
+
+function UserNfts() {
   const { userId } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  const { user } = useAuth();
-  console.log("User:", user);
+  const filterSheetRef = useRef();
+  const searchParams = new URLSearchParams(location.search);
 
+  // State initialization
   const [searchValue, setSearchValue] = useState(
-    new URLSearchParams(location.search).get("search") || ""
+    getInitialStateFromURL(searchParams, "search", "")
   );
   const [sortOption, setSortOption] = useState(
-    new URLSearchParams(location.search).get("sort") || "default"
+    getInitialStateFromURL(searchParams, "sort", "default")
   );
   const [filter, setFilter] = useState({
-    lowestPrice: new URLSearchParams(location.search).get("minPrice") || "",
-    highestPrice: new URLSearchParams(location.search).get("maxPrice") || "",
-    status: new URLSearchParams(location.search).get("status") || "all",
-    collection:
-      new URLSearchParams(location.search).get("collectionName") || "",
+    lowestPrice: getInitialStateFromURL(searchParams, "minPrice", ""),
+    highestPrice: getInitialStateFromURL(searchParams, "maxPrice", ""),
+    status: getInitialStateFromURL(searchParams, "status", "all"),
+    collection: getInitialStateFromURL(searchParams, "collectionName", ""),
   });
   const [isGrid, setIsGrid] = useState(true);
   const [currentPage, setCurrentPage] = useState(
-    parseInt(new URLSearchParams(location.search).get("page"), 10) || 1
+    parseInt(getInitialStateFromURL(searchParams, "page", "1"), 10)
   );
   const [limitCard, setLimitCard] = useState(
-    parseInt(new URLSearchParams(location.search).get("limit"), 10) || 20
+    parseInt(getInitialStateFromURL(searchParams, "limit", "20"), 10)
   );
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [apiUrl, setApiUrl] = useState("");
   const [typeData, setTypeData] = useState("");
-  let CardComponent;
 
-  if (currentPath.includes("liked")) {
-    CardComponent = isGrid ? SmallNftCard : BigNftCard;
-  } else {
-    CardComponent = isGrid ? SmallEditNftCard : BigEditNftCard;
-  }
-  const filterSheetRef = useRef();
+  const CardComponent = getCardComponent(currentPath, isGrid);
 
-  useEffect(() => {
-    const userId = currentPath.split("/")[2];
-    if (currentPath.includes("owned")) {
-      setTypeData("owned");
-      setApiUrl(userOwnedNftsApiEndpoint.replace(":userId", userId));
-    } else if (currentPath.includes("onSale")) {
-      setTypeData("onSale");
-      setApiUrl(userOnSaleNftsApiEndpoint.replace(":userId", userId));
-    } else if (currentPath.includes("created")) {
-      setTypeData("created");
-      setApiUrl(userCreatedNftsApiEndpoint.replace(":userId", userId));
-    }
-    setCurrentPage(1);
-    setItems([]);
-  }, [currentPath]);
+  // Path-based initialization
+  useEffect(
+    function initializeApiEndpoint() {
+      const { type, url } = buildApiEndpoint(currentPath, userId);
+      setTypeData(type);
+      setApiUrl(url);
+      setCurrentPage(1);
+      setItems([]);
+    },
+    [currentPath]
+  );
 
+  // Query configuration
   const {
-    data: nftsData,
+    data,
     error: nftsError,
     isLoading: nftsLoading,
     refetch,
@@ -99,67 +133,76 @@ const UserNfts = () => {
       currentPage,
       limitCard,
     ],
-    () =>
-      fetcher(
-        `${apiUrl}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&collectionName=${filter.collection}&page=${currentPage}&limit=${limitCard}`
-      ),
+    function fetchUserNfts() {
+      const queryParams = new URLSearchParams({
+        title: searchValue,
+        sort: sortOption,
+        minPrice: filter.lowestPrice,
+        maxPrice: filter.highestPrice,
+        collectionName: filter.collection,
+        page: currentPage.toString(),
+        limit: limitCard.toString(),
+      });
+
+      return fetcher(`${apiUrl}?${queryParams.toString()}`);
+    },
     {
       keepPreviousData: true,
-      onSuccess: (response) => {
-        console.log(
-          `Request API: ${apiUrl}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&collectionName=${filter.collection}&page=${currentPage}&limit=${limitCard}`
+      onSuccess: function handleQuerySuccess(response) {
+        const responseData = response.data;
+        setItems(
+          currentPage === 1
+            ? responseData.items
+            : (prevItems) => [...prevItems, ...responseData.items]
         );
-
-        const data = response.data;
-        if (currentPage === 1) {
-          setItems(data.items);
-        } else {
-          setItems((prevItems) => [...prevItems, ...data.items]);
-        }
-        setHasMore(data.hasMore || data.items.length > 0);
+        setHasMore(responseData.hasMore || responseData.items.length > 0);
       },
-      enabled: !!userId && !!apiUrl,
+      enabled: Boolean(userId && apiUrl),
     }
   );
 
-  useEffect(() => {
-    const newCardCount = isGrid ? 5 : 4;
-    setLimitCard(newCardCount * 4);
-    setCurrentPage(1);
-    setItems([]);
-    refetch();
-  }, [isGrid, refetch]);
+  // Grid/List view handling
+  useEffect(
+    function handleLayoutChange() {
+      const newCardCount = isGrid ? ITEMS_PER_ROW.GRID : ITEMS_PER_ROW.LIST;
+      setLimitCard(newCardCount * 4);
+      setCurrentPage(1);
+      setItems([]);
+      refetch();
+    },
+    [isGrid, refetch]
+  );
 
-  const updateQueryParams = (params) => {
-    const searchParams = new URLSearchParams({
+  function updateQueryParams(params) {
+    const updatedParams = new URLSearchParams({
       ...Object.fromEntries(new URLSearchParams(location.search).entries()),
       ...params,
     });
-    navigate({ search: searchParams.toString() });
-  };
+    navigate({ search: updatedParams.toString() });
+  }
 
-  const handlePageChange = (pageNumber) => {
+  function handlePageChange(pageNumber) {
     setCurrentPage(pageNumber);
     updateQueryParams({ page: pageNumber });
-  };
+  }
 
-  const handleSearch = (value) => {
+  function handleSearch(value) {
     setSearchValue(value);
     updateQueryParams({ search: value });
     setCurrentPage(1);
     setItems([]);
     refetch();
-  };
+  }
 
-  const handleSort = (option) => {
+  function handleSort(option) {
     setSortOption(option);
     updateQueryParams({ sort: option });
     setCurrentPage(1);
     setItems([]);
     refetch();
-  };
+  }
 
-  const handleFilterChange = (newFilter) => {
+  function handleFilterChange(newFilter) {
     setFilter(newFilter);
     updateQueryParams({
       minPrice: newFilter.lowestPrice,
@@ -170,15 +213,10 @@ const UserNfts = () => {
     setCurrentPage(1);
     setItems([]);
     refetch();
-  };
+  }
 
-  const handleClearFilter = () => {
-    setFilter({
-      lowestPrice: "",
-      highestPrice: "",
-      status: "all",
-      collection: "",
-    });
+  function handleClearFilter() {
+    setFilter(DEFAULT_FILTER_STATE);
     updateQueryParams({
       minPrice: "",
       maxPrice: "",
@@ -188,22 +226,27 @@ const UserNfts = () => {
     setCurrentPage(1);
     setItems([]);
     refetch();
-  };
+  }
 
-  const handleToggleGrid = (value) => setIsGrid(value);
+  function handleToggleGrid(value) {
+    setIsGrid(value);
+  }
 
-  const fetchMoreData = () => {
+  function fetchMoreData() {
     handlePageChange(currentPage + 1);
-  };
+  }
 
-  const closeFilter = () => {
-    if (filterSheetRef.current) {
-      filterSheetRef.current.close();
-    }
-  };
+  function closeFilter() {
+    filterSheetRef.current?.close();
+  }
 
-  if (nftsLoading && currentPage === 1) return <LoadingAnimation />;
-  if (nftsError) return <ErrorAnimation />;
+  if (nftsLoading && currentPage === 1) {
+    return <LoadingAnimation />;
+  }
+
+  if (nftsError) {
+    return <ErrorAnimation />;
+  }
 
   return (
     <div className="flex flex-col gap-10">
@@ -245,6 +288,6 @@ const UserNfts = () => {
       </InfiniteScroll>
     </div>
   );
-};
+}
 
 export default UserNfts;

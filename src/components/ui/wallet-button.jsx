@@ -13,7 +13,7 @@ import { useWallet } from "@/context/WalletProvider";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import { userInitWalletApiEndpoint } from "@/handlers/Endpoints";
+import { USER_ENDPOINTS } from "../../handlers/Endpoints";
 
 const formatAddress = (address) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -40,7 +40,7 @@ export function WalletButton() {
 
       // init user wallet address
       if (!user.wallet_address) {
-        const result = await fetchWithAuth(userInitWalletApiEndpoint, {
+        const result = await fetchWithAuth(USER_ENDPOINTS.INIT_WALLET, {
           method: "POST",
           body: JSON.stringify({ walletAddress: connectedAddress }),
         });

@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { useWallet } from "@/context/WalletProvider";
 import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import { createCollectionApiEndpoint } from "@/handlers/Endpoints";
+import { USER_ENDPOINTS } from "../../handlers/Endpoints";
 
 function CreateCollection() {
   const [collection, setCollection] = useState({
@@ -75,7 +75,7 @@ function CreateCollection() {
 
       console.log("Creating collection with data:", collectionData);
 
-      const response = await fetchWithAuth(createCollectionApiEndpoint, {
+      const response = await fetchWithAuth(USER_ENDPOINTS.CREATE_COLLECTION, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

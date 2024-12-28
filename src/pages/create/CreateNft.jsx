@@ -21,7 +21,7 @@ import CustomDateInput from "@/components/ui/date-input";
 import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useWallet } from "@/context/WalletProvider";
-import { userCollection, createNftApiEndpoint } from "@/handlers/Endpoints";
+import { USER_ENDPOINTS } from "../../handlers/Endpoints";
 
 function CreateNft() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ function CreateNft() {
 
   const fetchCollections = async () => {
     try {
-      const result = await fetchWithAuth(userCollection);
+      const result = await fetchWithAuth(USER_ENDPOINTS.GET_COLLECTIONS);
       console.log("Collections", result);
       setCollection(result.data);
     } catch (error) {
@@ -160,7 +160,7 @@ function CreateNft() {
 
       console.log("NFT Data", nftData);
 
-      const result = await fetchWithAuth(createNftApiEndpoint, {
+      const result = await fetchWithAuth(USER_ENDPOINTS.CREATE_NFT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nftData),

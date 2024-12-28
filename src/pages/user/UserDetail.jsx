@@ -13,11 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
-import { userDetailApiEndpoint } from "@/handlers/Endpoints";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { useAuth } from "@/context/AuthProvider";
+import { USER_ENDPOINTS } from "../../handlers/Endpoints";
 
 function UserDetail() {
   const navigate = useNavigate();
@@ -37,7 +37,6 @@ function UserDetail() {
   }, [isAuth, location.pathname, navigate]);
 
   const userDetailItem = menuItems.find((item) => item.group === "userDetail");
-  const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { fetcher } = useAuthHandler();
 
@@ -47,7 +46,7 @@ function UserDetail() {
     isLoading: userDetailLoading,
   } = useQuery(
     ["user-detail", id],
-    () => fetcher(userDetailApiEndpoint.replace(":userId", id)),
+    () => fetcher(USER_ENDPOINTS.PROFILE.BASE.replace(":userId", id)),
     { enabled: !!id }
   );
 

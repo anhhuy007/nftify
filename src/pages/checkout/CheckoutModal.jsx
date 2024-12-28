@@ -11,29 +11,82 @@ import { Separator } from "@/components/ui/separator";
 import NFTService from "@/services/NFTService";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartProvider";
+import { ethers } from "ethers";
+import { useAuthHandler } from "../../handlers/AuthHandler";
+import { TRANSACTION_ENDPOINTS } from "../../handlers/Endpoints";
+
+// Constants
+const PROTOCOL_FEE = 0.1; // 0.1 ETH fixed fee
+
+function calculateSubtotal(items) {
+  if (!Array.isArray(items)) return 0;
+  return items.reduce((acc, item) => acc + (item?.price || 0), 0);
+}
+
+function processTransaction(transactionData) {
+  const { event, transaction: _transaction } = transactionData;
+  if (!event || !_transaction) return null;
+
+  try {
+    const gasUsed = BigInt(_transaction.gasUsed);
+    const gasPrice = BigInt(_transaction.gasPrice);
+    const transactionFee = ethers.formatEther((gasUsed * gasPrice).toString());
+
+    return {
+      transactionHash: _transaction.blockHash,
+      block: _transaction.blockNumber,
+      from: event.args[1],
+      to: event.args[2],
+      tokenID: Number(event.args[0]),
+      value: ethers.formatEther(event.args[3].toString()),
+      transactionFee,
+      gasPrice: ethers.formatEther(gasPrice.toString()),
+    };
+  } catch (error) {
+    console.error("Failed to process transaction:", error);
+    return null;
+  }
+}
 
 export default function CheckoutModal({
   preprocess,
-  cancelCheckout, 
+  cancelCheckout,
   style,
   content = "Checkout",
 }) {
   const { cart, checkoutCart } = useCart();
   const [open, setOpen] = useState(false);
+  const { fetchWithAuth } = useAuthHandler();
 
-  // Safely calculate totals with null checks
-  const subtotal = cart?.items?.reduce((acc, item) => acc + item.price, 0) || 0;
-  const protocolFee = 0.1; // 0.1 ETH fixed fee
-  const total = subtotal + protocolFee;
+  const subtotal = calculateSubtotal(cart?.items);
+  const total = subtotal + PROTOCOL_FEE;
 
-  const handleOpenChange = (isOpen) => {
+  function handleOpenChange(isOpen) {
     if (!isOpen && cancelCheckout) {
       cancelCheckout();
     }
     setOpen(isOpen);
-  };
+  }
 
-  const handleDialogTrigger = async () => {
+  async function saveTransaction(transaction) {
+    try {
+      const response = await fetchWithAuth(TRANSACTION_ENDPOINTS.BASE, {
+        method: "POST",
+        body: JSON.stringify(transaction),
+      });
+
+      if (!response.success) {
+        throw new Error("Failed to save transaction");
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to save transaction:", error);
+    }
+  }
+
+  async function handleDialogTrigger(event) {
+    event.preventDefault();
     try {
       if (preprocess) {
         await preprocess();
@@ -41,53 +94,70 @@ export default function CheckoutModal({
       setOpen(true);
     } catch (error) {
       toast.error(error.message || "Failed to process item");
+    }
+  }
+
+  async function handleCheckout() {
+    if (!cart?.items?.length) {
+      toast.error("Cart is empty");
       return;
     }
-  };
 
-  const handleCheckout = async () => {
+    if (!NFTService.contract) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
     try {
-      // Call the checkout API here
       console.log("Processing purchase...");
-      const result = await NFTService.checkoutCart(cart.items);
+      const transaction_result = await NFTService.checkoutCart(cart.items);
 
-      // If successful, log the result
-      if (result) {
-        const result_checkout = await checkoutCart();
-        if (result_checkout) {
-          toast.success("Checkout successful");
-          setOpen(false);
-        } else {
-          toast.error("Failed to checkout");
-        }
+      if (!transaction_result?.results) {
+        throw new Error("Invalid transaction result");
+      }
+
+      const processedTransactions = transaction_result.results
+        .map(processTransaction)
+        .filter(Boolean);
+
+      if (processedTransactions.length === 0) {
+        throw new Error("No transactions were processed successfully");
+      }
+
+      // save transactions to database
+      for (const _trans of processedTransactions) {
+        const response = await saveTransaction(_trans);
+        console.log("Transaction saved:", response);
+      }
+
+      const checkout_response = await checkoutCart();
+      if (checkout_response) {
+        toast.success("Checkout successful");
+        setOpen(false);
       } else {
-        toast.error("Failed to checkout");
+        throw new Error("Failed to checkout");
       }
     } catch (error) {
-      if (error.message === "Contract not initialized") {
-        toast.error("Please connect your wallet first");
-      } else {
-        toast.error("Failed to process purchase");
-      }
+      const errorMessage = error.message === "Contract not initialized"
+        ? "Please connect your wallet first"
+        : "Failed to process purchase";
+      toast.error(errorMessage);
+      console.error("Checkout error:", error);
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
-          className={`w-full ${
-            style || "bg-white text-black hover:bg-white/90"
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            handleDialogTrigger();
-          }}
+          className={`w-full ${style || "bg-white text-black hover:bg-white/90"}`}
+          onClick={handleDialogTrigger}
         >
           {content}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-[#0D0F1D] border-none text-white">
+        {/* Rest of the JSX remains unchanged */}
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white">
             Check out
@@ -136,7 +206,7 @@ export default function CheckoutModal({
             </div>
             <div className="flex justify-between">
               <span>Protocol fee</span>
-              <span>{protocolFee.toFixed(2)} ETH</span>
+              <span>{PROTOCOL_FEE.toFixed(2)} ETH</span>
             </div>
             <Separator className="my-2 bg-white/20" />
             <div className="flex justify-between font-medium">
