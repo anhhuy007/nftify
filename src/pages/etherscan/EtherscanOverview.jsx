@@ -8,6 +8,7 @@ import EthereumIcon from "../../assets/ethereum.svg"
 import TransactionIcon from "../../assets/transaction.svg"
 import GasIcon from "../../assets/gas.svg"
 import IconFoward from "../../assets/icon_forward.svg"
+import { Link } from "react-router-dom"
 
 const transactions = [
   {
@@ -168,7 +169,9 @@ export default function EtherscanPage() {
                     <tr key={i} className="hover:bg-[#252644]">
                       <td className="p-5">
                         <div className="flex items-center gap-2 text-blue-500">
-                          {tx.hash}
+                          <Link to="/etherscan/transaction/0xbfa600b22a4b844e7c12b8512819940b9a0d78830b28020d9a3a21aa94ff3e1" className="hover:text-blue-400">
+                              {tx.hash}
+                            </Link>
                           <button className="hover:text-blue-400">
                             <Copy className="h-4 w-4" />
                           </button>
