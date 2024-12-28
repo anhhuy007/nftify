@@ -32,6 +32,7 @@ import CreateCollection from "@/pages/create/CreateCollection";
 import Profile from "@/pages/setting/Profile/Profile";
 import Notification from "@/pages/setting/Notification/Notification";
 import Account from "@/pages/setting/Account/Account";
+import EtherscanPage from "../pages/etherscan/EtherscanOverview";
 
 const menuItems = [
   {
@@ -263,6 +264,14 @@ const menuItems = [
         element: <UserNfts />,
       },
     ],
+  },
+  {
+    name: "Etherscan",
+    group: "tools",
+    link: "/etherscan",
+    layout: "RootLayout",
+    element: <EtherscanPage />,
+    isPrivate: false,
   },
 ];
 
