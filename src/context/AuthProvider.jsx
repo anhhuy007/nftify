@@ -184,7 +184,7 @@ const AuthProvider = ({ children }) => {
   if (!user) {
     fetchUserData();
   }
-  
+
   return (
     <AuthContext.Provider
       value={{

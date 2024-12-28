@@ -17,7 +17,7 @@ import { useAuthHandler } from "@/handlers/AuthHandler";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { useAuth } from "@/context/AuthProvider";
-import { USER_ENDPOINTS } from "../../handlers/Endpoints";
+import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 function UserDetail() {
   const navigate = useNavigate();

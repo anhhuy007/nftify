@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
-import CollectionCard from "@/pages/marketplace/collections/components/CollectionCard";
+import CollectionCard, {
+  EditCollectionCard,
+} from "@/pages/marketplace/collections/components/CollectionCard";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
 import { fetcher } from "@/handlers/Endpoints";
 import { USER_ENDPOINTS } from "../../handlers/Endpoints";
+import { useAuth } from "@/context/AuthProvider";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -27,6 +30,7 @@ function UserCollections() {
   const { userId } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuth, user } = useAuth();
   const searchParams = new URLSearchParams(location.search);
 
   // State initialization
@@ -109,6 +113,13 @@ function UserCollections() {
     handlePageChange(currentPage + 1);
   }
 
+  let CardComponent = CollectionCard;
+  if (user?._id === userId) {
+    CardComponent = EditCollectionCard;
+  } else {
+    CardComponent = CollectionCard;
+  }
+
   if (collectionsLoading && currentPage === 1) {
     return <LoadingAnimation />;
   }
@@ -139,7 +150,7 @@ function UserCollections() {
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:grid-cols-4">
           {collections.map((collection, index) => (
-            <CollectionCard
+            <CardComponent
               key={collection._id || index}
               collection={collection}
             />

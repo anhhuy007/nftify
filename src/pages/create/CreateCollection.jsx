@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useWallet } from "@/context/WalletProvider";
 import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/handlers/AuthHandler";
+import { useAuth } from "@/context/AuthProvider";
 import { USER_ENDPOINTS } from "../../handlers/Endpoints";
 
 function CreateCollection() {
@@ -14,6 +15,9 @@ function CreateCollection() {
     description: "",
     thumbUrl: "",
   });
+
+  const { user, isAuth } = useAuth();
+  console.log(user, isAuth);
 
   const { fetchWithAuth } = useAuthHandler();
   const [isLoading, setIsLoading] = useState(false);

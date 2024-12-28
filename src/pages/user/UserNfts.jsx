@@ -15,7 +15,8 @@ import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, USER_ENDPOINTS } from "../../handlers/Endpoints";
+import { fetcher, USER_ENDPOINTS } from "@/handlers/Endpoints";
+import { useAuth } from "@/context/AuthProvider";
 
 const ITEMS_PER_ROW = {
   GRID: 5,
@@ -33,14 +34,11 @@ function getInitialStateFromURL(searchParams, paramName, defaultValue) {
   return searchParams.get(paramName) || defaultValue;
 }
 
-function getCardComponent(currentPath, isGrid) {
-  return currentPath.includes("liked")
-    ? isGrid
-      ? SmallNftCard
-      : BigNftCard
-    : isGrid
-    ? SmallEditNftCard
-    : BigEditNftCard;
+function getCardComponent(currentPath, isGrid, isProfileOwner) {
+  if (!currentPath.includes("liked") && isProfileOwner) {
+    return isGrid ? SmallEditNftCard : BigEditNftCard;
+  }
+  return isGrid ? SmallNftCard : BigNftCard;
 }
 
 function buildApiEndpoint(currentPath, userId) {
@@ -73,6 +71,7 @@ function UserNfts() {
   const currentPath = location.pathname;
   const filterSheetRef = useRef();
   const searchParams = new URLSearchParams(location.search);
+  const { isAuth, user } = useAuth();
 
   // State initialization
   const [searchValue, setSearchValue] = useState(
@@ -99,7 +98,11 @@ function UserNfts() {
   const [apiUrl, setApiUrl] = useState("");
   const [typeData, setTypeData] = useState("");
 
-  const CardComponent = getCardComponent(currentPath, isGrid);
+  const isProfileOwner = userId === user?._id;
+  console.log("isProfileOwner", isProfileOwner);
+  console.log("userId", userId);
+  console.log("user", user);
+  const CardComponent = getCardComponent(currentPath, isGrid, isProfileOwner);
 
   // Path-based initialization
   useEffect(

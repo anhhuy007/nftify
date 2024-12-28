@@ -11,7 +11,7 @@ import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
 import { fetcher } from "@/handlers/Endpoints";
-import { MARKETPLACE_ENDPOINTS } from "../../../handlers/Endpoints";
+import { MARKETPLACE_ENDPOINTS } from "@/handlers/Endpoints";
 
 // Query params builder function
 function buildNftsQueryString(params) {

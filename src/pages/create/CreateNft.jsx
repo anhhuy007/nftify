@@ -21,7 +21,7 @@ import CustomDateInput from "@/components/ui/date-input";
 import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useWallet } from "@/context/WalletProvider";
-import { USER_ENDPOINTS } from "../../handlers/Endpoints";
+import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 function CreateNft() {
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ function CreateNft() {
   const [selectedCollection, setSelectedCollection] = useState(null);
 
   const { isAuth, user } = useAuth();
+  console.log("user", user);
   if (!isAuth) {
     toast.error("Please login to create NFTs");
     navigate("/");
@@ -52,14 +53,14 @@ function CreateNft() {
     fetchCollections();
   }, []);
 
-  const wallet = useWallet();
+  const { isConnected, connectWallet, disconnectWallet, address } = useWallet();
 
   const [nft, setNft] = useState({
     title: "",
     imgUrl: "",
     price: "",
     ownerDetails: {
-      username: user.username,
+      username: "dylandixon",
       avatarUrl: user.avatarUrl,
       id: user.id,
     },
@@ -77,7 +78,10 @@ function CreateNft() {
   };
 
   const handlePriceChange = (e) => {
-    setNft((prev) => ({ ...prev, price: e.target.value }));
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value)) {
+      setNft((prev) => ({ ...prev, price: value }));
+    }
   };
 
   const handleNameChange = (e) => {
@@ -119,7 +123,6 @@ function CreateNft() {
         throw new Error("Error uploading image to IPFS");
       }
       pinataImgUrl = stampImgUpload.url;
-      toast.success("Image uploaded on Pinata successfully");
 
       // Upload metadata
       const metadata = {
@@ -139,11 +142,8 @@ function CreateNft() {
       }
       pinataCid = metadataUpload.ipfsHash;
       pinataMetadataUrl = metadataUpload.url;
-      toast.success("Metadata uploaded on Pinata successfully");
-
       // Upload NFT to backend
       const nftData = {
-        creatorId: user._id,
         title: nft.title,
         issuedBy: nft.issuedBy,
         function: nft.function,
@@ -156,6 +156,7 @@ function CreateNft() {
         tokenUrl: pinataMetadataUrl,
         description: nft.description,
         collection: selectedCollection,
+        isListed: isOnMarketplace,
       };
 
       console.log("NFT Data", nftData);
@@ -183,6 +184,8 @@ function CreateNft() {
         function: "",
         price: "",
       });
+
+      navigate(`/user/${user._id}/created`);
     } catch (error) {
       console.error(error.message);
       toast.error(error.message);
@@ -204,8 +207,12 @@ function CreateNft() {
         <div className="grid grid-cols-[60%_5%_35%] mt-10">
           <div className="space-y-14">
             {/* Blockchain connection */}
-            <div className="bg-card p-5 rounded-xl border-2">
-              <div className="flex items-center flex-col md:flex-row justify-between gap-10">
+            <div
+              className={`bg-card p-5 rounded-xl border-2
+              ${isConnected ? "" : "w-fit"}
+              `}
+            >
+              <div className="flex items-center flex-col md:flex-row">
                 {/* Image */}
                 <div className="flex gap-10 items-center">
                   <img
@@ -213,25 +220,25 @@ function CreateNft() {
                     alt="Ethereum Icon"
                     className="w-16 h-16"
                   />
-                  <div className="flex flex-col">
-                    <span className="text-primary-foreground text-2xl font-bold">
-                      {/* {user.address} */}
+                  <div className="flex flex-col max-w-[43%]">
+                    <span className="text-primary-foreground text-2xl font-bold truncate">
+                      {address}
                     </span>
                     <span className="text-muted-foreground text-2xl font-bold">
                       Ethereum
                     </span>
                   </div>
-                </div>
-                <div>
-                  {wallet.isConnected ? (
-                    <div className="bg-green-500 text-white px-4 py-2 rounded">
-                      Connected
-                    </div>
-                  ) : (
-                    <div className="bg-red-500 text-white px-4 py-2 rounded">
-                      Not Connected
-                    </div>
-                  )}
+                  <div className="">
+                    {isConnected ? (
+                      <div className="bg-green-500 text-white px-4 py-2 rounded">
+                        Connected
+                      </div>
+                    ) : (
+                      <div className="bg-red-500 text-white px-4 py-2 rounded">
+                        Not Connected
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -400,6 +407,7 @@ function CreateNft() {
                     id="denom"
                     placeholder="Enter price"
                     value={nft.denom}
+                    type="number"
                     onChange={(e) =>
                       setNft((prev) => ({ ...prev, denom: e.target.value }))
                     }

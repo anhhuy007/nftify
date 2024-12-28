@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Maximize2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import NftGeneralInformation from "@/pages/nft/components/NftGeneralInformation";
 import NftDetailTabs from "@/pages/nft/components/NftDetailTabs";

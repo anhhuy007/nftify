@@ -86,8 +86,6 @@ class IpfsService {
         .file(file, uploadOptions)
         .group(this.bgImgGroup.id);
 
-      setIsLoading(false);
-
       return {
         ipfsHash: upload.IpfsHash,
         pinSize: upload.PinSize,

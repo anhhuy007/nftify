@@ -44,10 +44,8 @@ function Account() {
   const fetchData = async () => {
     // Fetch user data
     try {
-      const result = await fetchWithAuth(USER_ENDPOINTS.GET_USER);
+      const result = await fetchWithAuth(USER_ENDPOINTS.SETTING.BASE);
       const userData = result.data[0];
-
-      console.log("User data: ", userData);
 
       setEditUser({
         ...editUser,
@@ -124,7 +122,9 @@ function Account() {
 
   const handleConnectWallet = async () => {
     try {
-      const connectedAddress = await connectWallet(editUser.wallet_address || null);
+      const connectedAddress = await connectWallet(
+        editUser.wallet_address || null
+      );
       if (!connectedAddress) {
         toast.error("Failed to connect wallet");
         return;

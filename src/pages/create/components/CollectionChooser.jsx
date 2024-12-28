@@ -41,14 +41,14 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
       {collections.map((collection) => (
         <CarouselItem
           key={collection._id}
-          className={`sm:basis-1/2 md:basis-1/3 lg:basis-1/3 `} // Apply shadow effect on hover
+          className={`pl-3 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 `} // Apply shadow effect on hover
           onClick={() => handleCollectionClick(collection)}
         >
           <Card
-            className={`border-2 border-border bg-background/50 transition-colors cursor-pointer rounded-2xl 
+            className={`bg-background/50 transition-colors cursor-pointer rounded-2xl 
               ${
                 selectedCollectionId === collection._id
-                  ? "border-[hsl(247,85%,64%)]"
+                  ? "border-destructive border-[6px] shadow-lg"
                   : ""
               } 
               hover:bg-background/80 hover:shadow-lg`}
@@ -72,7 +72,7 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
       <span className="text-primary-foreground text-3xl font-bold">
         Collection
       </span>
-      <div className="px-10 pr-14">
+      <div className="px-6 ">
         {/* Ensure that Carousel wraps the items properly */}
         <Carousel
           opts={{
@@ -83,13 +83,14 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
         >
           {collections.length > 2 ? (
             <>
-              <CarouselContent>{renderCollectionItems()}</CarouselContent>
-
+              <CarouselContent className="ml-[px]">
+                {renderCollectionItems()}
+              </CarouselContent>
               <CarouselPrevious />
               <CarouselNext />
             </>
           ) : (
-            <div className="flex flex-wrap  items-center justify-center">
+            <div className="flex flex-wrap items-center justify-center">
               {renderCollectionItems()}
             </div>
           )}

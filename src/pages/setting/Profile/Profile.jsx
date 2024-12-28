@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 // Pinata SDK
 import IpfsService from "@/services/IpfsService";
 import LoadingAnimation from "@/components/ui/loading";
-import { USER_ENDPOINTS } from "../../../handlers/Endpoints";
+import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 function Profile() {
   const { isAuth } = useAuth();
