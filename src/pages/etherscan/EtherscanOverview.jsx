@@ -1,67 +1,102 @@
 'use client'
 
-import React, { useState, useEffect } from "react"
-import { Search } from 'lucide-react'
+import React, { useState } from "react"
+import { Search, Copy, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { useLocation, useNavigate } from "react-router-dom"
 
 const transactions = [
   {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago",
-    from: "0xabcdef...xyz",
-    to: "0xabcdef...xyz", 
-    amount: "0.125 ETH"
-  },
-  {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago", 
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
     from: "0xabcdef...xyz",
     to: "0xabcdef...xyz",
-    amount: "0.125 ETH"
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
   },
   {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago",
-    from: "0xabcdef...xyz", 
-    to: "0xabcdef...xyz",
-    amount: "0.125 ETH"
-  },
-  {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago",
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
     from: "0xabcdef...xyz",
     to: "0xabcdef...xyz",
-    amount: "0.125 ETH"
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
   },
   {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago",
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
     from: "0xabcdef...xyz",
     to: "0xabcdef...xyz",
-    amount: "0.125 ETH"
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
   },
   {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago",
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
     from: "0xabcdef...xyz",
     to: "0xabcdef...xyz",
-    amount: "0.125 ETH"
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
   },
   {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago",
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
     from: "0xabcdef...xyz",
     to: "0xabcdef...xyz",
-    amount: "0.125 ETH"
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
   },
   {
-    hash: "0xabcxyz...",
-    timeAgo: "2 min ago",
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
     from: "0xabcdef...xyz",
     to: "0xabcdef...xyz",
-    amount: "0.125 ETH"
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
+  },
+  {
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
+    from: "0xabcdef...xyz",
+    to: "0xabcdef...xyz",
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
+  },
+  {
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
+    from: "0xabcdef...xyz",
+    to: "0xabcdef...xyz",
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
+  },
+  {
+    hash: "0xabcdef...xyz",
+    block: "21498227",
+    age: "2 secs ago",
+    from: "0xabcdef...xyz",
+    to: "0xabcdef...xyz",
+    amount: "0.125 ETH",
+    fee: "0.125 ETH",
+    name: "Name..."
   }
 ]
 
@@ -70,6 +105,8 @@ export default function EtherscanPage() {
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const [searchValue, setSearchValue] = useState(queryParams.get("search") || "")
+  const [currentPage, setCurrentPage] = useState(1)
+  const totalPages = 100
 
   const handleSearch = (value) => {
     setSearchValue(value)
@@ -88,72 +125,154 @@ export default function EtherscanPage() {
         <div className="space-y-4">
           <h1 className="text-2xl font-bold text-white">Etherscan</h1>
           
-          <div className="relative">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input 
               value={searchValue}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 bg-[#1C1D3A] border-none text-white placeholder:text-gray-400 h-12 rounded-lg"
+              className="pl-10 bg-[#1C1D3A] border-none text-white placeholder:text-gray-400 h-12 rounded-lg w-full"
               placeholder="Search by Transaction Hash, Address"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-4 space-y-1 bg-[#1C1D3A] border-none text-white">
-            <div className="text-sm text-gray-400">ETHER PRICE</div>
-            <div className="text-xl font-bold">$3,900.61</div>
+        <div className="grid grid-cols-3 gap-4">
+          <Card className="p-6 bg-[#1C1D3A] border-none rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-blue-500">
+                  <path d="M12 2L19 6V18L12 22L5 18V6L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm text-gray-400">ETHER PRICE</div>
+                <div className="text-xl font-bold text-white">$3,900.61</div>
+              </div>
+            </div>
           </Card>
 
-          <Card className="p-4 space-y-1 bg-[#1C1D3A] border-none text-white">
-            <div className="text-sm text-gray-400">TRANSACTIONS</div>
-            <div className="text-xl font-bold">2,512 K</div>
+          <Card className="p-6 bg-[#1C1D3A] border-none rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-blue-500">
+                  <path d="M22 12H2M22 12L18 8M22 12L18 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm text-gray-400">TRANSACTIONS</div>
+                <div className="text-xl font-bold text-white">2,512 K</div>
+              </div>
+            </div>
           </Card>
 
-          <Card className="p-4 space-y-1 bg-[#1C1D3A] border-none text-white">
-            <div className="text-sm text-gray-400">GAS PRICE</div>
-            <div className="text-xl font-bold">12.487 Gwei</div>
+          <Card className="p-6 bg-[#1C1D3A] border-none rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-blue-500">
+                  <path d="M4 20V12H8M4 12V4H20V12H16M4 12H16M16 12V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm text-gray-400">GAS PRICE</div>
+                <div className="text-xl font-bold text-white">12.487 Gwei</div>
+              </div>
+            </div>
           </Card>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-white">Latest Transactions</h2>
-          <Card className="bg-[#1C1D3A] border-none">
-            <div className="divide-y divide-gray-700">
-              {transactions.map((tx, i) => (
-                <div key={i} className="p-4 flex items-center justify-between hover:bg-[#252644] text-white">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-blue-500/10 rounded">
-                      <svg
-                        className="h-5 w-5 text-blue-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="font-medium">{tx.hash}</div>
-                      <div className="text-sm text-gray-400">{tx.timeAgo}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div>
-                      From <span className="font-medium">{tx.from}</span>
-                    </div>
-                    <div>
-                      To <span className="font-medium">{tx.to}</span>
-                    </div>
-                  </div>
-                  <div className="font-medium">{tx.amount}</div>
-                </div>
-              ))}
+          <Card className="bg-[#1C1D3A] border-none rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-700">
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">Transaction Hash</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">Block</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">Age</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">From</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">To</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">Amount</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">Fee</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">Item</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {transactions.map((tx, i) => (
+                    <tr key={i} className="hover:bg-[#252644]">
+                      <td className="p-4">
+                        <div className="flex items-center gap-2 text-blue-500">
+                          {tx.hash}
+                          <button className="hover:text-blue-400">
+                            <Copy className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-4 text-blue-500">{tx.block}</td>
+                      <td className="p-4 text-gray-400">{tx.age}</td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2 text-blue-500">
+                          {tx.from}
+                          <button className="hover:text-blue-400">
+                            <Copy className="h-4 w-4" />
+                            </button>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2 text-blue-500">
+                          {tx.to}
+                          <button className="hover:text-blue-400">
+                            <Copy className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-4 text-white">{tx.amount}</td>
+                      <td className="p-4 text-white">{tx.fee}</td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-gray-600 rounded"></div>
+                          <span className="text-white">{tx.name}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="p-4 border-t border-gray-700 flex items-center justify-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(1)}
+              >
+                First
+              </Button>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-gray-400">Page {currentPage} of {totalPages}</span>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                Last
+              </Button>
             </div>
           </Card>
         </div>
