@@ -109,7 +109,7 @@ export default function EtherscanPage() {
   const totalPages = 100
 
   return (
-    <div className="min-h-screen bg-[#0A0B1E]">
+    <div className="min-h-screen bg-[#10112c]">
       <EtherscanHeader />
 
       <div className="container mx-auto py-6 space-y-8">
@@ -146,21 +146,21 @@ export default function EtherscanPage() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-3xl font-bold text-white">Latest Transactions</h2>
+          <h2 className="text-3xl font-bold pb-3 text-white">Latest Transactions</h2>
           <Card className="bg-[#1C1D3A] border-none rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-700">
-                    <th className="text-left p-5 text-sm font-medium text-gray-400 w-32">Transaction Hash</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400 w-28">Block</th>
-                    <th className="text-left p-3 text-sm font-medium text-gray-400 w-28">Age</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400 w-64">From</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400"></th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400 w-60">To</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400 w-32">Amount</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400 w-32">Fee</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Item</th>
+                    <th className="text-left p-5 text-base font-semibold text-gray-300 w-32">Transaction Hash</th>
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-28">Block</th>
+                    <th className="text-left p-3 text-base font-semibold text-gray-300 w-28">Age</th>
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-64">From</th>
+                    <th className="text-left p-4 text-base font-semibold text-gray-300"></th>
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-60">To</th>
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-32">Amount</th>
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-32">Fee</th>
+                    <th className="text-left p-4 text-base font-semibold text-gray-300">Item</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
