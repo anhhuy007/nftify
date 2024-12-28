@@ -21,7 +21,7 @@ import CustomDateInput from "@/components/ui/date-input";
 import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useWallet } from "@/context/WalletProvider";
-import { userCollection, createNftApiEndpoint } from "@/handlers/Endpoints";
+import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 function CreateNft() {
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ function CreateNft() {
   const [selectedCollection, setSelectedCollection] = useState(null);
 
   const { isAuth, user } = useAuth();
+  console.log("user", user);
   if (!isAuth) {
     toast.error("Please login to create NFTs");
     navigate("/");
@@ -40,7 +41,7 @@ function CreateNft() {
 
   const fetchCollections = async () => {
     try {
-      const result = await fetchWithAuth(userCollection);
+      const result = await fetchWithAuth(USER_ENDPOINTS.GET_COLLECTIONS);
       console.log("Collections", result);
       setCollection(result.data);
     } catch (error) {
@@ -59,7 +60,7 @@ function CreateNft() {
     imgUrl: "",
     price: "",
     ownerDetails: {
-      username: user.name,
+      username: "dylandixon",
       avatarUrl: user.avatarUrl,
       id: user.id,
     },
@@ -160,7 +161,7 @@ function CreateNft() {
 
       console.log("NFT Data", nftData);
 
-      const result = await fetchWithAuth(createNftApiEndpoint, {
+      const result = await fetchWithAuth(USER_ENDPOINTS.CREATE_NFT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nftData),

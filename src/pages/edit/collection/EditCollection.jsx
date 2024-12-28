@@ -6,11 +6,9 @@ import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useAuth } from "@/context/AuthProvider";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import {
-  collectionAboutApiEndpoint,
-  editCollectionApiEndpoint,
-} from "@/handlers/Endpoints";
+import { COLLECTION_ENDPOINTS } from "@/handlers/Endpoints";
 import { DeleteCollectionDialog } from "@/pages/marketplace/collections/components/CollectionCard";
+import { USER_ENDPOINTS } from "../../../handlers/Endpoints";
 
 function EditCollection() {
   const { collectionId } = useParams();
@@ -31,7 +29,7 @@ function EditCollection() {
   } = useQuery(
     "collection-about",
     () =>
-      fetchWithAuth(collectionAboutApiEndpoint.replace(":id", collectionId)),
+      fetchWithAuth(COLLECTION_ENDPOINTS.ABOUT.replace(":id", collectionId)),
     {
       enabled: !!collectionId,
       retry: 1,
@@ -73,7 +71,7 @@ function EditCollection() {
 
     try {
       // Send updated collection data to the backend
-      const response = await fetchWithAuth(editCollectionApiEndpoint, {
+      const response = await fetchWithAuth(USER_ENDPOINTS.EDIT_COLLECTION, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

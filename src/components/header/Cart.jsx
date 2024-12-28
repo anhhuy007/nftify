@@ -4,7 +4,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
   Sheet,
   SheetFooter,
 } from "@/components/ui/sheet";

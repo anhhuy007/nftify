@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useAuth } from "@/context/AuthProvider";
-import { deleteCollectionApiEndpoint } from "@/handlers/Endpoints";
+import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 export function DeleteCollectionDialog({ collectionId, children: child }) {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export function DeleteCollectionDialog({ collectionId, children: child }) {
   const deleteCollection = async (id) => {
     try {
       const result = await fetchWithAuth(
-        deleteCollectionApiEndpoint + `/${id}`,
+        USER_ENDPOINTS.DELETE_COLLECTION + `/${id}`,
         {
           method: "DELETE",
         }

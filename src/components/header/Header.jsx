@@ -21,7 +21,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { isAuth } = useAuth();
+  const { isAuth, logoutAction } = useAuth();
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = (event) => {
@@ -100,15 +100,15 @@ function Header() {
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-2"> 
+                  <div className="flex items-center gap-2">
                     <LoginDialog>
-                      <div className="flex items-center justify-center py-3 px-4 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
+                      <div className="flex font-medium items-center justify-center py-3 px-4 rounded-lg transition-all transform hover:scale-105 cursor-pointer hover:bg-white hover:text-black text-white bg-white/[.2]">
                         Login
                       </div>
                     </LoginDialog>
 
                     <CreateAccountDialog>
-                      <div className="flex items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer bg-purple-600 hover:bg-purple-700 text-white">
+                      <div className="flex font-medium items-center justify-center p-3 rounded-lg transition-all transform hover:scale-105 cursor-pointer bg-purple-600 hover:bg-purple-700 text-white">
                         Create Account
                       </div>
                     </CreateAccountDialog>

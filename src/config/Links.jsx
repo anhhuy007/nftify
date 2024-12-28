@@ -32,6 +32,8 @@ import CreateCollection from "@/pages/create/CreateCollection";
 import Profile from "@/pages/setting/Profile/Profile";
 import Notification from "@/pages/setting/Notification/Notification";
 import Account from "@/pages/setting/Account/Account";
+import EtherscanPage from "../pages/etherscan/EtherscanOverview";
+import TransactionDetailPage from "../pages/etherscan/TransactionDetail";
 import EditCollection from "@/pages/edit/collection/EditCollection";
 import EditNft from "@/pages/edit/nft/EditNft";
 
@@ -289,6 +291,22 @@ const menuItems = [
         element: <UserNfts />,
       },
     ],
+  },
+  {
+    name: "Etherscan",
+    group: "tools",
+    link: "/etherscan",
+    layout: "RootLayout",
+    element: <EtherscanPage />,
+    isPrivate: false,
+  },
+  {
+    name: "Transaction Detail",
+    group: "etherscan",
+    link: "/etherscan/transaction/:hash",
+    layout: "RootLayout",
+    element: <TransactionDetailPage />,
+    isPrivate: false,
   },
 ];
 

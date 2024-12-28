@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
   DialogClose,
@@ -17,16 +15,13 @@ import {
 } from "@/pages/create/components/FileUpload";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import {
-  userApiEndpoint,
-  userSettingUploadApiEndpoint,
-} from "@/handlers/Endpoints";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 // Pinata SDK
 import IpfsService from "@/services/IpfsService";
 import LoadingAnimation from "@/components/ui/loading";
+import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 function Profile() {
   const { isAuth } = useAuth();
@@ -60,9 +55,9 @@ function Profile() {
     }
 
     try {
-      const result = await fetchWithAuth(userApiEndpoint);
-      const userData = result.data[0];
-      console.log("User data:", userData);
+      const result = await fetchWithAuth(USER_ENDPOINTS.GET_USER);
+      const userData = result.data;
+      console.log("User data:", result);
 
       // Update state with user data
       setInitialUser({
@@ -86,10 +81,6 @@ function Profile() {
     }
     fetchData();
   }, []);
-
-  useEffect(() => {
-    console.log("Initial user data:", initialUser);
-  }, [initialUser]);
 
   const handleNameChange = (e) => {
     setInitialUser((prev) => ({ ...prev, name: e.target.value }));
@@ -160,7 +151,7 @@ function Profile() {
       updates.description = initialUser.shortBio;
 
       // Send all updated data to the backend
-      const response = await fetchWithAuth(userSettingUploadApiEndpoint, {
+      const response = await fetchWithAuth(USER_ENDPOINTS.SETTING.UPLOAD, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

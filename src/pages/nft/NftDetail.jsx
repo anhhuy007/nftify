@@ -11,7 +11,7 @@ import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { Link } from "react-router-dom";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import { stampDetailApiEndpoint } from "@/handlers/Endpoints";
+import { MARKETPLACE_ENDPOINTS } from "../../handlers/Endpoints";
 
 export default function NftDetail() {
   const { nftId } = useParams();
@@ -26,7 +26,7 @@ export default function NftDetail() {
     isLoading: nftDetailLoading,
   } = useQuery(
     ["nft-detail", nftId],
-    () => fetcher(stampDetailApiEndpoint + `/${nftId}`),
+    () => fetcher(MARKETPLACE_ENDPOINTS.NFT_DETAIL + `/${nftId}`),
     {
       enabled: !!nftId,
       retry: 1,

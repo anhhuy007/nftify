@@ -1,11 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import {
-  getUserApiEndpoint,
-  loginApiEndpoint,
-  logoutApiEndpoint,
-  refreshTokenApiEndpoint,
-  registerApiEndpoint,
-} from "@/handlers/Endpoints";
+import { AUTH_ENDPOINTS, USER_ENDPOINTS } from "../handlers/Endpoints";
 
 const AuthContext = createContext();
 
@@ -45,7 +39,7 @@ const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await fetch(getUserApiEndpoint, {
+      const response = await fetch(USER_ENDPOINTS.GET_USER, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -67,7 +61,7 @@ const AuthProvider = ({ children }) => {
 
   const registerAction = async (data) => {
     try {
-      const response = await fetch(registerApiEndpoint, {
+      const response = await fetch(AUTH_ENDPOINTS.REGISTER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +83,7 @@ const AuthProvider = ({ children }) => {
 
   const loginAction = async (data) => {
     try {
-      const response = await fetch(loginApiEndpoint, {
+      const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +115,7 @@ const AuthProvider = ({ children }) => {
 
   const refreshAccessToken = async () => {
     try {
-      const response = await fetch(refreshTokenApiEndpoint, {
+      const response = await fetch(AUTH_ENDPOINTS.REFRESH, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -159,7 +153,7 @@ const AuthProvider = ({ children }) => {
     };
 
     try {
-      const response = await fetch(logoutApiEndpoint, {
+      const response = await fetch(AUTH_ENDPOINTS.LOGOUT, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

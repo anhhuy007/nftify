@@ -8,11 +8,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import {
-  userCollection,
-  editNftApiEndpoint,
-  stampDetailApiEndpoint,
-} from "@/handlers/Endpoints";
+import { USER_ENDPOINTS, MARKETPLACE_ENDPOINTS } from "@/handlers/Endpoints";
 import { useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import { DeleteNFTDialog } from "@/components/NFT/NftCard";
@@ -37,7 +33,7 @@ function EditNft() {
     isLoading: nftDetailLoading,
   } = useQuery(
     ["nft-detail", nftId],
-    () => fetchWithAuth(stampDetailApiEndpoint + `/${nftId}`),
+    () => fetchWithAuth(MARKETPLACE_ENDPOINTS.NFT_DETAIL + `/${nftId}`),
     {
       enabled: !!nftId,
       retry: 1,
@@ -78,7 +74,7 @@ function EditNft() {
 
   const fetchCollections = async () => {
     try {
-      const result = await fetchWithAuth(userCollection);
+      const result = await fetchWithAuth(USER_ENDPOINTS.GET_COLLECTIONS);
       setCollection(result.data);
     } catch (error) {
       console.error("Error fetching collections", error);
@@ -116,15 +112,19 @@ function EditNft() {
         price: nft.price,
         isListed: isOnMarketplace,
         collection: selectedCollection,
+        oldCollection: nftDetail.data.collection._id,
       };
 
       console.log("NFT Data", nftData);
 
-      const result = await fetchWithAuth(editNftApiEndpoint + `/${nftId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nftData),
-      });
+      const result = await fetchWithAuth(
+        USER_ENDPOINTS.EDIT_NFT + `/${nftId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(nftData),
+        }
+      );
 
       if (result.success !== true) {
         throw new Error(result.message || "Error editing NFT on backend");
@@ -200,27 +200,6 @@ function EditNft() {
                 onCollectionSelect={setSelectedCollection}
               />
             </div>
-            {/* Name */}
-            <div className="space-y-4">
-              <span className="text-primary-foreground text-3xl font-bold">
-                Name
-              </span>
-              <div className="relative">
-                <Input
-                  id="name"
-                  placeholder="Name your NFT"
-                  value={nft.title}
-                  onChange={handleNameChange}
-                  className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
-                      ${
-                        !nft.title
-                          ? "border-destructive border-2"
-                          : "border-2 border-primary"
-                      }
-                      `}
-                />
-              </div>
-            </div>
           </div>
 
           {/* Gap */}
@@ -242,7 +221,7 @@ function EditNft() {
               onClick={handleEditNft}
               disabled={isLoading}
             >
-              Edit NFT
+              Save NFT
             </Button>
             <DeleteNFTDialog stampId={nftId}>
               <Button className="mt-10 w-1/2 mx-auto p-8 bg-destructive text-white text-2xl font-bold">

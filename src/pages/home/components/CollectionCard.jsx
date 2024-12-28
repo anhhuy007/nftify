@@ -25,7 +25,7 @@ export default function CollectionCard({ collection }) {
           <div className="flex items-center justify-between flex-col-reverse gap-5 md:flex-row md:gap-20 p-8">
             <div className="space-y-6 md:max-w-[280px] lg:max-w-[300px] xl:max-w-[500px]">
               <h2 className="text-2xl md:text-3xl xl:text-4xl font-bold mx-auto">
-                {collection.name}
+                {collection.name}e
               </h2>
               <p className="text-base md:text-lg lg:text-xl xl:text-2xl leading-relaxed">
                 {collection.description}

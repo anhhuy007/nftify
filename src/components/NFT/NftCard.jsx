@@ -21,21 +21,23 @@ import {
 } from "@/components/ui/dialog";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useNavigate } from "react-router-dom";
-import { deleteNftApiEndpoint } from "@/handlers/Endpoints";
 import { useAuth } from "@/context/AuthProvider";
+import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 export function DeleteNFTDialog({ stampId, children: child }) {
   const navigate = useNavigate();
   const { fetchWithAuth } = useAuthHandler();
   const { isAuth, user } = useAuth();
 
-  console.log("Stamp ID: ", stampId);
   const deleteStamp = async () => {
     console.log("Deleting stamp with ID: ", stampId);
     try {
-      const result = await fetchWithAuth(deleteNftApiEndpoint + `/${stampId}`, {
-        method: "DELETE",
-      });
+      const result = await fetchWithAuth(
+        USER_ENDPOINTS.DELETE_NFT + `/${stampId}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (result.success !== true) {
         throw new Error("Failed to delete stamp");
       } else {
@@ -63,7 +65,11 @@ export function DeleteNFTDialog({ stampId, children: child }) {
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button variant="destructive" type="button" onClick={deleteStamp}>
+            <Button
+              variant="destructive"
+              type="button"
+              onClick={() => deleteStamp(stampId)}
+            >
               Delete
             </Button>
           </DialogClose>
@@ -86,10 +92,7 @@ export default function NftCard({ stamp }) {
   const { address } = useWallet();
 
   let isBuyable = false;
-  if (
-    stamp.insight.verifyStatus === "selling" &&
-    stamp.ownerDetails.wallet_address !== address
-  ) {
+  if (stamp.insight.isListed && stamp.ownerDetails.wallet_address !== address) {
     isBuyable = true;
   }
 
@@ -199,10 +202,7 @@ export function SmallNftCard({ stamp }) {
   const { address } = useWallet();
 
   let isBuyable = false;
-  if (
-    stamp.status === "selling" &&
-    stamp.ownerDetails.wallet_address !== address
-  ) {
+  if (stamp.isListed && stamp.ownerDetails.wallet_address !== address) {
     isBuyable = true;
   }
 
@@ -292,11 +292,10 @@ export function BigNftCard({ stamp }) {
   const { addItemToCart } = useCart();
   const { address } = useWallet();
 
+  console.log("Big NFT Card", stamp);
+
   let isBuyable = false;
-  if (
-    stamp.insight?.verifyStatus === "selling" &&
-    stamp.ownerDetails.wallet_address !== address
-  ) {
+  if (stamp.isListed && stamp.ownerDetails.wallet_address !== address) {
     isBuyable = true;
   }
 
@@ -371,7 +370,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
                 <p className="text-lg font-semibold">
-                  {stamp.price.$numberDecimal ?? "Not for sale"} ETH
+                  {stamp?.price?.$numberDecimal ?? "Not for sale"} ETH
                 </p>
               </div>
             </div>
