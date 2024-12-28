@@ -233,6 +233,7 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="sm"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(1)}
               >
                 First
               </Button>
@@ -240,6 +241,7 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="icon"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -248,6 +250,7 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="icon"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -255,6 +258,7 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="sm"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
+                onClick={() => setCurrentPage(totalPages)}
               >
                 Last
               </Button>
