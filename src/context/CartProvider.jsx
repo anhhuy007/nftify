@@ -1,130 +1,132 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import { cartApiEndpoint } from "@/handlers/Endpoints";
+import { CART_ENDPOINTS } from "../handlers/Endpoints";
 
 const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
-    const { fetchWithAuth } = useAuthHandler();
-    const [cart, setCart] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const { fetchWithAuth } = useAuthHandler();
+  const [cart, setCart] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const fetchCartItems = async () => {
-        try {
-            setIsLoading(true);
-            const response = await fetchWithAuth(cartApiEndpoint);
-            if (!response) {
-                throw new Error("Invalid cart data received");
-            }
+  const fetchCartItems = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetchWithAuth(CART_ENDPOINTS.CART);
+      if (!response) {
+        throw new Error("Invalid cart data received");
+      }
 
-            setCart(response.data);
-            setError(null);
-        } catch (error) {
-            console.error("Error fetching cart:", error);
-            setError(error.message);
-            setCart([]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      setCart(response.data);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+      setError(error.message);
+      setCart([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchCartItems();
-    }, []);
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
 
-    const addItemToCart = async (nftId) => {
-        try {
-            const response = await fetchWithAuth(cartApiEndpoint, {
-                method: "POST",
-                body: JSON.stringify({ itemId: nftId }),
-            });
+  const addItemToCart = async (nftId) => {
+    try {
+      const response = await fetchWithAuth(CART_ENDPOINTS.CART, {
+        method: "POST",
+        body: JSON.stringify({ itemId: nftId }),
+      });
 
-            if (!response.success) {
-                throw new Error(response.message);
-            }
+      console.log("Add to cart response:", response);
 
-            fetchCartItems();
-            return true;
-        } catch (error) {
-            console.error("Add to cart error:", error);
-            throw error;
-        }
-    };
+      if (!response.success) {
+        throw new Error(response.message);
+      }
 
-    const removeItemFromCart = async (nftId) => {
-        try {
-            const response = await fetchWithAuth(`${cartApiEndpoint}`, {
-                method: "DELETE",
-                body: JSON.stringify({ itemId: nftId }),
-            });
+      fetchCartItems();
+      return true;
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      throw error;
+    }
+  };
 
-            if (!response.success) {
-                throw new Error(response.message);
-            }
+  const removeItemFromCart = async (nftId) => {
+    try {
+      const response = await fetchWithAuth(`${CART_ENDPOINTS.CART}`, {
+        method: "DELETE",
+        body: JSON.stringify({ itemId: nftId }),
+      });
 
-            fetchCartItems();
-            return true;
-        } catch (error) {
-            console.error("Remove from cart error:", error);
-            throw error;
-        }
-    };
+      if (!response.success) {
+        throw new Error(response.message);
+      }
 
-    const clearCart = async () => {
-        try {
-            const response = await fetchWithAuth(`${cartApiEndpoint}/clear`, {
-                method: "DELETE",
-            });
+      fetchCartItems();
+      return true;
+    } catch (error) {
+      console.error("Remove from cart error:", error);
+      throw error;
+    }
+  };
 
-            if (!response.success) {
-                throw new Error(response.message);
-            }
+  const clearCart = async () => {
+    try {
+      const response = await fetchWithAuth(`${CART_ENDPOINTS.CART}/clear`, {
+        method: "DELETE",
+      });
 
-            fetchCartItems();
-            return true;
-        } catch (error) {
-            console.error("Clear cart error:", error);
-            throw error;
-        }
-    };
+      if (!response.success) {
+        throw new Error(response.message);
+      }
 
-    const checkoutCart = async () => {
-        try {
-            const response = await fetchWithAuth(`${cartApiEndpoint}/checkout`, {
-                method: "POST",
-            });
+      fetchCartItems();
+      return true;
+    } catch (error) {
+      console.error("Clear cart error:", error);
+      throw error;
+    }
+  };
 
-            if (!response.success) {
-                throw new Error(response.message);
-            }
+  const checkoutCart = async () => {
+    try {
+      const response = await fetchWithAuth(`${CART_ENDPOINTS.CART}/checkout`, {
+        method: "POST",
+      });
 
-            clearCart();
-            fetchCartItems();
+      if (!response.success) {
+        throw new Error(response.message);
+      }
 
-            return true;
-        } catch (error) {
-            console.error("Checkout cart error:", error);
-            throw error;
-        }
-    };
+      clearCart();
+      fetchCartItems();
 
-    return (
-        <CartContext.Provider 
-            value={{
-                cart,
-                isLoading,
-                error,
-                addItemToCart,
-                removeItemFromCart,
-                refreshCart: fetchCartItems,
-                clearCart,
-                checkoutCart
-            }}
-        >
-            {children}
-        </CartContext.Provider>
-    );
+      return true;
+    } catch (error) {
+      console.error("Checkout cart error:", error);
+      throw error;
+    }
+  };
+
+  return (
+    <CartContext.Provider
+      value={{
+        cart,
+        isLoading,
+        error,
+        addItemToCart,
+        removeItemFromCart,
+        refreshCart: fetchCartItems,
+        clearCart,
+        checkoutCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 };
 
 export default CartProvider;

@@ -73,10 +73,12 @@ class NFTService {
       for (const item of cartItems) {
         const response = await this.executeSale(item.tokenID);
         results.push(response);
-        console.log("Checkout result:", response);
       }
 
-      return true;
+      return {
+        success: results.every((result) => result.success),
+        results: results,
+      }
     } catch (error) {
       console.error("Checkout failed:", error);
       throw error;

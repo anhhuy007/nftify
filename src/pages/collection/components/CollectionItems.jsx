@@ -6,134 +6,198 @@ import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, collectionItemsApiEndpoint } from "@/handlers/Endpoints";
+import { fetcher } from "@/handlers/Endpoints";
 import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
+import { COLLECTION_ENDPOINTS } from "../../../handlers/Endpoints";
 
-function CollectionItems() {
-  const { id } = useParams();
+const GRID_COLUMNS = {
+  GRID: 5,
+  LIST: 4,
+};
+
+const ITEMS_PER_ROW = 4;
+
+function getInitialStateFromURL(searchParams, paramName, defaultValue) {
+  const value = searchParams.get(paramName);
+
+  switch (paramName) {
+    case "isGrid":
+      return value === "true";
+    case "page":
+    case "limit":
+      return parseInt(value, 10) || defaultValue;
+    default:
+      return value || defaultValue;
+  }
+}
+
+function useCollectionItems(collectionId) {
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(useLocation().search);
 
-  const [isGrid, setIsGrid] = useState(queryParams.get("isGrid") === "true");
+  const [isGrid, setIsGrid] = useState(
+    getInitialStateFromURL(queryParams, "isGrid", true)
+  );
   const [currentPage, setCurrentPage] = useState(
-    parseInt(queryParams.get("page"), 10) || 1
+    getInitialStateFromURL(queryParams, "page", 1)
   );
   const [limitCard, setLimitCard] = useState(
-    parseInt(queryParams.get("limit"), 10) || 20
+    getInitialStateFromURL(queryParams, "limit", 20)
   );
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [searchValue, setSearchValue] = useState(
-    queryParams.get("search") || ""
+    getInitialStateFromURL(queryParams, "search", "")
   );
   const [sortOption, setSortOption] = useState(
-    queryParams.get("sort") || "default"
+    getInitialStateFromURL(queryParams, "sort", "default")
   );
 
-  const CardComponent = isGrid ? SmallNftCard : BigNftCard;
-  const url = collectionItemsApiEndpoint.replace(":id", id);
+  const url = COLLECTION_ENDPOINTS.DETAIL.ITEMS.replace(":id", collectionId);
 
-  const { data, error, isLoading, refetch } = useQuery(
+  const { error, isLoading, refetch } = useQuery(
     ["collectionItems", searchValue, sortOption, currentPage, limitCard],
-    () =>
-      fetcher(
-        `${url}?title=${searchValue}&sort=${sortOption}&page=${currentPage}&limit=${limitCard}`
-      ),
+    function fetchCollectionItems() {
+      const queryString = new URLSearchParams({
+        title: searchValue,
+        sort: sortOption,
+        page: currentPage.toString(),
+        limit: limitCard.toString(),
+      }).toString();
+
+      return fetcher(`${url}?${queryString}`);
+    },
     {
       keepPreviousData: true,
-      onSuccess: (response) => {
-        const data = response.data;
-        // Append new items or reset based on page
-        if (currentPage === 1) {
-          setItems(data.items);
-        } else {
-          setItems((prevItems) => [...prevItems, ...data.items]);
-        }
-
-        // Update hasMore based on API response
-        setHasMore(data.page < data.totalPages);
+      onSuccess: function handleQuerySuccess(response) {
+        const responseData = response.data;
+        setItems(
+          currentPage === 1
+            ? responseData.items
+            : (prevItems) => [...prevItems, ...responseData.items]
+        );
+        setHasMore(responseData.page < responseData.totalPages);
       },
-      enabled: true, // Ensure query can be manually triggered
     }
   );
 
-  useEffect(() => {
-    const newCardCount = isGrid ? 5 : 4;
-    setLimitCard(newCardCount * 4);
-    // Reset pagination when view changes
-    setCurrentPage(1);
-    setItems([]);
-    refetch();
-  }, [isGrid, refetch]);
-
-  const fetchMoreData = () => {
-    // Increment page and trigger refetch
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const updateQueryParams = (params) => {
+  function updateQueryParams(params) {
     const searchParams = new URLSearchParams({
       ...Object.fromEntries(queryParams.entries()),
       ...params,
     });
     navigate({ search: searchParams.toString() });
-  };
+  }
 
-  const handleSearch = (value) => {
+  function handleSearch(value) {
     setSearchValue(value);
     updateQueryParams({ search: value });
-    // Reset pagination and items when searching
-    setCurrentPage(1);
-    setItems([]);
-    refetch();
-  };
+    resetPagination();
+  }
 
-  const handleSort = (option) => {
+  function handleSort(option) {
     setSortOption(option);
     updateQueryParams({ sort: option });
+    resetPagination();
+  }
+
+  function handleToggleGrid(value) {
+    setIsGrid(value);
+    updateQueryParams({ isGrid: value });
+  }
+
+  function resetPagination() {
     setCurrentPage(1);
     setItems([]);
     refetch();
+  }
+
+  function fetchMoreData() {
+    setCurrentPage((prevPage) => prevPage + 1);
+  }
+
+  // Update card limit when view changes
+  useEffect(
+    function handleViewChange() {
+      const newCardCount = isGrid ? GRID_COLUMNS.GRID : GRID_COLUMNS.LIST;
+      setLimitCard(newCardCount * ITEMS_PER_ROW);
+      resetPagination();
+    },
+    [isGrid]
+  );
+
+  return {
+    isGrid,
+    items,
+    hasMore,
+    searchValue,
+    sortOption,
+    isLoading,
+    error,
+    handleSearch,
+    handleSort,
+    handleToggleGrid,
+    fetchMoreData,
   };
+}
 
-  const handleToggleGrid = (value) => setIsGrid(value);
+function CollectionItems() {
+  const { id } = useParams();
+  const {
+    isGrid,
+    items,
+    hasMore,
+    searchValue,
+    sortOption,
+    isLoading,
+    error,
+    handleSearch,
+    handleSort,
+    handleToggleGrid,
+    fetchMoreData,
+  } = useCollectionItems(id);
 
-  if (isLoading && currentPage === 1) return <LoadingAnimation />;
-  if (error) return <ErrorAnimation />;
+  const CardComponent = isGrid ? SmallNftCard : BigNftCard;
+
+  if (isLoading) {
+    return <LoadingAnimation />;
+  }
+
+  if (error) {
+    return <ErrorAnimation />;
+  }
 
   return (
-    <>
-      <div className="flex flex-col gap-10">
-        <div className="flex items-center justify-center w-full gap-8 mt-4">
-          <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
-          <Sort sortOption={sortOption} setSortOption={handleSort} />
-          <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} disabled />
-        </div>
-        <InfiniteScroll
-          dataLength={items.length}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={<FetchingMoreAnimation />}
-          endMessage={
-            <p className="text-center text-white mt-20">
-              {items.length > 0 ? "No more items to display" : "No items found"}
-            </p>
-          }
-        >
-          <div
-            className={`grid grid-cols-1 sm:grid-cols-2 gap-2
-          ${isGrid ? "md:grid-cols-5" : "md:grid-cols-4"}
-          `}
-          >
-            {items.map((item) => (
-              <CardComponent key={item._id} stamp={item} />
-            ))}
-          </div>
-        </InfiniteScroll>
+    <div className="flex flex-col gap-10">
+      <div className="flex items-center justify-center w-full gap-8 mt-4">
+        <SearchNfts searchValue={searchValue} onSearch={handleSearch} />
+        <Sort sortOption={sortOption} setSortOption={handleSort} />
+        <ToggleSwitch isGrid={isGrid} setIsGrid={handleToggleGrid} disabled />
       </div>
-    </>
+      <InfiniteScroll
+        dataLength={items.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={<FetchingMoreAnimation />}
+        endMessage={
+          <p className="text-center text-white mt-20">
+            {items.length > 0 ? "No more items to display" : "No items found"}
+          </p>
+        }
+      >
+        <div
+          className={`grid grid-cols-1 sm:grid-cols-2 gap-2 ${
+            isGrid ? "md:grid-cols-5" : "md:grid-cols-4"
+          }`}
+        >
+          {items.map((item) => (
+            <CardComponent key={item._id} stamp={item} />
+          ))}
+        </div>
+      </InfiniteScroll>
+    </div>
   );
 }
 
