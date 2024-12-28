@@ -54,3 +54,8 @@ export const userCollectionsApiEndpoint = `${baseUrl}/user/profile/:userId/colle
 // Marketplace endpoints
 export const usersApiEndpoint = `${baseUrl}/marketplace/list/creators`;
 export const collectionsApiEndpoint = `${baseUrl}/marketplace/list/collections`;
+
+// Transaction endpoints
+export const transactionApiEndpoint = `${baseUrl}/transaction`;
+export const transactionListApiEndpoint = `${baseUrl}/transaction/list`;
+export const findTransactionApiEndpoint = `${baseUrl}/transaction/find`;

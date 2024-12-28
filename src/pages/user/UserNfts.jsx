@@ -16,6 +16,7 @@ import {
   userOnSaleNftsApiEndpoint,
   userCreatedNftsApiEndpoint,
 } from "@/handlers/Endpoints";
+import { useAuth } from "@/context/AuthProvider";
 
 const UserNfts = () => {
   const { userId } = useOutletContext();

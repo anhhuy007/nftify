@@ -263,7 +263,7 @@ const menuItems = [
         element: <UserNfts />,
       },
     ],
-  },
+  }
 ];
 
 export default menuItems;
