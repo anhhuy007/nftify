@@ -1,11 +1,12 @@
-'use client'
-
 import React, { useState } from "react"
 import { Search, Copy, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useLocation, useNavigate } from "react-router-dom"
+import EthereumIcon from "../../assets/ethereum.svg"
+import TransactionIcon from "../../assets/transaction.svg"
+import GasIcon from "../../assets/gas.svg"
 
 const transactions = [
   {
@@ -138,12 +139,8 @@ export default function EtherscanPage() {
 
         <div className="grid grid-cols-3 gap-4">
           <Card className="p-6 bg-[#1C1D3A] border-none rounded-xl">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-blue-500">
-                  <path d="M12 2L19 6V18L12 22L5 18V6L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+            <div className="flex items-center gap-6">
+              <img src={EthereumIcon} alt="Ethereum Icon" width="30" height="30" className="ml-1" />
               <div>
                 <div className="text-sm text-gray-400">ETHER PRICE</div>
                 <div className="text-xl font-bold text-white">$3,900.61</div>
@@ -152,12 +149,8 @@ export default function EtherscanPage() {
           </Card>
 
           <Card className="p-6 bg-[#1C1D3A] border-none rounded-xl">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-blue-500">
-                  <path d="M22 12H2M22 12L18 8M22 12L18 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+            <div className="flex items-center gap-6">
+              <img src={TransactionIcon} alt="Transaction Icon" width="40" height="40" className="ml-1" />
               <div>
                 <div className="text-sm text-gray-400">TRANSACTIONS</div>
                 <div className="text-xl font-bold text-white">2,512 K</div>
@@ -166,12 +159,8 @@ export default function EtherscanPage() {
           </Card>
 
           <Card className="p-6 bg-[#1C1D3A] border-none rounded-xl">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-blue-500">
-                  <path d="M4 20V12H8M4 12V4H20V12H16M4 12H16M16 12V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+            <div className="flex items-center gap-6">
+              <img src={GasIcon} alt="Gas Icon" width="40" height="40" className="ml-1" />
               <div>
                 <div className="text-sm text-gray-400">GAS PRICE</div>
                 <div className="text-xl font-bold text-white">12.487 Gwei</div>
@@ -181,7 +170,7 @@ export default function EtherscanPage() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white">Latest Transactions</h2>
+          <h2 className="text-3xl font-bold text-white">Latest Transactions</h2>
           <Card className="bg-[#1C1D3A] border-none rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -244,7 +233,6 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="sm"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
-                onClick={() => setCurrentPage(1)}
               >
                 First
               </Button>
@@ -252,7 +240,6 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="icon"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -261,7 +248,6 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="icon"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -269,7 +255,6 @@ export default function EtherscanPage() {
                 variant="secondary"
                 size="sm"
                 className="bg-[#252644] hover:bg-[#2D2F56] text-white border-none"
-                onClick={() => setCurrentPage(totalPages)}
               >
                 Last
               </Button>
