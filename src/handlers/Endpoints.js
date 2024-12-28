@@ -5,7 +5,7 @@ export const baseUrl = `${protocol}://${host}/api/v1`;
 export const fetcher = (url) => fetch(url).then((res) => res.json());
 
 // authentification endpoints
-export const registerApiEndpoint = `${baseUrl}/auth/register`;  
+export const registerApiEndpoint = `${baseUrl}/auth/register`;
 export const loginApiEndpoint = `${baseUrl}/auth/login`;
 export const signupApiEndpoint = `${baseUrl}/auth/signup`;
 export const refreshTokenApiEndpoint = `${baseUrl}/auth/refresh-token`;
@@ -59,3 +59,11 @@ export const collectionsApiEndpoint = `${baseUrl}/marketplace/list/collections`;
 export const createNftApiEndpoint = `${baseUrl}/user/create/nft`;
 export const userCollection = `${baseUrl}/user/collectionList`;
 export const createCollectionApiEndpoint = `${baseUrl}/user/collection/create`;
+
+// Edit NFT endpoints
+export const editNftApiEndpoint = `${baseUrl}/user/edit/nft`;
+export const editCollectionApiEndpoint = `${baseUrl}/user/edit/collection`;
+
+// Delete NFT endpoints
+export const deleteNftApiEndpoint = `${baseUrl}/user/delete/nft`;
+export const deleteCollectionApiEndpoint = `${baseUrl}/user/delete/collection`;

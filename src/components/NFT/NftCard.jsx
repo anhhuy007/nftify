@@ -3,13 +3,75 @@
 import { useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import userPlaceHolder from "@/assets/user-placeholder.png";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartProvider";
 import { useWallet } from "@/context/WalletProvider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { useNavigate } from "react-router-dom";
+import { deleteNftApiEndpoint } from "@/handlers/Endpoints";
+import { useAuth } from "@/context/AuthProvider";
 
+export function DeleteNFTDialog({ stampId, children: child }) {
+  const navigate = useNavigate();
+  const { fetchWithAuth } = useAuthHandler();
+  const { isAuth, user } = useAuth();
+
+  console.log("Stamp ID: ", stampId);
+  const deleteStamp = async () => {
+    console.log("Deleting stamp with ID: ", stampId);
+    try {
+      const result = await fetchWithAuth(deleteNftApiEndpoint + `/${stampId}`, {
+        method: "DELETE",
+      });
+      if (result.success !== true) {
+        throw new Error("Failed to delete stamp");
+      } else {
+        toast.success("Stamp deleted successfully");
+        navigate(`/user/${user._id}/owned `);
+      }
+    } catch (error) {
+      console.error("Failed to delete stamp:", error);
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{child}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px] text-primary-foreground">
+        <DialogHeader>
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete this NFT? This action cannot be
+            undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button variant="destructive" type="button" onClick={deleteStamp}>
+              Delete
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 export const handleAddToCart = (title) => {
   toast.success(
     <>
@@ -385,7 +447,7 @@ export function PreviewNftCard({ stamp }) {
       >
         <CardHeader
           className={`px-3 pt-3 pb-0 transition-all duration-300 ${
-            isHovered ? "h-[350px]" : "h-[390px]"
+            isHovered ? "h-[340px]" : "h-[390px]"
           }`}
         >
           <img
@@ -399,7 +461,7 @@ export function PreviewNftCard({ stamp }) {
             isHovered ? "h-[150px]" : "h-[90px]"
           }`}
         >
-          <div className="grid grid-cols-[20%_54%_5%_20%]  items-center">
+          <div className="grid grid-cols-[20%_54%_5%_20%] mt-1  items-center">
             <img
               src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder}
               alt={stamp?.ownerDetails?.username || "Unknown"}
@@ -416,7 +478,7 @@ export function PreviewNftCard({ stamp }) {
             <div></div>
             <div className="flex-1 text-right ">
               {stamp.price ? (
-                <p className="text-lg font-semibold whitespace-nowrap">
+                <p className="text-lg font-semibold">
                   {stamp.price ?? "Not for sale"} ETH
                 </p>
               ) : (
@@ -448,32 +510,6 @@ export function PreviewNftCard({ stamp }) {
 
 export function SmallEditNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
-  const { addItemToCart } = useCart();
-  const { address } = useWallet();
-
-  let isBuyable = false;
-  if (
-    stamp.status === "selling" &&
-    stamp.ownerDetails.wallet_address !== address
-  ) {
-    isBuyable = true;
-  }
-
-  const handleCartClick = async () => {
-    try {
-      if (!isBuyable) {
-        toast.error("This stamp is not for sale");
-        return;
-      }
-
-      const result = await addItemToCart(stamp._id);
-      if (result) {
-        handleAddToCart(stamp.title);
-      }
-    } catch (error) {
-      toast.error("Failed: " + error.message);
-    }
-  };
 
   return (
     <div
@@ -519,26 +555,18 @@ export function SmallEditNftCard({ stamp }) {
             </div>
           </Link>
           {isHovered && (
-            // <div className="grid grid-cols-[80%_5%_15%]">
-            //   <Link to={`/nft/${stamp._id}`}>
-            //     <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-            //       Collect now!
-            //     </Button>
-            //   </Link>
-            //   <div></div>
-            //   <Button
-            //     className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
-            //     onClick={handleCartClick}
-            //   >
-            //     <ShoppingCart className="h-10 w-10" />
-            //   </Button>
-            // </div>
-            <div className="">
-              <Link to={`/nft/${stamp._id}`}>
+            <div className="grid grid-cols-[80%_5%_15%]">
+              <Link to={`/edit/nft/${stamp._id}`}>
                 <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
                   Edit
                 </Button>
               </Link>
+              <div></div>
+              <DeleteNFTDialog stampId={stamp._id}>
+                <Button className="hover:bg-gray-400 font-semibold bg-destructive text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
+                  <Trash2 className="h-10 w-10" />
+                </Button>
+              </DeleteNFTDialog>
             </div>
           )}
         </CardContent>
@@ -549,32 +577,7 @@ export function SmallEditNftCard({ stamp }) {
 
 export function BigEditNftCard({ stamp }) {
   const [isHovered, setIsHovered] = useState(false);
-  const { addItemToCart } = useCart();
   const { address } = useWallet();
-
-  let isBuyable = false;
-  if (
-    stamp.insight?.verifyStatus === "selling" &&
-    stamp.ownerDetails.wallet_address !== address
-  ) {
-    isBuyable = true;
-  }
-
-  const handleCartClick = async () => {
-    try {
-      if (!isBuyable) {
-        toast.error("This stamp is not for sale");
-        return;
-      }
-
-      const result = await addItemToCart(stamp._id);
-      if (result) {
-        handleAddToCart(stamp.title);
-      }
-    } catch (error) {
-      toast.error("Failed: " + error.message);
-    }
-  };
 
   return (
     <div
@@ -637,12 +640,18 @@ export function BigEditNftCard({ stamp }) {
             </div>
           </Link>
           {isHovered && (
-            <div className="">
-              <Link to={`/nft/${stamp._id}`}>
+            <div className="grid grid-cols-[80%_5%_15%]">
+              <Link to={`/edit/nft/${stamp._id}`}>
                 <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
                   Edit
                 </Button>
               </Link>
+              <div></div>
+              <DeleteNFTDialog stampId={stamp._id}>
+                <Button className="hover:bg-gray-400 font-semibold bg-destructive text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
+                  <Trash2 className="h-10 w-10" />
+                </Button>
+              </DeleteNFTDialog>
             </div>
           )}
         </CardContent>

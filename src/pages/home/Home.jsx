@@ -7,7 +7,13 @@ import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
 import ErrorAnimation from "@/components/ui/error";
 import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
-import { fetcher, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, trendingNftsApiEndpoint } from "@/handlers/Endpoints";
+import {
+  fetcher,
+  trendingCollectionsApiEndpoint,
+  trendingCreatorsApiEndpoint,
+  trendingNftsApiEndpoint,
+} from "@/handlers/Endpoints";
+import { useAuth } from "../../context/AuthProvider";
 
 function Home() {
   const {
@@ -27,6 +33,9 @@ function Home() {
     error: creatorsError,
     isLoading: creatorsLoading,
   } = useQuery("top-creators", () => fetcher(trendingCreatorsApiEndpoint));
+
+  const { user } = useAuth();
+  console.log("User", user);
 
   if (trendingLoading || collectionsLoading || creatorsLoading)
     return (
@@ -82,7 +91,10 @@ function Home() {
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Creators
           </span>
-          <CreatorCarousel data={creatorsData.data} isLoading={trendingLoading} />
+          <CreatorCarousel
+            data={creatorsData.data}
+            isLoading={trendingLoading}
+          />
         </div>
         <Banner />
       </div>

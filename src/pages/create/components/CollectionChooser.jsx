@@ -45,10 +45,10 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
           onClick={() => handleCollectionClick(collection)}
         >
           <Card
-            className={`border-2 border-border bg-background/50 transition-colors cursor-pointer rounded-2xl 
+            className={`border-border bg-background/50 transition-colors cursor-pointer rounded-2xl 
               ${
                 selectedCollectionId === collection._id
-                  ? "border-[hsl(247,85%,64%)]"
+                  ? "border-[6px] shadow-lg"
                   : ""
               } 
               hover:bg-background/80 hover:shadow-lg`}

@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import CollectionGeneralInformation from "@/pages/collection/components/CollectionGeneralInformation";
 import CollectionDetailTabs from "@/pages/collection/components/CollectionDetailTabs";
 import { Description } from "@radix-ui/react-dialog";
-import { collectionAboutApiEndpoint, collectionItemsApiEndpoint, fetcher } from "@/handlers/Endpoints";
+import {
+  collectionAboutApiEndpoint,
+  collectionItemsApiEndpoint,
+  fetcher,
+} from "@/handlers/Endpoints";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { useQuery } from "react-query";
@@ -16,8 +20,23 @@ function CollectionDetail() {
   const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: collectionResponse, error: aboutError, isLoading: aboutLoading } = useQuery('collection-about', () => fetcher(collectionAboutApiEndpoint.replace(":id", id)));
-  const { data: collectionItemsResponse, error: itemsError, isLoading: itemsLoading } = useQuery('collection-items', () => fetcher(collectionItemsApiEndpoint.replace(":id", id)));
+  const {
+    data: collectionResponse,
+    error: aboutError,
+    isLoading: aboutLoading,
+  } = useQuery("collection-about", () =>
+    fetcher(collectionAboutApiEndpoint.replace(":id", id))
+  );
+
+  console.log("Collection Response", collectionResponse);
+  const {
+    data: collectionItemsResponse,
+    error: itemsError,
+    isLoading: itemsLoading,
+  } = useQuery("collection-items", () =>
+    fetcher(collectionItemsApiEndpoint.replace(":id", id))
+  );
+  console.log("Collection Items Response", collectionItemsResponse);
 
   if (aboutLoading || itemsLoading) return <LoadingAnimation />;
   if (aboutError || itemsError) return <ErrorAnimation />;

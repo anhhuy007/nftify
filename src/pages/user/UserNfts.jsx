@@ -28,8 +28,7 @@ const UserNfts = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  const { user } = useAuth();
-  console.log("User:", user);
+  const { isAuth, user } = useAuth();
 
   const [searchValue, setSearchValue] = useState(
     new URLSearchParams(location.search).get("search") || ""
@@ -56,11 +55,10 @@ const UserNfts = () => {
   const [apiUrl, setApiUrl] = useState("");
   const [typeData, setTypeData] = useState("");
   let CardComponent;
-
-  if (currentPath.includes("liked")) {
-    CardComponent = isGrid ? SmallNftCard : BigNftCard;
-  } else {
+  if (!currentPath.includes("liked") && user?._id === userId) {
     CardComponent = isGrid ? SmallEditNftCard : BigEditNftCard;
+  } else {
+    CardComponent = isGrid ? SmallNftCard : BigNftCard;
   }
   const filterSheetRef = useRef();
 

@@ -2,22 +2,32 @@ import React, { useState, useEffect, useRef } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
-import CollectionCard from "@/pages/marketplace/collections/components/CollectionCard";
+import CollectionCard, {
+  EditCollectionCard,
+} from "@/pages/marketplace/collections/components/CollectionCard";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
 import { fetcher, userCollectionsApiEndpoint } from "@/handlers/Endpoints";
+import { useAuth } from "@/context/AuthProvider";
 
 const UserCollections = () => {
   const { userId } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuth, user } = useAuth();
   const currentPath = location.pathname;
 
-  const [searchValue, setSearchValue] = useState(new URLSearchParams(location.search).get("search") || "");
-  const [currentPage, setCurrentPage] = useState(parseInt(new URLSearchParams(location.search).get("page"), 10) || 1);
-  const [limitCard, setLimitCard] = useState(parseInt(new URLSearchParams(location.search).get("limit"), 10) || 12);
+  const [searchValue, setSearchValue] = useState(
+    new URLSearchParams(location.search).get("search") || ""
+  );
+  const [currentPage, setCurrentPage] = useState(
+    parseInt(new URLSearchParams(location.search).get("page"), 10) || 1
+  );
+  const [limitCard, setLimitCard] = useState(
+    parseInt(new URLSearchParams(location.search).get("limit"), 10) || 12
+  );
   const [collections, setCollections] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
@@ -28,13 +38,7 @@ const UserCollections = () => {
     isLoading: collectionsLoading,
     refetch,
   } = useQuery(
-    [
-      "userCollections",
-      userId,
-      searchValue,
-      currentPage,
-      limitCard,
-    ],
+    ["userCollections", userId, searchValue, currentPage, limitCard],
     () =>
       fetcher(
         `${apiUrl}?&title=${searchValue}&page=${currentPage}&limit=${limitCard}`
@@ -47,7 +51,10 @@ const UserCollections = () => {
         if (currentPage === 1) {
           setCollections(data.items);
         } else {
-          setCollections((prevCollections) => [...prevCollections, ...data.items]);
+          setCollections((prevCollections) => [
+            ...prevCollections,
+            ...data.items,
+          ]);
         }
         setHasMore(data.hasMore || data.items.length > 0);
       },
@@ -86,6 +93,13 @@ const UserCollections = () => {
     handlePageChange(currentPage + 1);
   };
 
+  let CardComponent = CollectionCard;
+  if (user?._id === userId) {
+    CardComponent = EditCollectionCard;
+  } else {
+    CardComponent = CollectionCard;
+  }
+
   if (collectionsLoading && currentPage === 1) return <LoadingAnimation />;
   if (collectionsError) return <ErrorAnimation />;
 
@@ -105,13 +119,18 @@ const UserCollections = () => {
         loader={<FetchingMoreAnimation />}
         endMessage={
           <p className="text-center text-white mt-20">
-            {collections.length > 0 ? "No more items to display" : "No items found"}
+            {collections.length > 0
+              ? "No more items to display"
+              : "No items found"}
           </p>
         }
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:grid-cols-4">
           {collections.map((collection, index) => (
-            <CollectionCard key={collection._id || index} collection={collection} />
+            <CardComponent
+              key={collection._id || index}
+              collection={collection}
+            />
           ))}
         </div>
       </InfiniteScroll>

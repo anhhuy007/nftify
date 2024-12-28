@@ -7,6 +7,7 @@ import { useWallet } from "@/context/WalletProvider";
 import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { createCollectionApiEndpoint } from "@/handlers/Endpoints";
+import { useAuth } from "@/context/AuthProvider";
 
 function CreateCollection() {
   const [collection, setCollection] = useState({
@@ -14,6 +15,9 @@ function CreateCollection() {
     description: "",
     thumbUrl: "",
   });
+
+  const { user, isAuth } = useAuth();
+  console.log(user, isAuth);
 
   const { fetchWithAuth } = useAuthHandler();
   const [isLoading, setIsLoading] = useState(false);

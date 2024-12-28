@@ -32,6 +32,8 @@ import CreateCollection from "@/pages/create/CreateCollection";
 import Profile from "@/pages/setting/Profile/Profile";
 import Notification from "@/pages/setting/Notification/Notification";
 import Account from "@/pages/setting/Account/Account";
+import EditCollection from "@/pages/edit/collection/EditCollection";
+import EditNft from "@/pages/edit/nft/EditNft";
 
 const menuItems = [
   {
@@ -192,6 +194,30 @@ const menuItems = [
     layout: "RootLayout",
     element: <NftDetail />,
     isPrivate: false,
+  },
+  {
+    name: "Edit NFT",
+    group: "edit",
+    link: "/edit/nft/:nftId",
+    layout: "RootLayout",
+    element: <EditNft />,
+    // isPrivate: true,
+  },
+  {
+    name: "Edit Collection",
+    group: "edit",
+    link: "/edit/collection/:collectionId",
+    layout: "RootLayout",
+    element: <EditCollection />,
+    // isPrivate: true,
+  },
+  {
+    name: "Edit Collection",
+    group: "edit",
+    link: "/edit/collection/:collectionId",
+    layout: "RootLayout",
+    element: <EditCollection />,
+    // isPrivate: true,
   },
   {
     name: "NFTs",
