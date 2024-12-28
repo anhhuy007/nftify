@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthProvider";
 
 const useAuthHandler = () => {
   const { isAuth, refreshAccessToken, logoutAction } = useAuth();
-  
+
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
   const handleTokenRefresh = async () => {
@@ -28,6 +28,15 @@ const useAuthHandler = () => {
     if (!token) {
       throw new Error("No token found");
     }
+
+    // Handle query params
+    let finalUrl = url;
+    if (options.params) {
+      const queryParams = new URLSearchParams(options.params).toString();
+      finalUrl = `${url}${url.includes("?") ? "&" : "?"}${queryParams}`;
+      delete options.params; // Remove params from options
+    }
+
     const headers = {
       "Content-Type": "application/json",
       ...options.headers,
@@ -35,7 +44,7 @@ const useAuthHandler = () => {
     };
 
     try {
-      const response = await fetch(url, { ...options, headers });
+      const response = await fetch(finalUrl, { ...options, headers });
 
       if (response.status === 401) {
         const newToken = await handleTokenRefresh();
@@ -44,11 +53,11 @@ const useAuthHandler = () => {
           Authorization: `Bearer ${newToken}`,
         };
 
-        const newResponse = await fetch(url, {
+        const newResponse = await fetch(finalUrl, {
           ...options,
           headers: newHeaders,
         });
-      
+
         return newResponse.json();
       }
 
@@ -58,6 +67,18 @@ const useAuthHandler = () => {
       throw error;
     }
   };
+
+  // Usage example:
+  /*
+  await fetchWithAuth('/api/nfts', {
+    method: 'GET',
+    params: {
+      page: 1,
+      limit: 10,
+      sort: 'desc'
+    }
+  });
+  */
 
   return { fetcher, fetchWithAuth };
 };
