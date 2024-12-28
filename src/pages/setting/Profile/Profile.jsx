@@ -17,7 +17,10 @@ import {
 } from "@/pages/create/components/FileUpload";
 import { useAuth } from "@/context/AuthProvider";
 import { useAuthHandler } from "@/handlers/AuthHandler";
-import { userApiEndpoint, userSettingUploadApiEndpoint } from "@/handlers/Endpoints";
+import {
+  userApiEndpoint,
+  userSettingUploadApiEndpoint,
+} from "@/handlers/Endpoints";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -111,21 +114,16 @@ function Profile() {
       toast.error("Please login before changing details");
       return;
     }
-
+    setIsLoading(true);
     try {
       const updates = {};
 
       const uploadTasks = [];
 
-      if (isImgChanged.avatar) {
-        if (!initialUser.avatar) {
-          throw new Error("Avatar is missing");
-        }
-
+      if (isImgChanged.avatar && initialUser.avatar) {
         // Create a promise for uploading the avatar
         const avatarUploadTask = IpfsService.uploadAvatarImage(
-          initialUser.avatar,
-          setIsLoading
+          initialUser.avatar
         ).then((avatarUpload) => {
           if (avatarUpload) {
             toast.success("Avatar uploaded on Pinata successfully");
@@ -138,15 +136,10 @@ function Profile() {
         uploadTasks.push(avatarUploadTask); // Add the promise to the array
       }
 
-      if (isImgChanged.background) {
-        if (!initialUser.background) {
-          throw new Error("Background image is missing");
-        }
-
+      if (isImgChanged.background && initialUser.background) {
         // Create a promise for uploading the background image
         const bgUploadTask = IpfsService.uploadBackgroundImage(
-          initialUser.background,
-          setIsLoading
+          initialUser.background
         ).then((bgUpload) => {
           if (bgUpload) {
             toast.success("Background uploaded on Pinata successfully");
@@ -175,10 +168,9 @@ function Profile() {
         body: JSON.stringify(updates),
       });
 
-      if (response.status === "success") {
+      if (response.success === true) {
         console.log("updates: ", updates);
         toast.success("User data uploaded successfully");
-        // Update the local state with the new data
         setInitialUser((prev) => ({ ...prev, ...updates }));
       } else {
         throw new Error(
@@ -189,6 +181,8 @@ function Profile() {
       // Handle and display any errors that occur during the process
       console.error("Error uploading image:", error);
       toast.error(`An error occurred: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -222,7 +216,7 @@ function Profile() {
             value={initialUser.name}
             onChange={handleNameChange}
             id="token"
-            className={`w-full pl-5 py-2 border-0 text-lg text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] resize-none overflow-hidden`} 
+            className={`w-full pl-5 py-2 border-0 text-lg text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] resize-none overflow-hidden`}
           />
         </div>
         {/* Short Bio */}
@@ -235,7 +229,7 @@ function Profile() {
             id="description"
             onChange={(e) => {
               handleShortBioChange(e);
-              e.target.style.height = 'inherit';
+              e.target.style.height = "inherit";
               e.target.style.height = `${e.target.scrollHeight}px`;
             }}
             value={initialUser.shortBio}

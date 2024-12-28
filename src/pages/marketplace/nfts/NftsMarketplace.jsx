@@ -82,10 +82,6 @@ function NftsMarketplace() {
     }
   );
 
-  console.log(
-    `${nftsApiEndpoint}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${currentPage}&limit=${limitCard}`
-  );
-
   useEffect(() => {
     const newCardCount = isGrid ? 5 : 4;
     setLimitCard(newCardCount * 4);

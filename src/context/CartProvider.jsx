@@ -40,8 +40,6 @@ const CartProvider = ({ children }) => {
                 body: JSON.stringify({ itemId: nftId }),
             });
 
-            console.log("Add to cart response:", response);
-
             if (!response.success) {
                 throw new Error(response.message);
             }
@@ -96,8 +94,6 @@ const CartProvider = ({ children }) => {
             const response = await fetchWithAuth(`${cartApiEndpoint}/checkout`, {
                 method: "POST",
             });
-
-            console.log("Checkout cart response:", response);
 
             if (!response.success) {
                 throw new Error(response.message);

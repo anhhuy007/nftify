@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import FileUpload from "@/pages/create/components/FileUpload";
 import { Switch } from "@/components/ui/switch";
@@ -8,23 +8,29 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthProvider";
 import { useNavigate } from "react-router-dom";
-
-const user = {
-  name: "John Doe",
-  address: "0x1234567890",
-  isConnected: true,
-  collections: [
-    { id: "1", name: "Name..", icon: "/placeholder.svg?height=40&width=40" },
-    { id: "2", name: "Name..", icon: "/placeholder.svg?height=40&width=40" },
-    { id: "3", name: "Name..", icon: "/placeholder.svg?height=40&width=40" },
-    { id: "4", name: "Name..", icon: "/placeholder.svg?height=40&width=40" },
-  ],
-};
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+  SelectLabel,
+} from "@/components/ui/select";
+import CustomDateInput from "@/components/ui/date-input";
+import IpfsService from "@/services/IpfsService";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { useWallet } from "@/context/WalletProvider";
+import { userCollection, createNftApiEndpoint } from "@/handlers/Endpoints";
 
 function CreateNft() {
   const navigate = useNavigate();
   const [isOnMarketplace, setIsOnMarketplace] = useState(false);
   const [isCreated, setIsCreated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { fetchWithAuth } = useAuthHandler();
+  const [collection, setCollection] = useState([]);
+  const [selectedCollection, setSelectedCollection] = useState(null);
 
   const { isAuth, user } = useAuth();
   if (!isAuth) {
@@ -32,18 +38,37 @@ function CreateNft() {
     navigate("/");
   }
 
+  const fetchCollections = async () => {
+    try {
+      const result = await fetchWithAuth(userCollection);
+      console.log("Collections", result);
+      setCollection(result.data);
+    } catch (error) {
+      console.error("Error fetching collections", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
+
+  const wallet = useWallet();
+
   const [nft, setNft] = useState({
     title: "",
     imgUrl: "",
-    denom: "",
+    price: "",
     ownerDetails: {
-      name: user.name,
+      username: user.username,
       avatarUrl: user.avatarUrl,
       id: user.id,
     },
     issuedBy: "",
+    denom: "",
     function: "",
     color: "",
+    releasedDate: "",
+    cid: "",
   });
 
   const handleFileSelect = (file) => {
@@ -51,12 +76,8 @@ function CreateNft() {
     setIsCreated(true);
   };
 
-  const handleCollectionSelect = (collection) => {
-    setNft({ ...nft, collection });
-  };
-
-  const handleDenomChange = (e) => {
-    setNft((prev) => ({ ...prev, denom: e.target.value }));
+  const handlePriceChange = (e) => {
+    setNft((prev) => ({ ...prev, price: e.target.value }));
   };
 
   const handleNameChange = (e) => {
@@ -67,50 +88,112 @@ function CreateNft() {
     setNft((prev) => ({ ...prev, description: e.target.value }));
   };
 
-  const handleCreateNft = () => {
-    // Validate NFT fields
+  const handleCreateNft = async () => {
     console.log("Creating NFT", nft);
 
-    let errors = [];
+    const requiredFields = [
+      "title",
+      "imgUrl",
+      "description",
+      "issuedBy",
+      "denom",
+      "color",
+      "releasedDate",
+      "function",
+    ];
+    const missingFields = requiredFields.filter((field) => !nft[field]);
 
-    // Check if image is uploaded
-    if (!nft.imgUrl) {
-      errors.push("Please upload an image for your NFT");
+    if (missingFields.length > 0) {
+      toast.error("Please fill all required fields");
+      return;
     }
 
-    // Check if title is provided
-    if (!nft.title) {
-      errors.push("Please enter a name for your NFT");
+    setIsLoading(true);
+
+    let pinataImgUrl, pinataCid, pinataMetadataUrl;
+
+    try {
+      // Upload image
+      const stampImgUpload = await IpfsService.uploadStampImage(nft.imgUrl);
+      if (!stampImgUpload || !stampImgUpload.url) {
+        throw new Error("Error uploading image to IPFS");
+      }
+      pinataImgUrl = stampImgUpload.url;
+      toast.success("Image uploaded on Pinata successfully");
+
+      // Upload metadata
+      const metadata = {
+        creatorId: user._id,
+        title: nft.title,
+        issuedBy: nft.issuedBy,
+        function: nft.function,
+        color: nft.color,
+        date: nft.releasedDate,
+        denom: nft.denom,
+        imgUrl: pinataImgUrl,
+      };
+
+      const metadataUpload = await IpfsService.uploadStampMetadata(metadata);
+      if (!metadataUpload || !metadataUpload.url) {
+        throw new Error("Error uploading metadata to IPFS");
+      }
+      pinataCid = metadataUpload.ipfsHash;
+      pinataMetadataUrl = metadataUpload.url;
+      toast.success("Metadata uploaded on Pinata successfully");
+
+      // Upload NFT to backend
+      const nftData = {
+        creatorId: user._id,
+        title: nft.title,
+        issuedBy: nft.issuedBy,
+        function: nft.function,
+        color: nft.color,
+        date: nft.releasedDate,
+        denom: nft.denom,
+        imgUrl: pinataImgUrl,
+        tokenID: pinataCid,
+        price: nft.price,
+        tokenUrl: pinataMetadataUrl,
+        description: nft.description,
+        collection: selectedCollection,
+      };
+
+      console.log("NFT Data", nftData);
+
+      const result = await fetchWithAuth(createNftApiEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nftData),
+      });
+
+      if (result.success !== true) {
+        throw new Error(result.message || "Error creating NFT on backend");
+      }
+
+      toast.success("NFT created successfully");
+
+      setNft({
+        title: "",
+        imgUrl: "",
+        description: "",
+        issuedBy: "",
+        denom: "",
+        color: "",
+        releasedDate: "",
+        function: "",
+        price: "",
+      });
+    } catch (error) {
+      console.error(error.message);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
-
-    // Check if description is provided
-    if (!nft.description) {
-      errors.push("Please enter a description for your NFT");
-    }
-
-    // Check if price is entered for marketplace
-    if (isOnMarketplace && !nft.denom) {
-      errors.push(
-        "If you want to put it on marketplace, please enter a price for your NFT"
-      );
-    }
-
-    // If there are errors, show them and stop the NFT creation process
-    if (errors.length > 0) {
-      errors.forEach((error) => toast.error(error));
-      return; // Stop execution if there are validation errors
-    }
-
-    // If no errors, create the NFT
-    // setIsCreated(true);
-
-    // Show success message
-    toast.success("NFT created successfully!");
   };
 
   return (
     <>
-      <div className="flex flex-col min-h-screen my-20 mx-72 ">
+      <div className="flex flex-col min-h-screen my-20 mx-20 xl:mx-72 ">
         <h1 className="text-primary-foreground text-6xl font-bold">
           Create New NFT
         </h1>
@@ -132,7 +215,7 @@ function CreateNft() {
                   />
                   <div className="flex flex-col">
                     <span className="text-primary-foreground text-2xl font-bold">
-                      {user.address}
+                      {/* {user.address} */}
                     </span>
                     <span className="text-muted-foreground text-2xl font-bold">
                       Ethereum
@@ -140,7 +223,7 @@ function CreateNft() {
                   </div>
                 </div>
                 <div>
-                  {user.isConnected ? (
+                  {wallet.isConnected ? (
                     <div className="bg-green-500 text-white px-4 py-2 rounded">
                       Connected
                     </div>
@@ -179,11 +262,11 @@ function CreateNft() {
                   <Input
                     id="price"
                     placeholder="Enter price"
-                    value={nft.denom}
-                    onChange={handleDenomChange}
+                    value={nft.price}
+                    onChange={handlePriceChange}
                     className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]
                       ${
-                        !nft.denom && isOnMarketplace
+                        !nft.price && isOnMarketplace
                           ? "border-destructive border-2"
                           : "border-2 border-primary"
                       }
@@ -199,14 +282,14 @@ function CreateNft() {
             {/* Collection */}
             <div className="space-y-4">
               <CollectionChooser
-                collections={user.collections}
-                onCollectionSelect={handleCollectionSelect}
+                collections={collection}
+                onCollectionSelect={setSelectedCollection}
               />
             </div>
             {/* Name */}
             <div className="space-y-4">
               <span className="text-primary-foreground text-3xl font-bold">
-                Name <span className="text-destructive">*</span>
+                Name
               </span>
               <div className="relative">
                 <Input
@@ -228,7 +311,7 @@ function CreateNft() {
             {/* Description */}
             <div className="space-y-4">
               <span className="text-primary-foreground text-3xl font-bold">
-                Description <span className="text-destructive">*</span>
+                Description
               </span>
               <div className="relative">
                 <Input
@@ -245,6 +328,145 @@ function CreateNft() {
                   `}
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-[48%_4%_48%]">
+              <div className="space-y-4">
+                <span className="text-primary-foreground text-3xl font-bold">
+                  Issued By
+                </span>
+                <div className="relative">
+                  <Input
+                    id="issuedBy"
+                    placeholder="Enter country"
+                    value={nft.issuedBy}
+                    onChange={(e) =>
+                      setNft((prev) => ({ ...prev, issuedBy: e.target.value }))
+                    }
+                    className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] border-2 border-primary
+                      ${
+                        !nft.issuedBy
+                          ? "border-destructive border-2"
+                          : "border-2 border-primary"
+                      }
+                      `}
+                  />
+                </div>
+              </div>
+              <div></div>
+              <div className="space-y-4">
+                {/* released date */}
+                <span className="text-primary-foreground text-3xl font-bold">
+                  Released Date
+                </span>
+                <div className="">
+                  <CustomDateInput
+                    id="released-date"
+                    value={
+                      nft.releasedDate
+                        ? new Date(nft.releasedDate).toLocaleDateString("en-US")
+                        : ""
+                    }
+                    onChange={(formattedDate) => {
+                      const [day, month, year] = formattedDate.split("/");
+                      const isoDate =
+                        month && day && year
+                          ? new Date(`${year}-${month}-${day}`).toISOString()
+                          : "";
+
+                      setNft((prev) => ({
+                        ...prev,
+                        releasedDate: isoDate,
+                      }));
+                    }}
+                    className={`pl-5 py-8 w-full text-sm text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] border-2 border-primary
+                      ${
+                        !nft.releasedDate
+                          ? "border-destructive border-2"
+                          : "border-2 border-primary"
+                      }
+                      `}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-[48%_4%_48%]">
+              <div className="space-y-4">
+                <span className="text-primary-foreground text-3xl font-bold">
+                  Face value
+                </span>
+                <div className="relative">
+                  <Input
+                    id="denom"
+                    placeholder="Enter price"
+                    value={nft.denom}
+                    onChange={(e) =>
+                      setNft((prev) => ({ ...prev, denom: e.target.value }))
+                    }
+                    className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] border-2 border-primary
+                      ${
+                        !nft.denom
+                          ? "border-destructive border-2"
+                          : "border-2 border-primary"
+                      }
+                      `}
+                  />
+                </div>
+              </div>
+              <div></div>
+              <div className="space-y-4">
+                {/* Color */}
+                <span className="text-primary-foreground text-3xl font-bold">
+                  Color
+                </span>
+                <div className="relative">
+                  <Input
+                    id="color"
+                    placeholder="Color"
+                    value={nft.color}
+                    onChange={(e) =>
+                      setNft((prev) => ({ ...prev, color: e.target.value }))
+                    }
+                    className={`pl-5 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] border-2 border-primary
+                      ${
+                        !nft.color
+                          ? "border-destructive border-2"
+                          : "border-2 border-primary"
+                      }
+                      `}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4 w-[48%]">
+              <span className="text-primary-foreground text-3xl font-bold">
+                Function
+              </span>
+              <Select
+                onValueChange={(value) =>
+                  setNft((prev) => ({ ...prev, function: value }))
+                }
+              >
+                <SelectTrigger
+                  className={`pl-5 py-8 text-sm text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)] border-2 border-primary
+                  ${
+                    !nft.function
+                      ? "border-destructive border-2"
+                      : "border-2 border-primary"
+                  }
+                  
+                  `}
+                >
+                  <SelectValue placeholder="Select a function" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Function</SelectLabel>
+                    <SelectItem value="postage">Postage</SelectItem>
+                    <SelectItem value="airmail">Airmail</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -268,9 +490,11 @@ function CreateNft() {
               )}
             </div>
           </div>
+
           <Button
             className="mt-10 w-1/2 mx-auto p-8 bg-white text-black  text-2xl font-bold"
             onClick={handleCreateNft}
+            disabled={isLoading}
           >
             Create NFT
           </Button>

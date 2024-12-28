@@ -8,8 +8,6 @@ import toast from "react-hot-toast";
 import { handleAddToCart } from "@/components/NFT/NftCard";
 import { useCart } from "@/context/CartProvider";
 import { useWallet } from "@/context/WalletProvider";
-import NFTService from "@/services/NFTService";
-import { useAuth } from "@/context/AuthProvider";
 import CheckoutModal from "@/pages/checkout/CheckoutModal";
 
 export default function NftGeneralInformation({ data: stamp }) {
@@ -29,7 +27,7 @@ export default function NftGeneralInformation({ data: stamp }) {
 
   let isBuyable = false;
   if (
-    stamp.insight.verifyStatus === "selling" &&
+    stamp.insight.isListed &&
     stamp.ownerDetails?.wallet_address !== address
   ) {
     isBuyable = true;

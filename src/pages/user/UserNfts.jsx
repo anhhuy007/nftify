@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import ToggleSwitch from "@/pages/marketplace/nfts/components/ToggleSwitch";
-import { BigNftCard, SmallNftCard } from "@/components/NFT/NftCard";
+import {
+  BigNftCard,
+  SmallNftCard,
+  SmallEditNftCard,
+  BigEditNftCard,
+} from "@/components/NFT/NftCard";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import Filter from "@/pages/marketplace/nfts/components/Filter";
@@ -23,6 +28,8 @@ const UserNfts = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+  const { user } = useAuth();
+  console.log("User:", user);
 
   const [searchValue, setSearchValue] = useState(
     new URLSearchParams(location.search).get("search") || ""
@@ -48,8 +55,13 @@ const UserNfts = () => {
   const [hasMore, setHasMore] = useState(true);
   const [apiUrl, setApiUrl] = useState("");
   const [typeData, setTypeData] = useState("");
+  let CardComponent;
 
-  const CardComponent = isGrid ? SmallNftCard : BigNftCard;
+  if (currentPath.includes("liked")) {
+    CardComponent = isGrid ? SmallNftCard : BigNftCard;
+  } else {
+    CardComponent = isGrid ? SmallEditNftCard : BigEditNftCard;
+  }
   const filterSheetRef = useRef();
 
   useEffect(() => {
