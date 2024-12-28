@@ -18,8 +18,6 @@ const CartProvider = ({ children }) => {
                 throw new Error("Invalid cart data received");
             }
 
-            console.log("Cart response:", response);
-
             setCart(response.data);
             setError(null);
         } catch (error) {
@@ -41,8 +39,6 @@ const CartProvider = ({ children }) => {
                 method: "POST",
                 body: JSON.stringify({ itemId: nftId }),
             });
-
-            console.log("Add to cart response:", response);
 
             if (!response.success) {
                 throw new Error(response.message);
@@ -98,8 +94,6 @@ const CartProvider = ({ children }) => {
             const response = await fetchWithAuth(`${cartApiEndpoint}/checkout`, {
                 method: "POST",
             });
-
-            console.log("Checkout cart response:", response);
 
             if (!response.success) {
                 throw new Error(response.message);

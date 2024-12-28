@@ -20,7 +20,7 @@ export const trendingCreatorsApiEndpoint = `${baseUrl}/marketplace/list/trending
 export const nftsApiEndpoint = `${baseUrl}/marketplace/list/stamps`;
 
 // nft detail endpoints
-export const stampDetailApiEndpoint = `http://localhost:3000/api/v1/marketplace/stamp`;
+export const stampDetailApiEndpoint = `${baseUrl}/marketplace/stamp`;
 
 // cart endpoints
 export const cartApiEndpoint = `${baseUrl}/user/cart`;
@@ -59,3 +59,8 @@ export const collectionsApiEndpoint = `${baseUrl}/marketplace/list/collections`;
 export const createNftApiEndpoint = `${baseUrl}/user/create/nft`;
 export const userCollection = `${baseUrl}/user/collectionList`;
 export const createCollectionApiEndpoint = `${baseUrl}/user/collection/create`;
+
+// Transaction endpoints
+export const transactionApiEndpoint = `${baseUrl}/transaction`;
+export const transactionListApiEndpoint = `${baseUrl}/transaction/list`;
+export const findTransactionApiEndpoint = `${baseUrl}/transaction/find`;

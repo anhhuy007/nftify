@@ -25,7 +25,7 @@ export default function NftCard({ stamp }) {
 
   let isBuyable = false;
   if (
-    stamp.insight.verifyStatus === "selling" &&
+    stamp.insight.isListed &&
     stamp.ownerDetails.wallet_address !== address
   ) {
     isBuyable = true;
@@ -138,7 +138,7 @@ export function SmallNftCard({ stamp }) {
 
   let isBuyable = false;
   if (
-    stamp.status === "selling" &&
+    stamp.isListed &&
     stamp.ownerDetails.wallet_address !== address
   ) {
     isBuyable = true;
@@ -230,9 +230,11 @@ export function BigNftCard({ stamp }) {
   const { addItemToCart } = useCart();
   const { address } = useWallet();
 
+  console.log("Big NFT Card", stamp);
+
   let isBuyable = false;
   if (
-    stamp.insight?.verifyStatus === "selling" &&
+    stamp.isListed &&
     stamp.ownerDetails.wallet_address !== address
   ) {
     isBuyable = true;
@@ -309,7 +311,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
                 <p className="text-lg font-semibold">
-                  {stamp.price.$numberDecimal ?? "Not for sale"} ETH
+                  {stamp?.price?.$numberDecimal ?? "Not for sale"} ETH
                 </p>
               </div>
             </div>
@@ -453,7 +455,7 @@ export function SmallEditNftCard({ stamp }) {
 
   let isBuyable = false;
   if (
-    stamp.status === "selling" &&
+    stamp.isListed &&
     stamp.ownerDetails.wallet_address !== address
   ) {
     isBuyable = true;
@@ -554,7 +556,7 @@ export function BigEditNftCard({ stamp }) {
 
   let isBuyable = false;
   if (
-    stamp.insight?.verifyStatus === "selling" &&
+    stamp.insight?.isListed &&
     stamp.ownerDetails.wallet_address !== address
   ) {
     isBuyable = true;

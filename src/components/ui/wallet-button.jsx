@@ -31,6 +31,7 @@ export function WalletButton() {
 
   const handleConnectWallet = async () => {
     try {
+      console.log("Connecting wallet... with address:", user.wallet_address);
       const connectedAddress = await connectWallet(user.wallet_address || null);
       if (!connectedAddress) {
         toast.error("Failed to connect wallet");
