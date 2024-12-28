@@ -33,6 +33,7 @@ import Profile from "@/pages/setting/Profile/Profile";
 import Notification from "@/pages/setting/Notification/Notification";
 import Account from "@/pages/setting/Account/Account";
 import EtherscanPage from "../pages/etherscan/EtherscanOverview";
+import TransactionDetailPage from "../pages/etherscan/TransactionDetail";
 
 const menuItems = [
   {
@@ -271,6 +272,14 @@ const menuItems = [
     link: "/etherscan",
     layout: "RootLayout",
     element: <EtherscanPage />,
+    isPrivate: false,
+  },
+  {
+    name: "Transaction Detail",
+    group: "etherscan",
+    link: "/etherscan/transaction/:hash",
+    layout: "RootLayout",
+    element: <TransactionDetailPage />,
     isPrivate: false,
   },
 ];
