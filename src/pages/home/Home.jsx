@@ -7,28 +7,36 @@ import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
 import ErrorAnimation from "@/components/ui/error";
 import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
-import { fetcher, trendingCollectionsApiEndpoint, trendingCreatorsApiEndpoint, trendingNftsApiEndpoint } from "@/api/Endpoints";
+// import { SkeletonCollectionCarousel } from "@/components/skeleton/SkeletonCollection";
+// import { SkeletonCreatorCarousel } from "@/components/skeleton/SkeletonCreator";
+import { fetcher, HOME_ENDPOINTS } from "@/handlers/Endpoints";
 
 function Home() {
   const {
-    data: trendingData,
-    error: trendingError,
-    isLoading: trendingLoading,
-  } = useQuery("trending-nfts", () => fetcher(trendingNftsApiEndpoint));
-  const {
-    data: collectionsData,
-    error: collectionsError,
-    isLoading: collectionsLoading,
-  } = useQuery("top-collections", () =>
-    fetcher(trendingCollectionsApiEndpoint)
-  );
-  const {
-    data: creatorsData,
-    error: creatorsError,
-    isLoading: creatorsLoading,
-  } = useQuery("top-creators", () => fetcher(trendingCreatorsApiEndpoint));
+    data: trendingNftsData,
+    isLoading: trendingNftsLoading,
+    error: trendingNftsError,
+  } = useQuery("trending-nfts", () => fetcher(HOME_ENDPOINTS.TRENDING_NFTS));
 
-  if (trendingLoading || collectionsLoading || creatorsLoading)
+  const {
+    data: topCollectionsData,
+    isLoading: topCollectionsLoading,
+    error: topCollectionsError,
+  } = useQuery("top-collections", () =>
+    fetcher(HOME_ENDPOINTS.TRENDING_COLLECTIONS)
+  );
+
+  const {
+    data: topCreatorsData,
+    isLoading: topCreatorsLoading,
+    error: topCreatorsError,
+  } = useQuery("top-creators", () => fetcher(HOME_ENDPOINTS.TRENDING_CREATORS));
+
+  const isLoading =
+    trendingNftsLoading || topCollectionsLoading || topCreatorsLoading;
+  const isError = trendingNftsError || topCollectionsError || topCreatorsError;
+
+  if (isLoading) {
     return (
       <>
         <div className="flex flex-col items-center justify-center">
@@ -45,20 +53,23 @@ function Home() {
             <span className="text-5xl leading-normal font-bold text-gradient">
               Top Collections
             </span>
-            {/* Skeleton for collections here */}
+            {/* <SkeletonCollectionCarousel /> Added skeleton */}
           </div>
           <div className="flex flex-col justify-center items-center gap-10">
             <span className="text-5xl leading-normal font-bold text-gradient">
               Top Creators
             </span>
-            {/* Skeleton for creators here */}
+            {/* <SkeletonCreatorCarousel /> Added skeleton */}
           </div>
           <Banner />
         </div>
       </>
     );
-  if (trendingError || collectionsError || creatorsError)
-    return ErrorAnimation();
+  }
+
+  if (isError) {
+    return <ErrorAnimation />;
+  }
 
   return (
     <>
@@ -70,19 +81,28 @@ function Home() {
           <span className="text-5xl font-bold leading-normal text-gradient">
             Trending NFTs
           </span>
-          <NftCarousel data={trendingData.data} isLoading={trendingLoading} />
+          <NftCarousel
+            data={trendingNftsData?.data}
+            isLoading={trendingNftsLoading}
+          />{" "}
+          {/* Added optional chaining */}
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Collections
           </span>
-          <CollectionCarousel data={collectionsData.data} />
+          <CollectionCarousel data={topCollectionsData?.data} />{" "}
+          {/* Added optional chaining */}
         </div>
         <div className="flex flex-col justify-center items-center gap-10">
           <span className="text-5xl leading-normal font-bold text-gradient">
             Top Creators
           </span>
-          <CreatorCarousel data={creatorsData.data} isLoading={trendingLoading} />
+          <CreatorCarousel
+            data={topCreatorsData?.data}
+            isLoading={topCreatorsLoading}
+          />{" "}
+          {/* Added optional chaining, corrected loading prop */}
         </div>
         <Banner />
       </div>

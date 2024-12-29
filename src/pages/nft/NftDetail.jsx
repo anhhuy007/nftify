@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Maximize2 } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import NftGeneralInformation from "@/pages/nft/components/NftGeneralInformation";
 import NftDetailTabs from "@/pages/nft/components/NftDetailTabs";
@@ -15,8 +10,8 @@ import { useQuery } from "react-query";
 import LoadingAnimation from "@/components/ui/loading";
 import ErrorAnimation from "@/components/ui/error";
 import { Link } from "react-router-dom";
-import { useAuthHandler } from "@/api/AuthHandler";
-import { stampDetailApiEndpoint } from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { MARKETPLACE_ENDPOINTS } from "../../handlers/Endpoints";
 
 export default function NftDetail() {
   const { nftId } = useParams();
@@ -31,7 +26,7 @@ export default function NftDetail() {
     isLoading: nftDetailLoading,
   } = useQuery(
     ["nft-detail", nftId],
-    () => fetcher(stampDetailApiEndpoint + `/${nftId}`),
+    () => fetcher(MARKETPLACE_ENDPOINTS.NFT_DETAIL + `/${nftId}`),
     {
       enabled: !!nftId,
       retry: 1,
@@ -66,7 +61,6 @@ export default function NftDetail() {
       },
       // Directly use the data from API response
       onSuccess: (data) => {
-        console.log("More from creator data:", data);
         if (data) {
           setCreatorNfts(data);
         }
@@ -136,7 +130,7 @@ export default function NftDetail() {
               Retry
             </button>
           </div>
-        ) : creatorNfts.items.length > 0 ? (
+        ) : creatorNfts?.items?.length > 0 ? (
           <NftCarousel data={creatorNfts} />
         ) : (
           <p className="text-gray-500">No additional NFTs from this creator</p>

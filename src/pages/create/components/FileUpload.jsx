@@ -19,7 +19,7 @@ const FileUpload = ({ onFileSelect }) => {
     console.log(uploadedFile);
     if (uploadedFile) {
       setFile(URL.createObjectURL(uploadedFile));
-      onFileSelect(URL.createObjectURL(uploadedFile));
+      onFileSelect(uploadedFile);
     }
   };
 
@@ -146,7 +146,7 @@ export const FileLogoUpload = ({ onFileSelect }) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       setFile(URL.createObjectURL(uploadedFile));
-      onFileSelect(URL.createObjectURL(uploadedFile));
+      onFileSelect(uploadedFile);
     }
   };
   const handleRemoveFile = () => {
@@ -177,13 +177,13 @@ export const FileLogoUpload = ({ onFileSelect }) => {
     e.stopPropagation();
     setIsDragging(false);
 
-    const uploadedFile = e.dataTransfer.files[0];
+    const uploadedFile = e.target.files[0];
     if (
       uploadedFile &&
       accept.includes(uploadedFile.type) &&
       uploadedFile.size <= maxSize
     ) {
-      setFile(URL.createObjectURL(uploadedFile));
+      setFile(uploadedFile);
       onFileSelect(URL.createObjectURL(uploadedFile));
     } else {
       alert("Invalid file type or size exceeds 20MB");

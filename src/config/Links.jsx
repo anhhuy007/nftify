@@ -1,12 +1,10 @@
 import React from "react";
 import {
   User,
-  CreditCard,
   Settings,
   LifeBuoy,
   LogOut,
   ShoppingCart,
-  Users,
   Shield,
   Bell,
   Heart,
@@ -32,6 +30,10 @@ import CreateCollection from "@/pages/create/CreateCollection";
 import Profile from "@/pages/setting/Profile/Profile";
 import Notification from "@/pages/setting/Notification/Notification";
 import Account from "@/pages/setting/Account/Account";
+import EtherscanPage from "../pages/etherscan/EtherscanOverview";
+import TransactionDetailPage from "../pages/etherscan/TransactionDetail";
+import EditCollection from "@/pages/edit/collection/EditCollection";
+import EditNft from "@/pages/edit/nft/EditNft";
 
 const menuItems = [
   {
@@ -177,6 +179,15 @@ const menuItems = [
     isPrivate: false,
   },
   {
+    name: "Etherscan",
+    group: "create",
+    link: "/etherscan",
+    layout: "RootLayout",
+    icon: <ShoppingCart />,
+    element: <EtherscanPage />,
+    isPrivate: false,
+  },
+  {
     name: "Home",
     group: "home",
     layout: "RootLayout",
@@ -192,6 +203,30 @@ const menuItems = [
     layout: "RootLayout",
     element: <NftDetail />,
     isPrivate: false,
+  },
+  {
+    name: "Edit NFT",
+    group: "edit",
+    link: "/edit/nft/:nftId",
+    layout: "RootLayout",
+    element: <EditNft />,
+    // isPrivate: true,
+  },
+  {
+    name: "Edit Collection",
+    group: "edit",
+    link: "/edit/collection/:collectionId",
+    layout: "RootLayout",
+    element: <EditCollection />,
+    // isPrivate: true,
+  },
+  {
+    name: "Edit Collection",
+    group: "edit",
+    link: "/edit/collection/:collectionId",
+    layout: "RootLayout",
+    element: <EditCollection />,
+    // isPrivate: true,
   },
   {
     name: "NFTs",
@@ -263,6 +298,22 @@ const menuItems = [
         element: <UserNfts />,
       },
     ],
+  },
+  {
+    name: "Etherscan",
+    group: "tools",
+    link: "/etherscan",
+    layout: "RootLayout",
+    element: <EtherscanPage />,
+    isPrivate: false,
+  },
+  {
+    name: "Transaction Detail",
+    group: "etherscan",
+    link: "/etherscan/transaction/:hash",
+    layout: "RootLayout",
+    element: <TransactionDetailPage />,
+    isPrivate: false,
   },
 ];
 

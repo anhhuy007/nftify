@@ -1,10 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import {
-  getUserApiEndpoint,
-  loginApiEndpoint,
-  logoutApiEndpoint,
-  refreshTokenApiEndpoint,
-} from "@/api/Endpoints";
+import { AUTH_ENDPOINTS, USER_ENDPOINTS } from "../handlers/Endpoints";
 
 const AuthContext = createContext();
 
@@ -38,19 +33,13 @@ const AuthProvider = ({ children }) => {
 
   // Update fetchUserData
   const fetchUserData = async () => {
-    console.log("----- Fetching User Data -----");
-    if (user) {
-      console.log("User data already fetched:", user);
-      return;
-    }
-
     if (!isAuth) {
       console.log("User not authenticated");
       return;
     }
 
     try {
-      const response = await fetch(getUserApiEndpoint, {
+      const response = await fetch(USER_ENDPOINTS.GET_USER, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,15 +52,38 @@ const AuthProvider = ({ children }) => {
       }
 
       setUser(result.data);
+      localStorage.setItem("user", JSON.stringify(result.data));
     } catch (error) {
       console.error("Error fetching user data:", error);
       setUser(null);
     }
   };
 
+  const registerAction = async (data) => {
+    try {
+      const response = await fetch(AUTH_ENDPOINTS.REGISTER, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success === true) {
+        return result;
+      }
+
+      return { error: result.message };
+    } catch (error) {
+      return { error: error.message };
+    }
+  };
+
   const loginAction = async (data) => {
     try {
-      const response = await fetch(loginApiEndpoint, {
+      const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,13 +96,13 @@ const AuthProvider = ({ children }) => {
       if (result.success === true) {
         const data = result.data;
 
-        setUser(data.account);
+        // fetch user data
+        await fetchUserData();
         setToken(data.accessToken);
         setRefreshToken(data.refreshToken);
         setIsAuth(true);
         localStorage.setItem("jwtToken", data.accessToken);
         localStorage.setItem("jwtRefreshToken", data.refreshToken);
-        localStorage.setItem("user", JSON.stringify(data.account));
 
         return data;
       }
@@ -103,7 +115,7 @@ const AuthProvider = ({ children }) => {
 
   const refreshAccessToken = async () => {
     try {
-      const response = await fetch(refreshTokenApiEndpoint, {
+      const response = await fetch(AUTH_ENDPOINTS.REFRESH, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,7 +153,7 @@ const AuthProvider = ({ children }) => {
     };
 
     try {
-      const response = await fetch(logoutApiEndpoint, {
+      const response = await fetch(AUTH_ENDPOINTS.LOGOUT, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -178,9 +190,11 @@ const AuthProvider = ({ children }) => {
       value={{
         user,
         isAuth,
+        registerAction,
         loginAction,
         logoutAction,
-        refreshAccessToken
+        refreshAccessToken,
+        fetchUserData,
       }}
     >
       {children}

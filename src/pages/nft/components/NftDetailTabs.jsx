@@ -33,9 +33,8 @@ export default function NftDetailTabs({ data }) {
                 Description
               </h2>
               <p className="text-lg leading-relaxed text-primary-foreground">
-                In the digital world, where bytes collide, Glitch ghouls emerge,
-                a terrifying tide. Their forms corrupted, their power's might,
-                Byte beasts, a digital fright.
+                {data.description ??
+                  "In the digital world, where bytes collide, Glitch ghouls emerge, a terrifying tide. Their forms corrupted, their power's might, Byte beasts, a digital fright."}
               </p>
             </div>
           </TabsContent>

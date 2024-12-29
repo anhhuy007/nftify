@@ -6,19 +6,14 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/context/AuthProvider";
-import { useAuthHandler } from "@/api/AuthHandler";
-import {
-  userApiEndpoint,
-  userSettingApiEndpoint,
-  userCheckPasswordApiEndpoint,
-  userChangePasswordApiEndpoint,
-  userSettingUploadApiEndpoint,
-  userChangeEmailApiEndpoint,
-} from "@/api/Endpoints";
+import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useNavigate } from "react-router-dom";
+import { useWallet } from "@/context/WalletProvider";
+import { USER_ENDPOINTS } from "../../../handlers/Endpoints";
 
 function Account() {
-  const { isAuth } = useAuth();
+  const { isAuth, user } = useAuth();
+
   if (!isAuth) {
     const navigate = useNavigate();
 
@@ -27,7 +22,7 @@ function Account() {
     return;
   }
 
-  const [user, setUser] = useState({
+  const [editUser, setEditUser] = useState({
     currentPassword: "",
     newPassword: "",
     email: "",
@@ -49,13 +44,11 @@ function Account() {
   const fetchData = async () => {
     // Fetch user data
     try {
-      const result = await fetchWithAuth(userApiEndpoint);
+      const result = await fetchWithAuth(USER_ENDPOINTS.SETTING.BASE);
       const userData = result.data[0];
 
-      console.log("User data: ", userData);
-
-      setUser({
-        ...user,
+      setEditUser({
+        ...editUser,
         name: userData.name || "",
         username: userData.username || "",
         address: userData.userId || "",
@@ -67,24 +60,24 @@ function Account() {
     }
   };
 
-  const [isConnected, setIsConnected] = useState(true);
+  const { isConnected, connectWallet, disconnectWallet, address } = useWallet();
 
   const handlePasswordChange = async () => {
     // Check if both current and new password are entered
-    if (!user.currentPassword || !user.newPassword) {
+    if (!editUser.currentPassword || !editUser.newPassword) {
       toast.error("Please enter both the current and new password.");
       return;
     }
 
     // Check if the current password is correct
     try {
-      const response = await fetchWithAuth(userCheckPasswordApiEndpoint, {
+      const response = await fetchWithAuth(USER_ENDPOINTS.CHECK_PASSWORD, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          password: user.currentPassword,
+          password: editUser.currentPassword,
         }),
       });
 
@@ -104,7 +97,7 @@ function Account() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            password: user.newPassword,
+            password: editUser.newPassword,
           }),
         }
       );
@@ -119,7 +112,7 @@ function Account() {
         toast.success("Password has been successfully changed!");
 
         // Clear password fields
-        setUser({ ...user, currentPassword: "", newPassword: "" });
+        setEditUser({ ...editUser, currentPassword: "", newPassword: "" });
       }
     } catch (error) {
       console.error("Error checking or updating password:", error);
@@ -127,9 +120,52 @@ function Account() {
     }
   };
 
+  const handleConnectWallet = async () => {
+    try {
+      const connectedAddress = await connectWallet(
+        editUser.wallet_address || null
+      );
+      if (!connectedAddress) {
+        toast.error("Failed to connect wallet");
+        return;
+      }
+
+      // init user wallet address
+      if (!user.wallet_address) {
+        const result = await fetchWithAuth(USER_ENDPOINTS.INIT_WALLET, {
+          method: "POST",
+          body: JSON.stringify({ walletAddress: connectedAddress }),
+        });
+
+        if (result.success) {
+          toast.success("Wallet address initialized successfully");
+        } else {
+          disconnectWallet();
+          toast.error("Failed: " + result.message);
+        }
+      } else {
+        toast.success("Wallet connected successfully");
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast.error(`${error.message}`);
+    }
+  };
+
+  const handleDisconnectWallet = async () => {
+    try {
+      const result = await disconnectWallet();
+      if (result) {
+        toast.success("Wallet disconnected successfully");
+      }
+    } catch (error) {
+      console.error("Error disconnecting wallet:", error);
+      toast.error(`Error disconnecting wallet: ${error.message}`);
+    }
+  };
+
   const handleWalletChange = () => {
-    setIsConnected(!isConnected);
-    toast.success(isConnected ? "Wallet disconnected" : "Wallet connected");
+    isConnected ? handleDisconnectWallet() : handleConnectWallet();
   };
 
   const handleDeleteAccount = () => {
@@ -152,10 +188,10 @@ function Account() {
             This is your username for signing in
           </span>
           <Input
-            value={user.username}
+            value={editUser.username}
             id="username"
             disabled
-            className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+            className="pl-5 border-0 py-7 text-4x text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
           />
         </div>
 
@@ -168,10 +204,10 @@ function Account() {
             Your email for marketplace notifications
           </span>
           <Input
-            value={user.email}
+            value={editUser.email}
             id="email"
             disabled
-            className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+            className="pl-5 border-0 py-7 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
           />
         </div>
 
@@ -184,22 +220,22 @@ function Account() {
             <PasswordInput
               placeholder="Enter your current password"
               id="current-password"
-              value={user.currentPassword}
+              value={editUser.currentPassword}
               onChange={(e) =>
-                setUser({ ...user, currentPassword: e.target.value })
+                setEditUser({ ...editUser, currentPassword: e.target.value })
               }
-              className="pl-5 py-8 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+              className="pl-5 py-7 border-0 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
             />
           </div>
           <div className="grid grid-cols-[82%_3%_15%]">
             <PasswordInput
               placeholder="Enter your new password"
               id="new-password"
-              value={user.newPassword}
+              value={editUser.newPassword}
               onChange={(e) =>
-                setUser({ ...user, newPassword: e.target.value })
+                setEditUser({ ...editUser, newPassword: e.target.value })
               }
-              className="pl-5 border-0 py-8 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
+              className="pl-5 border-0 py-7 text-4xl text-primary-foreground rounded-xl bg-[hsl(232,40%,35%)]"
             />
 
             <div></div>
@@ -228,7 +264,7 @@ function Account() {
                 />
                 <div className="flex flex-col">
                   <span className="text-primary-foreground text-xl font-bold">
-                    {user.address}
+                    {isConnected ? address : "Not connected"}
                   </span>
                   <span className="text-muted-foreground text-xl font-bold">
                     Ethereum
@@ -251,9 +287,9 @@ function Account() {
           <Button
             size="xl"
             className="text-primary-foreground text-xl w-fit p-8 bg-[hsl(232,40%,35%)]"
-            onClick={handlePasswordChange}
+            onClick={handleWalletChange}
           >
-            Change Wallet
+            {isConnected ? "Disconnect" : "Connect"}
           </Button>
         </div>
 

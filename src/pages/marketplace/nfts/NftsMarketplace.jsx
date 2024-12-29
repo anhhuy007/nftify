@@ -10,7 +10,35 @@ import SearchNfts from "@/pages/marketplace/nfts/components/SearchNfts";
 import Sort from "@/pages/marketplace/nfts/components/Sort";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, nftsApiEndpoint } from "@/api/Endpoints";
+import { fetcher } from "@/handlers/Endpoints";
+import { MARKETPLACE_ENDPOINTS } from "@/handlers/Endpoints";
+
+// Query params builder function
+function buildNftsQueryString(params) {
+  const {
+    title,
+    sort,
+    minPrice,
+    maxPrice,
+    status,
+    collectionName,
+    ownerName,
+    page,
+    limit,
+  } = params;
+
+  return `${MARKETPLACE_ENDPOINTS.LIST_NFTS}?title=${title}&sort=${sort}&minPrice=${minPrice}&maxPrice=${maxPrice}&status=${status}&collectionName=${collectionName}&ownerName=${ownerName}&page=${page}&limit=${limit}`;
+}
+
+function handleNftsDataUpdate(currentPageNumber, existingItems, newData) {
+  if (!newData?.items) {
+    return existingItems;
+  }
+
+  return currentPageNumber === 1
+    ? newData.items
+    : [...existingItems, ...newData.items];
+}
 
 function NftsMarketplace() {
   const navigate = useNavigate();
@@ -60,30 +88,47 @@ function NftsMarketplace() {
       currentPage,
       limitCard,
     ],
-    () =>
-      fetcher(
-        `${nftsApiEndpoint}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${currentPage}&limit=${limitCard}`
-      ),
+    async function fetchNftsData() {
+      const queryString = buildNftsQueryString({
+        title: searchValue,
+        sort: sortOption,
+        minPrice: filter.lowestPrice,
+        maxPrice: filter.highestPrice,
+        status: filter.status,
+        collectionName: filter.collection,
+        ownerName: filter.owner,
+        page: currentPage,
+        limit: limitCard,
+      });
+
+      return fetcher(queryString);
+    },
     {
       keepPreviousData: true,
-      onSuccess: (response) => {
-        const data = response.data;
-        // Append new items or reset based on page
-        if (currentPage === 1) {
-          setItems(data.items);
-        } else {
-          setItems((prevItems) => [...prevItems, ...data.items]);
+      onSuccess: function handleQuerySuccess(response) {
+        if (!response?.data) {
+          console.warn("Received invalid response format");
+          return;
         }
 
-        // Update hasMore based on API response
-        setHasMore(data.hasMore || data.items.length > 0);
-      },
-      enabled: true, // Ensure query can be manually triggered
-    }
-  );
+        const updatedItems = handleNftsDataUpdate(
+          currentPage,
+          items,
+          response.data
+        );
 
-  console.log(
-    `${nftsApiEndpoint}?title=${searchValue}&sort=${sortOption}&minPrice=${filter.lowestPrice}&maxPrice=${filter.highestPrice}&status=${filter.status}&collectionName=${filter.collection}&ownerName=${filter.owner}&page=${currentPage}&limit=${limitCard}`
+        setItems(updatedItems);
+        setHasMore(response.data.hasMore || response.data.items?.length > 0);
+      },
+      onError: function handleQueryError(error) {
+        console.error("Failed to fetch NFTs:", error);
+        setItems([]);
+        setHasMore(false);
+      },
+      enabled: true,
+      retry: 3,
+      retryDelay: 1000,
+    }
   );
 
   useEffect(() => {

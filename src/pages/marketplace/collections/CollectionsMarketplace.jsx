@@ -6,9 +6,10 @@ import SearchNfts from "../nfts/components/SearchNfts";
 import { useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FetchingMoreAnimation from "@/components/ui/fetching-more";
-import { fetcher, collectionsApiEndpoint } from "@/api/Endpoints";
+import { fetcher } from "@/handlers/Endpoints";
 import { useLocation } from "react-router-dom";
 import ErrorAnimation from "@/components/ui/error";
+import { MARKETPLACE_ENDPOINTS } from "../../../handlers/Endpoints";
 
 function CollectionsMarketplace() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function CollectionsMarketplace() {
     ["collections", searchValue, currentPage, limitCard],
     () =>
       fetcher(
-        `${collectionsApiEndpoint}?name=${searchValue}&page=${currentPage}&limit=${limitCard}`
+        `${MARKETPLACE_ENDPOINTS.LIST_COLLECTIONS}?name=${searchValue}&page=${currentPage}&limit=${limitCard}`
       ),
     {
       keepPreviousData: true,

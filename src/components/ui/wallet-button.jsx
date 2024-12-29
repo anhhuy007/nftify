@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { ChevronDown, Copy, Wallet } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,21 +11,73 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useWallet } from "@/context/WalletProvider";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthProvider";
+import { useAuthHandler } from "@/handlers/AuthHandler";
+import { USER_ENDPOINTS } from "../../handlers/Endpoints";
 
 const formatAddress = (address) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
+const formatBalance = (balance) => {
+  return balance ? `${parseFloat(balance).toFixed(2)} ETH` : "0 ETH";
+};
+
 export function WalletButton() {
   const { isConnected, address, balance, connectWallet, disconnectWallet } =
     useWallet();
+  const { user } = useAuth();
+  const { fetchWithAuth } = useAuthHandler();
+
+  const handleConnectWallet = async () => {
+    try {
+      console.log("Connecting wallet... with address:", user.wallet_address);
+      const connectedAddress = await connectWallet(user.wallet_address || null);
+      if (!connectedAddress) {
+        toast.error("Failed to connect wallet");
+        return;
+      }
+
+      // init user wallet address
+      if (!user.wallet_address) {
+        const result = await fetchWithAuth(USER_ENDPOINTS.INIT_WALLET, {
+          method: "POST",
+          body: JSON.stringify({ walletAddress: connectedAddress }),
+        });
+
+        if (result.success) {
+          toast.success("Wallet address initialized successfully");
+        } else {
+          disconnectWallet();
+          toast.error("Failed: " + result.message);
+        }
+      } else {
+        toast.success("Wallet connected successfully");
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast.error(`${error.message}`);
+    }
+  };
+
+  const handleDisconnectWallet = async () => {
+    try {
+      const result = await disconnectWallet();
+      if (result) {
+        toast.success("Wallet disconnected successfully");
+      }
+    } catch (error) {
+      console.error("Error disconnecting wallet:", error);
+      toast.error(`Error disconnecting wallet: ${error.message}`);
+    }
+  };
 
   if (!isConnected) {
     return (
       <Button
         variant="default"
         className="p-5 bg-[#1686FF] hover:bg-[#1686FF]/90"
-        onClick={connectWallet}
+        onClick={handleConnectWallet}
       >
         Connect Wallet
       </Button>
@@ -64,7 +113,7 @@ export function WalletButton() {
           Wallet Balance
         </DropdownMenuLabel>
         <DropdownMenuItem className="text-white font-medium">
-          {balance}
+          {formatBalance(balance)}
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-zinc-700" />
         <DropdownMenuItem className="flex items-center justify-between text-zinc-400">
@@ -79,7 +128,7 @@ export function WalletButton() {
         <DropdownMenuSeparator className="bg-zinc-700" />
         <DropdownMenuItem
           className="text-red-500 cursor-pointer"
-          onClick={disconnectWallet}
+          onClick={handleDisconnectWallet}
         >
           Disconnect
         </DropdownMenuItem>

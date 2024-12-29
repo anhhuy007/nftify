@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,7 +13,7 @@ import {
 import { Link } from "react-router-dom";
 
 export default function CollectionChooser({ collections, onCollectionSelect }) {
-  const [selectedCollectionId, setSelectedCollectionId] = React.useState(null);
+  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 
   // Handler when a collection is clicked
   const handleCollectionClick = (collection) => {
@@ -40,30 +40,28 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
       {/* Collection Cards */}
       {collections.map((collection) => (
         <CarouselItem
-          key={collection.id}
-          className={`sm:basis-1/2 md:basis-1/3 lg:basis-1/3 `} // Apply shadow effect on hover
+          key={collection._id}
+          className={`pl-3 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 `} // Apply shadow effect on hover
           onClick={() => handleCollectionClick(collection)}
         >
           <Card
-            className={`border-2 border-border bg-background/50 transition-colors cursor-pointer rounded-2xl 
-                ${selectedCollectionId === collection.id ? "border-4 " : ""} 
-                hover:bg-background/80 hover:shadow-lg`}
+            className={`bg-background/50 transition-colors cursor-pointer rounded-2xl 
+              ${
+                selectedCollectionId === collection._id
+                  ? "border-destructive border-[6px] shadow-lg"
+                  : ""
+              } 
+              hover:bg-background/80 hover:shadow-lg`}
           >
-            <CardContent className="flex flex-col items-center justify-center aspect-square p-6">
-              <div className="w-12 h-12 rounded-lg bg-sky-100 mb-4 overflow-hidden">
-                {collection.icon && (
-                  <img
-                    src={collection.icon}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-              <span className="text-xl font-medium overflow-hidden text-ellipsis whitespace-nowrap">
-                {collection.name}
-              </span>
-            </CardContent>
+            <img
+              src={collection.thumbUrl}
+              alt={collection.name}
+              className={`w-full h-full object-cover aspect-square rounded-2xl`}
+            />
           </Card>
+          <span className="text-primary-foreground text-lg font-medium mt-2 text-center truncate max-w-full block">
+            {collection.name}
+          </span>
         </CarouselItem>
       ))}
     </>
@@ -74,7 +72,7 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
       <span className="text-primary-foreground text-3xl font-bold">
         Collection
       </span>
-      <div className="px-10 pr-14">
+      <div className="px-6 ">
         {/* Ensure that Carousel wraps the items properly */}
         <Carousel
           opts={{
@@ -83,15 +81,16 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
           }}
           className="w-full"
         >
-          {collections.length > 3 ? (
+          {collections.length > 2 ? (
             <>
-              <CarouselContent>{renderCollectionItems()}</CarouselContent>
-
+              <CarouselContent className="ml-[px]">
+                {renderCollectionItems()}
+              </CarouselContent>
               <CarouselPrevious />
               <CarouselNext />
             </>
           ) : (
-            <div className="flex flex-wrap  items-center justify-center">
+            <div className="flex flex-wrap items-center justify-center">
               {renderCollectionItems()}
             </div>
           )}
