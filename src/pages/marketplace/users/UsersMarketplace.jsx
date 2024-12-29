@@ -73,7 +73,6 @@ function UsersMarketplace() {
   const handleSearch = (value) => {
     setSearchValue(value);
     updateQueryParams({ search: value });
-    // Reset pagination and items when searching
     setCurrentPage(1);
     setItems([]);
     refetch();
@@ -106,9 +105,11 @@ function UsersMarketplace() {
           </p>
         }
       >
-        <div className={`grid grid-cols-3 gap-4`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
           {items.map((card, index) => (
-            <UserCard key={index} user={card} />
+            <div key={index} className="w-full">
+              <UserCard user={card} />
+            </div>
           ))}
         </div>
       </InfiniteScroll>
@@ -117,3 +118,4 @@ function UsersMarketplace() {
 }
 
 export default UsersMarketplace;
+
