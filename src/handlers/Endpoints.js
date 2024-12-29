@@ -77,4 +77,5 @@ export const TRANSACTION_ENDPOINTS = {
   BASE: `${baseUrl}/transaction`,
   LIST: `${baseUrl}/transaction/list`,
   FIND: `${baseUrl}/transaction/find`,
+  OVERVIEW: `${baseUrl}/transaction/overview`,
 };

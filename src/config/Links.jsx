@@ -1,12 +1,10 @@
 import React from "react";
 import {
   User,
-  CreditCard,
   Settings,
   LifeBuoy,
   LogOut,
   ShoppingCart,
-  Users,
   Shield,
   Bell,
   Heart,
@@ -178,6 +176,15 @@ const menuItems = [
     layout: "MarketplaceLayout",
     icon: <ShoppingCart />,
     element: <NftsMarketplace />,
+    isPrivate: false,
+  },
+  {
+    name: "Etherscan",
+    group: "create",
+    link: "/etherscan",
+    layout: "RootLayout",
+    icon: <ShoppingCart />,
+    element: <EtherscanPage />,
     isPrivate: false,
   },
   {
