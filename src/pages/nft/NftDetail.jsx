@@ -36,6 +36,8 @@ export default function NftDetail() {
     }
   );
 
+  console.log("NFT Detail", nftDetail);
+
   // More From Creator Query
   const {
     data: moreFromCreatorData,

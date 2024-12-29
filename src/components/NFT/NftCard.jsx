@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import userPlaceHolder from "@/assets/user-placeholder.png";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Trash2 } from "lucide-react";
+import { ShoppingCart, Trash2, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartProvider";
 import { useWallet } from "@/context/WalletProvider";
@@ -557,7 +557,7 @@ export function SmallEditNftCard({ stamp }) {
             <div className="grid grid-cols-[80%_5%_15%]">
               <Link to={`/edit/nft/${stamp._id}`}>
                 <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-                  Edit
+                  Edit <Pencil className="h-10 w-10" />
                 </Button>
               </Link>
               <div></div>
@@ -642,7 +642,7 @@ export function BigEditNftCard({ stamp }) {
             <div className="grid grid-cols-[80%_5%_15%]">
               <Link to={`/edit/nft/${stamp._id}`}>
                 <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-                  Edit
+                  Edit <Pencil className="h-10 w-10" />
                 </Button>
               </Link>
               <div></div>

@@ -15,7 +15,6 @@ import { DeleteNFTDialog } from "@/components/NFT/NftCard";
 
 function EditNft() {
   const { nftId } = useParams();
-  console.log("NFT ID", nftId);
   const navigate = useNavigate();
   const [isOnMarketplace, setIsOnMarketplace] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +41,7 @@ function EditNft() {
       },
     }
   );
-  // console.log("NFT Detail", nftDetail);
+  console.log("NFT Detail", nftDetail);
 
   const [nft, setNft] = useState({
     title: nftDetail?.data?.title || "",
@@ -97,7 +96,7 @@ function EditNft() {
   };
 
   const handleEditNft = async () => {
-    console.log("Creating NFT", nft);
+    console.log("Edit NFT", nft);
 
     if (!nft.title || !nft.price) {
       toast.error("Please fill all required fields");
@@ -108,17 +107,19 @@ function EditNft() {
 
     try {
       const nftData = {
-        title: nft.title,
         price: nft.price,
+        _id: nftId,
         isListed: isOnMarketplace,
         collection: selectedCollection,
-        oldCollection: nftDetail.data.collection._id,
+        oldCollection: {
+          id: nftDetail.data?.collection?._id || "",
+        },
       };
 
       console.log("NFT Data", nftData);
-
+      console.log(USER_ENDPOINTS.PROFILE.EDIT_NFT + `/${nftId}`);
       const result = await fetchWithAuth(
-        USER_ENDPOINTS.EDIT_NFT + `/${nftId}`,
+        USER_ENDPOINTS.PROFILE.EDIT_NFT + `/${nftId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -126,6 +127,7 @@ function EditNft() {
         }
       );
 
+      console.log("Edit NFT result", result);
       if (result.success !== true) {
         throw new Error(result.message || "Error editing NFT on backend");
       }
