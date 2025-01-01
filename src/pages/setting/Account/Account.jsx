@@ -80,17 +80,15 @@ function Account() {
           password: editUser.currentPassword,
         }),
       });
-
       console.log(response);
 
-      if (response.status === "fail") {
+      if (response.data.status === "fail") {
         toast.error("Incorrect password. Please try again.");
         return;
       }
-
       // If password is correct, proceed to update the password
       const updateResponse = await fetchWithAuth(
-        userChangePasswordApiEndpoint,
+        USER_ENDPOINTS.SETTING.CHANGE_PASSWORD,
         {
           method: "POST",
           headers: {

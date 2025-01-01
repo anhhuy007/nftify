@@ -51,6 +51,7 @@ function EditCollection() {
         description: collectionData.data.description || "",
       }));
     }
+    console.log("Collection Data", collectionData);
   }, [collectionData]);
 
   const handleNameChange = (e) => {

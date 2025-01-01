@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -12,8 +12,19 @@ import {
 } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 
-export default function CollectionChooser({ collections, onCollectionSelect }) {
-  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+export default function CollectionChooser({
+  collections,
+  onCollectionSelect,
+  initialCollection,
+}) {
+  const [selectedCollectionId, setSelectedCollectionId] = useState(
+    initialCollection?._id
+  );
+  useEffect(() => {
+    if (initialCollection && initialCollection._id) {
+      setSelectedCollectionId(initialCollection._id);
+    }
+  }, [initialCollection]);
 
   // Handler when a collection is clicked
   const handleCollectionClick = (collection) => {

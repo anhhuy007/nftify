@@ -30,7 +30,7 @@ function EditNft() {
   const {
     data: nftDetail,
     error: nftDetailError,
-    isLoading: nftDetailLoading
+    isLoading: nftDetailLoading,
   } = useQuery(
     ["nft-detail", nftId],
     () => fetchWithAuth(MARKETPLACE_ENDPOINTS.NFT_DETAIL + `/${nftId}`),
@@ -53,8 +53,12 @@ function EditNft() {
       id: user._id,
     },
   });
+  const [selectedCollection, setSelectedCollection] = useState(
+    nftDetail?.data?.collection?._id || ""
+  );
 
   useEffect(() => {
+    console.log("NFT Detail", nftDetail);
     if (nftDetail?.data) {
       console.log("Fetched NFT details:", nftDetail.data);
       setNft((prev) => ({
@@ -63,16 +67,14 @@ function EditNft() {
         price: nftDetail.data.price?.price?.$numberDecimal || "",
         imgUrl: nftDetail.data.imgUrl || "",
         tokenID: nftDetail.data.tokenID,
-        isListed: nftDetail.data.insight.isListed
+        isListed: nftDetail.data.insight.isListed,
       }));
 
       setIsOnMarketplace(nftDetail.data.insight.isListed);
+      setSelectedCollection(nftDetail.data.collection?._id || "");
     }
   }, [nftDetail]);
   const [collection, setCollection] = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState(
-    nftDetail?.data?.collection?._id || ""
-  );
 
   const fetchCollections = async () => {
     try {
@@ -114,7 +116,10 @@ function EditNft() {
       };
 
       // update NFT on blockchain
-      const receipt = await NFTService.updateTokenListing(nft.tokenID, nftData.isListed);
+      const receipt = await NFTService.updateTokenListing(
+        nft.tokenID,
+        nftData.isListed
+      );
       console.log("Receipt:", receipt);
 
       // update NFT on backend
@@ -148,7 +153,7 @@ function EditNft() {
   };
   return (
     <>
-      <div className="flex flex-col min-h-screen my-20 mx-20 xl:mx-72 ">
+      <div className="flex flex-col min-h-screen my-20 mx-10 xl:mx-56 ">
         <h1 className="text-primary-foreground text-6xl font-bold">
           Edit your NFT
         </h1>
@@ -199,6 +204,7 @@ function EditNft() {
               <CollectionChooser
                 collections={collection}
                 onCollectionSelect={setSelectedCollection}
+                initialCollection={nftDetail?.data?.collection}
               />
             </div>
           </div>
