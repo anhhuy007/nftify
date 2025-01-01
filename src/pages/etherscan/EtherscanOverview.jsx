@@ -210,8 +210,8 @@ export default function EtherscanPage() {
                       <td className="p-4 text-white">{tx.transactionFee}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <img src={tx.stampDetails.imgUrl} alt="Ethereum Icon" width="40" height="40" />
-                          <span className="text-white max-w-40 truncate">{tx.stampDetails.title}</span>
+                          <img src={tx.stampDetails?.imgUrl} alt="Ethereum Icon" width="40" height="40" />
+                          <span className="text-white max-w-40 truncate">{tx.stampDetails?.title}</span>
                         </div>
                       </td>
                     </tr>

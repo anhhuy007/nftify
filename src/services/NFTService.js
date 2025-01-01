@@ -9,7 +9,7 @@ class NFTService {
     return this.contract !== undefined
   }
 
-  async createToken(tokenURI, price, currentlyListed = false) {
+  async createNFT(tokenURI, price, currentlyListed = false) {
     try {
       if (!this.contract) {
         throw new Error("Contract not initialized");
@@ -18,11 +18,27 @@ class NFTService {
       const listPrice = await this.contract.getListPrice();
       const tx = await this.contract.createToken(
         tokenURI,
-        ethers.parseEther(price.toString()),
+        ethers.parseEther(price.toString()) || "0",
         currentlyListed,
         { value: listPrice }
       );
-      return await tx.wait();
+      const receipt = await tx.wait();
+
+      const event = receipt.logs
+        .map((log) => {
+          try {
+            return this.contract.interface.parseLog(log);
+          } catch (error) {
+            return null;
+          }
+        })
+        .find((event) => event && event.name === "TokenListedSuccess");
+
+      return {
+        success: true,
+        transaction: receipt,
+        event: event,
+      };
     } catch (error) {
       console.error("Token creation failed:", error);
       throw error;
@@ -95,6 +111,38 @@ class NFTService {
     } catch (error) {
       console.error("Price update failed:", error);
       throw error;
+    }
+  }
+
+  async updateTokenListing(tokenId, currentlyListed) {
+    try {
+      if (!this.contract) {
+        throw new Error("Contract not initialized");
+      }
+
+      // Validate params
+      if (tokenId === undefined || currentlyListed === undefined) {
+        throw new Error("Invalid parameters");
+      }
+
+      // Submit transaction
+      const transaction = await this.contract.updateTokenListing(tokenId, currentlyListed);
+      
+      // Wait for confirmation  
+      const receipt = await transaction.wait();
+
+      return {
+        success: true,
+        transaction: receipt
+      };
+
+    } catch (error) {
+      console.error("Listing update failed:", {
+        tokenId,
+        currentlyListed,
+        error: error.message
+      });
+      throw new Error(`Failed to update listing: ${error.message}`);
     }
   }
 

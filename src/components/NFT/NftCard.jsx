@@ -22,30 +22,31 @@ import {
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
-import { USER_ENDPOINTS } from "@/handlers/Endpoints";
+import { USER_ENDPOINTS } from "../../handlers/Endpoints";
 
 export function DeleteNFTDialog({ stampId, children: child }) {
   const navigate = useNavigate();
   const { fetchWithAuth } = useAuthHandler();
-  const { isAuth, user } = useAuth();
+  const { user } = useAuth();
 
   const deleteStamp = async () => {
-    console.log("Deleting stamp with ID: ", stampId);
     try {
       const result = await fetchWithAuth(
-        USER_ENDPOINTS.DELETE_NFT + `/${stampId}`,
+        USER_ENDPOINTS.PROFILE.DELETE_NFT + `/${stampId}`,
         {
           method: "DELETE",
         }
       );
       if (result.success !== true) {
-        throw new Error("Failed to delete stamp");
+        console.error("Failed to delete stamp:", result);
+        toast.error("Failed: " + result.message);
       } else {
         toast.success("Stamp deleted successfully");
         navigate(`/user/${user._id}/owned `);
       }
     } catch (error) {
       console.error("Failed to delete stamp:", error);
+      toast.error("Failed to delete stamp");
     }
   };
 

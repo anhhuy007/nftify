@@ -12,6 +12,7 @@ import { USER_ENDPOINTS, MARKETPLACE_ENDPOINTS } from "@/handlers/Endpoints";
 import { useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import { DeleteNFTDialog } from "@/components/NFT/NftCard";
+import NFTService from "../../../services/NFTService";
 
 function EditNft() {
   const { nftId } = useParams();
@@ -41,7 +42,6 @@ function EditNft() {
       },
     }
   );
-  console.log("NFT Detail", nftDetail);
 
   const [nft, setNft] = useState({
     title: nftDetail?.data?.title || "",
@@ -60,11 +60,14 @@ function EditNft() {
   useEffect(() => {
     console.log("NFT Detail", nftDetail);
     if (nftDetail?.data) {
+      console.log("Fetched NFT details:", nftDetail.data);
       setNft((prev) => ({
         ...prev,
         title: nftDetail.data.title || "",
         price: nftDetail.data.price?.price?.$numberDecimal || "",
         imgUrl: nftDetail.data.imgUrl || "",
+        tokenID: nftDetail.data.tokenID,
+        isListed: nftDetail.data.insight.isListed,
       }));
 
       setIsOnMarketplace(nftDetail.data.insight.isListed);
@@ -94,8 +97,6 @@ function EditNft() {
   };
 
   const handleEditNft = async () => {
-    console.log("Edit NFT", nft);
-
     if (!nft.title || !nft.price) {
       toast.error("Please fill all required fields");
       return;
@@ -114,8 +115,14 @@ function EditNft() {
         },
       };
 
-      console.log("NFT Data", nftData);
-      console.log(USER_ENDPOINTS.PROFILE.EDIT_NFT + `/${nftId}`);
+      // update NFT on blockchain
+      const receipt = await NFTService.updateTokenListing(
+        nft.tokenID,
+        nftData.isListed
+      );
+      console.log("Receipt:", receipt);
+
+      // update NFT on backend
       const result = await fetchWithAuth(
         USER_ENDPOINTS.PROFILE.EDIT_NFT + `/${nftId}`,
         {
@@ -125,7 +132,6 @@ function EditNft() {
         }
       );
 
-      console.log("Edit NFT result", result);
       if (result.success !== true) {
         throw new Error(result.message || "Error editing NFT on backend");
       }
