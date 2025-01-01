@@ -12,10 +12,10 @@ import { USER_ENDPOINTS, MARKETPLACE_ENDPOINTS } from "@/handlers/Endpoints";
 import { useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import { DeleteNFTDialog } from "@/components/NFT/NftCard";
+import NFTService from "../../../services/NFTService";
 
 function EditNft() {
   const { nftId } = useParams();
-  console.log("NFT ID", nftId);
   const navigate = useNavigate();
   const [isOnMarketplace, setIsOnMarketplace] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +42,6 @@ function EditNft() {
       },
     }
   );
-  // console.log("NFT Detail", nftDetail);
 
   const [nft, setNft] = useState({
     title: nftDetail?.data?.title || "",
@@ -54,23 +53,28 @@ function EditNft() {
       id: user._id,
     },
   });
+  const [selectedCollection, setSelectedCollection] = useState(
+    nftDetail?.data?.collection?._id || ""
+  );
 
   useEffect(() => {
+    console.log("NFT Detail", nftDetail);
     if (nftDetail?.data) {
+      console.log("Fetched NFT details:", nftDetail.data);
       setNft((prev) => ({
         ...prev,
         title: nftDetail.data.title || "",
         price: nftDetail.data.price?.price?.$numberDecimal || "",
         imgUrl: nftDetail.data.imgUrl || "",
+        tokenID: nftDetail.data.tokenID,
+        isListed: nftDetail.data.insight.isListed,
       }));
 
-      setIsOnMarketplace(nftDetail.data.isListed);
+      setIsOnMarketplace(nftDetail.data.insight.isListed);
+      setSelectedCollection(nftDetail.data.collection?._id || "");
     }
   }, [nftDetail]);
   const [collection, setCollection] = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState(
-    nftDetail?.data?.collection?._id || ""
-  );
 
   const fetchCollections = async () => {
     try {
@@ -92,13 +96,7 @@ function EditNft() {
     }
   };
 
-  const handleNameChange = (e) => {
-    setNft((prev) => ({ ...prev, title: e.target.value }));
-  };
-
   const handleEditNft = async () => {
-    console.log("Creating NFT", nft);
-
     if (!nft.title || !nft.price) {
       toast.error("Please fill all required fields");
       return;
@@ -108,17 +106,25 @@ function EditNft() {
 
     try {
       const nftData = {
-        title: nft.title,
         price: nft.price,
+        _id: nftId,
         isListed: isOnMarketplace,
         collection: selectedCollection,
-        oldCollection: nftDetail.data.collection._id,
+        oldCollection: {
+          id: nftDetail.data?.collection?._id || "",
+        },
       };
 
-      console.log("NFT Data", nftData);
+      // update NFT on blockchain
+      const receipt = await NFTService.updateTokenListing(
+        nft.tokenID,
+        nftData.isListed
+      );
+      console.log("Receipt:", receipt);
 
+      // update NFT on backend
       const result = await fetchWithAuth(
-        USER_ENDPOINTS.EDIT_NFT + `/${nftId}`,
+        USER_ENDPOINTS.PROFILE.EDIT_NFT + `/${nftId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -147,7 +153,7 @@ function EditNft() {
   };
   return (
     <>
-      <div className="flex flex-col min-h-screen my-20 mx-20 xl:mx-72 ">
+      <div className="flex flex-col min-h-screen my-20 mx-10 xl:mx-56 ">
         <h1 className="text-primary-foreground text-6xl font-bold">
           Edit your NFT
         </h1>
@@ -198,6 +204,7 @@ function EditNft() {
               <CollectionChooser
                 collections={collection}
                 onCollectionSelect={setSelectedCollection}
+                initialCollection={nftDetail?.data?.collection}
               />
             </div>
           </div>

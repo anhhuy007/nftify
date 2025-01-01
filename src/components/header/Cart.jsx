@@ -20,6 +20,8 @@ function Cart() {
   const [isOpen, setIsOpen] = useState(false);
   const [removingItems, setRemovingItems] = useState(new Set());
 
+  console.log(cart);
+
   const handleRemoveItem = async (itemId) => {
     try {
       setRemovingItems((prev) => new Set([...prev, itemId]));
@@ -67,6 +69,8 @@ function Cart() {
     );
   }
 
+  const cartItems = cart.items.filter(validateItem);
+
   return (
     <>
       <div
@@ -82,7 +86,7 @@ function Cart() {
           </SheetHeader>
 
           <div className="flex flex-col gap-4 text-primary-foreground mt-8 flex-grow">
-            {cart.items.map((item) => (
+            {cartItems.map((item) => (
               <React.Fragment key={item._id}>
                 <Link to={`/nft/${item._id}`}>
                   <div className="grid grid-cols-[18%_2%_50%_30%] items-center">
@@ -121,6 +125,19 @@ function Cart() {
       </Sheet>
     </>
   );
+}
+
+// validate cart items
+function validateItem(item) {
+  if (!item) {
+    return false;
+  }
+
+  if (!item._id || !item.title || !item.price || !item.imgUrl) {
+    return false;
+  }
+
+  return true;
 }
 
 export default Cart;
