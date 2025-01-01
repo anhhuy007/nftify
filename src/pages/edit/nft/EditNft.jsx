@@ -12,6 +12,7 @@ import { USER_ENDPOINTS, MARKETPLACE_ENDPOINTS } from "@/handlers/Endpoints";
 import { useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import { DeleteNFTDialog } from "@/components/NFT/NftCard";
+import NFTService from "../../../services/NFTService";
 
 function EditNft() {
   const { nftId } = useParams();
@@ -29,7 +30,7 @@ function EditNft() {
   const {
     data: nftDetail,
     error: nftDetailError,
-    isLoading: nftDetailLoading,
+    isLoading: nftDetailLoading
   } = useQuery(
     ["nft-detail", nftId],
     () => fetchWithAuth(MARKETPLACE_ENDPOINTS.NFT_DETAIL + `/${nftId}`),
@@ -41,7 +42,6 @@ function EditNft() {
       },
     }
   );
-  console.log("NFT Detail", nftDetail);
 
   const [nft, setNft] = useState({
     title: nftDetail?.data?.title || "",
@@ -91,13 +91,7 @@ function EditNft() {
     }
   };
 
-  const handleNameChange = (e) => {
-    setNft((prev) => ({ ...prev, title: e.target.value }));
-  };
-
   const handleEditNft = async () => {
-    console.log("Edit NFT", nft);
-
     if (!nft.title || !nft.price) {
       toast.error("Please fill all required fields");
       return;
@@ -116,8 +110,11 @@ function EditNft() {
         },
       };
 
-      console.log("NFT Data", nftData);
-      console.log(USER_ENDPOINTS.PROFILE.EDIT_NFT + `/${nftId}`);
+      // update NFT on blockchain
+      const receipt = await NFTService.updateTokenListing(nftDetail.data.tokenId, nftData.isListed);
+      console.log("Receipt:", receipt);
+
+      // update NFT on backend
       const result = await fetchWithAuth(
         USER_ENDPOINTS.PROFILE.EDIT_NFT + `/${nftId}`,
         {
@@ -127,7 +124,6 @@ function EditNft() {
         }
       );
 
-      console.log("Edit NFT result", result);
       if (result.success !== true) {
         throw new Error(result.message || "Error editing NFT on backend");
       }

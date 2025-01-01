@@ -23,6 +23,8 @@ import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useWallet } from "@/context/WalletProvider";
 import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 import NFTService from "../../services/NFTService";
+import { ethers } from "ethers";
+import { TRANSACTION_ENDPOINTS } from "../../handlers/Endpoints";
 
 function CreateNft() {
   const navigate = useNavigate();
@@ -39,14 +41,122 @@ function CreateNft() {
     navigate("/");
   }
 
-  const fetchCollections = async () => {
+  async function saveTransaction(transaction) {
+    try {
+      const response = await fetchWithAuth(TRANSACTION_ENDPOINTS.BASE, {
+        method: "POST",
+        body: JSON.stringify(transaction),
+      });
+
+      if (!response.success) {
+        throw new Error("Failed to save transaction");
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to save transaction:", error);
+    }
+  }
+
+  async function fetchCollections() {
     try {
       const result = await fetchWithAuth(USER_ENDPOINTS.GET_COLLECTIONS);
       setCollection(result.data);
     } catch (error) {
       console.error("Error fetching collections", error);
     }
-  };
+  }
+
+  async function uploadNFTAssets(nft) {
+    try {
+      const stampImgUpload = await IpfsService.uploadStampImage(nft.imgUrl);
+      if (!stampImgUpload?.url) {
+        throw new Error("Failed to upload image");
+      }
+
+      const metadata = {
+        creatorId: user._id,
+        title: nft.title,
+        issuedBy: nft.issuedBy,
+        function: nft.function,
+        color: nft.color,
+        date: nft.releasedDate,
+        denom: nft.denom,
+        imgUrl: stampImgUpload.url,
+      };
+
+      const metadataUpload = await IpfsService.uploadStampMetadata(metadata);
+      if (!metadataUpload?.url) {
+        throw new Error("Failed to upload metadata");
+      }
+
+      return {
+        imageUrl: stampImgUpload.url,
+        metadataUrl: metadataUpload.url,
+        ipfsHash: metadataUpload.ipfsHash,
+      };
+    } catch (error) {
+      console.error("IPFS upload failed:", error);
+      throw new Error("Failed to upload NFT assets to IPFS");
+    }
+  }
+
+  // Mint NFT on blockchain
+  async function mintNFTOnChain(metadataUrl, price, isListed) {
+    try {
+      const receipt = await NFTService.createNFT(
+        metadataUrl,
+        price || 0,
+        isListed
+      );
+      if (!receipt?.success) {
+        throw new Error("Minting failed");
+      }
+
+      const processedTransactions = processTransaction(receipt);
+      if (processedTransactions) {
+        await saveTransaction(processedTransactions);
+      }
+
+      return receipt;
+    } catch (error) {
+      console.error("Blockchain error:", error);
+      throw new Error("Failed to mint NFT on blockchain");
+    }
+  }
+
+  // Save NFT to backend
+  async function saveNFTToBackend(nftData) {
+    try {
+      const result = await fetchWithAuth(USER_ENDPOINTS.CREATE_NFT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nftData),
+      });
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      return result;
+    } catch (error) {
+      console.error("Backend error:", error);
+      throw new Error("Failed to save NFT data");
+    }
+  }
+
+  function resetForm() {
+    setNft({
+      title: "",
+      imgUrl: "",
+      description: "",
+      issuedBy: "",
+      denom: "",
+      color: "",
+      releasedDate: "",
+      function: "",
+      price: ""
+    });
+  }
 
   useEffect(() => {
     fetchCollections();
@@ -59,7 +169,7 @@ function CreateNft() {
     imgUrl: "",
     price: "",
     ownerDetails: {
-      username: "dylandixon",
+      username: user.name,
       avatarUrl: user.avatarUrl,
       id: user.id,
     },
@@ -92,8 +202,6 @@ function CreateNft() {
   };
 
   const handleCreateNft = async () => {
-    console.log("Creating NFT", nft);
-
     const requiredFields = [
       "title",
       "imgUrl",
@@ -114,32 +222,17 @@ function CreateNft() {
     setIsLoading(true);
     let pinataImgUrl, pinataCid, pinataMetadataUrl;
     try {
-      // Upload image
-      const stampImgUpload = await IpfsService.uploadStampImage(nft.imgUrl);
-      if (!stampImgUpload || !stampImgUpload.url) {
-        throw new Error("Error uploading image to IPFS");
-      }
-      pinataImgUrl = stampImgUpload.url;
+      // Step 1: Upload assets
+      const { imageUrl, metadataUrl, ipfsHash } = await uploadNFTAssets(nft);
 
-      // Upload metadata
-      const metadata = {
-        creatorId: user._id,
-        title: nft.title,
-        issuedBy: nft.issuedBy,
-        function: nft.function,
-        color: nft.color,
-        date: nft.releasedDate,
-        denom: nft.denom,
-        imgUrl: pinataImgUrl,
-      };
+      // Step 2: Mint on blockchain
+      const receipt = await mintNFTOnChain(
+        metadataUrl,
+        nft.price,
+        isOnMarketplace
+      );
 
-      const metadataUpload = await IpfsService.uploadStampMetadata(metadata);
-      if (!metadataUpload || !metadataUpload.url) {
-        throw new Error("Error uploading metadata to IPFS");
-      }
-      pinataCid = metadataUpload.ipfsHash;
-      pinataMetadataUrl = metadataUpload.url;
-      // Upload NFT to backend
+      // Step 3: Save to backend
       const nftData = {
         title: nft.title,
         issuedBy: nft.issuedBy,
@@ -147,55 +240,25 @@ function CreateNft() {
         color: nft.color,
         date: nft.releasedDate,
         denom: nft.denom,
-        imgUrl: pinataImgUrl,
-        tokenID: pinataCid,
-        price: nft.price,
-        tokenUrl: pinataMetadataUrl,
+        imgUrl: imageUrl,
+        tokenID: Number(receipt.event.args[0]),
+        price: nft.price || 0,
+        tokenUrl: metadataUrl,
         description: nft.description,
         collection: selectedCollection,
         isListed: isOnMarketplace,
         creatorId: user._id,
       };
 
-      console.log("NFT Data", nftData);
-      // mint nft
-      const tx = await NFTService.createNFT(
-        pinataMetadataUrl,
-        nft.price,
-        isOnMarketplace
-      );
-      if (!tx) {
-        throw new Error("Error creating NFT on blockchain");
-      }
+      await saveNFTToBackend(nftData);
 
-      const result = await fetchWithAuth(USER_ENDPOINTS.CREATE_NFT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nftData),
-      });
-
-      if (result.success !== true) {
-        throw new Error(result.message || "Error creating NFT on backend");
-      }
-
+      // Success handling
       toast.success("NFT created successfully");
-
-      setNft({
-        title: "",
-        imgUrl: "",
-        description: "",
-        issuedBy: "",
-        denom: "",
-        color: "",
-        releasedDate: "",
-        function: "",
-        price: "",
-      });
-
+      resetForm();
       navigate(`/user/${user._id}/created`);
     } catch (error) {
-      console.error(error.message);
-      toast.error("Error creating NFT");
+      console.error("NFT creation failed:", error);
+      toast.error(error.message || "Failed to create NFT");
     } finally {
       setIsLoading(false);
     }
@@ -512,12 +575,16 @@ function CreateNft() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Creating NFT...</span>
+              <div className="flex items-center justify-center">
+                <div className="relative w-6 h-6">
+                  {/* Outer ring */}
+                  <div className="absolute w-full h-full border-2 border-black opacity-20 rounded-full" />
+                  {/* Spinning ring */}
+                  <div className="absolute w-full h-full border-2 border-black border-t-transparent rounded-full animate-spin" />
+                </div>
               </div>
             ) : (
-              "Create NFT"
+              <span>Create NFT</span>
             )}
           </Button>
         </div>
@@ -528,6 +595,31 @@ function CreateNft() {
 
 function formatAddress(address) {
   return `${address.slice(0, 20)}`;
+}
+
+function processTransaction(transactionData) {
+  const { event, transaction: _transaction } = transactionData;
+  if (!event || !_transaction) return null;
+
+  try {
+    const gasUsed = BigInt(_transaction.gasUsed);
+    const gasPrice = BigInt(_transaction.gasPrice);
+    const transactionFee = ethers.formatEther((gasUsed * gasPrice).toString());
+
+    return {
+      transactionHash: _transaction.blockHash,
+      block: _transaction.blockNumber,
+      from: _transaction.from,
+      to: _transaction.to,
+      tokenID: Number(event.args[0]),
+      value: ethers.formatEther(event.args[3].toString()),
+      transactionFee,
+      gasPrice: ethers.formatEther(gasPrice.toString()),
+    };
+  } catch (error) {
+    console.error("Failed to process transaction:", error);
+    return null;
+  }
 }
 
 export default CreateNft;

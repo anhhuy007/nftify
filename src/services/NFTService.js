@@ -22,7 +22,23 @@ class NFTService {
         currentlyListed,
         { value: listPrice }
       );
-      return await tx.wait();
+      const receipt = await tx.wait();
+
+      const event = receipt.logs
+        .map((log) => {
+          try {
+            return this.contract.interface.parseLog(log);
+          } catch (error) {
+            return null;
+          }
+        })
+        .find((event) => event && event.name === "TokenListedSuccess");
+
+      return {
+        success: true,
+        transaction: receipt,
+        event: event,
+      };
     } catch (error) {
       console.error("Token creation failed:", error);
       throw error;
@@ -94,6 +110,16 @@ class NFTService {
       return await tx.wait();
     } catch (error) {
       console.error("Price update failed:", error);
+      throw error;
+    }
+  }
+
+  async updateTokenListing(tokenId, currentlyListed) {
+    try {
+      const tx = await this.contract.updateTokenListing(tokenId, currentlyListed);
+      return await tx.wait();
+    } catch (error) {
+      console.error("Listing update failed:", error);
       throw error;
     }
   }
