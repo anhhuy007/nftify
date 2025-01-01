@@ -99,9 +99,6 @@ function UserNfts() {
   const [typeData, setTypeData] = useState("");
 
   const isProfileOwner = userId === user?._id;
-  console.log("isProfileOwner", isProfileOwner);
-  console.log("userId", userId);
-  console.log("user", user);
   const CardComponent = getCardComponent(currentPath, isGrid, isProfileOwner);
 
   // Path-based initialization

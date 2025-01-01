@@ -26,6 +26,8 @@ function Home() {
     fetcher(HOME_ENDPOINTS.TRENDING_COLLECTIONS)
   );
 
+  console.log("Trending NFT endpoint: ", HOME_ENDPOINTS.TRENDING_NFTS);
+
   const {
     data: topCreatorsData,
     isLoading: topCreatorsLoading,

@@ -9,7 +9,7 @@ class NFTService {
     return this.contract !== undefined
   }
 
-  async createToken(tokenURI, price, currentlyListed = false) {
+  async createNFT(tokenURI, price, currentlyListed = false) {
     try {
       if (!this.contract) {
         throw new Error("Contract not initialized");
@@ -18,7 +18,7 @@ class NFTService {
       const listPrice = await this.contract.getListPrice();
       const tx = await this.contract.createToken(
         tokenURI,
-        ethers.parseEther(price.toString()),
+        ethers.parseEther(price.toString()) || "0",
         currentlyListed,
         { value: listPrice }
       );
