@@ -22,6 +22,7 @@ import IpfsService from "@/services/IpfsService";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { useWallet } from "@/context/WalletProvider";
 import { USER_ENDPOINTS } from "@/handlers/Endpoints";
+import NFTService from "../../services/NFTService";
 
 function CreateNft() {
   const navigate = useNavigate();
@@ -33,7 +34,6 @@ function CreateNft() {
   const [selectedCollection, setSelectedCollection] = useState(null);
 
   const { isAuth, user } = useAuth();
-  console.log("user", user);
   if (!isAuth) {
     toast.error("Please login to create NFTs");
     navigate("/");
@@ -42,7 +42,6 @@ function CreateNft() {
   const fetchCollections = async () => {
     try {
       const result = await fetchWithAuth(USER_ENDPOINTS.GET_COLLECTIONS);
-      console.log("Collections", result);
       setCollection(result.data);
     } catch (error) {
       console.error("Error fetching collections", error);
@@ -53,7 +52,7 @@ function CreateNft() {
     fetchCollections();
   }, []);
 
-  const { isConnected, connectWallet, disconnectWallet, address } = useWallet();
+  const { isConnected, address } = useWallet();
 
   const [nft, setNft] = useState({
     title: "",
@@ -113,9 +112,7 @@ function CreateNft() {
     }
 
     setIsLoading(true);
-
     let pinataImgUrl, pinataCid, pinataMetadataUrl;
-
     try {
       // Upload image
       const stampImgUpload = await IpfsService.uploadStampImage(nft.imgUrl);
@@ -157,9 +154,19 @@ function CreateNft() {
         description: nft.description,
         collection: selectedCollection,
         isListed: isOnMarketplace,
+        creatorId: user._id,
       };
 
       console.log("NFT Data", nftData);
+      // mint nft
+      const tx = await NFTService.createNFT(
+        pinataMetadataUrl,
+        nft.price,
+        isOnMarketplace
+      );
+      if (!tx) {
+        throw new Error("Error creating NFT on blockchain");
+      }
 
       const result = await fetchWithAuth(USER_ENDPOINTS.CREATE_NFT, {
         method: "POST",
@@ -188,7 +195,7 @@ function CreateNft() {
       navigate(`/user/${user._id}/created`);
     } catch (error) {
       console.error(error.message);
-      toast.error(error.message);
+      toast.error("Error creating NFT");
     } finally {
       setIsLoading(false);
     }
@@ -222,7 +229,7 @@ function CreateNft() {
                   />
                   <div className="flex flex-col max-w-[43%]">
                     <span className="text-primary-foreground text-2xl font-bold truncate">
-                      {address}
+                      {formatAddress(address)}
                     </span>
                     <span className="text-muted-foreground text-2xl font-bold">
                       Ethereum
@@ -504,12 +511,23 @@ function CreateNft() {
             onClick={handleCreateNft}
             disabled={isLoading}
           >
-            Create NFT
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Creating NFT...</span>
+              </div>
+            ) : (
+              "Create NFT"
+            )}
           </Button>
         </div>
       </div>
     </>
   );
+}
+
+function formatAddress(address) {
+  return `${address.slice(0, 20)}`;
 }
 
 export default CreateNft;
