@@ -19,7 +19,7 @@ function CollectionImageViewer({ imageUrl, name }) {
       <img
         src={imageUrl}
         alt={name}
-        className="w-full h-full object-cover mx-auto md:mx-0 max-w-xs md:max-w-[600px] xl:w-[500px] aspect-square border-2 border-primary rounded-xl"
+        className="w-full h-full object-cover mx-auto md:mx-0 max-w-xs md:max-w-[600px] xl:w-[500px] aspect-square border-2 border-white/20 rounded-xl"
       />
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
