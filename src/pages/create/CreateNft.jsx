@@ -560,7 +560,7 @@ function CreateNft() {
               {nft.imgUrl ? (
                 <PreviewNftCard stamp={nft} />
               ) : (
-                <div className="border h-[450px] rounded-xl text-center p-4 flex justify-between items-center">
+                <div className="border h-[450px] rounded-xl text-center p-4 flex justify-between items-center max-w-[340px]">
                   <span className="text-muted-foreground text-xl">
                     Upload file to preview your brand new NFT
                   </span>
