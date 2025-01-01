@@ -26,7 +26,7 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
       {/* Create New Collection Card */}
       <CarouselItem className="sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
         <Link to="/create/collection">
-          <Card className="border-2 border-border bg-background/50 hover:bg-background/80 transition-colors cursor-pointer">
+          <Card className="border-2 border-border bg-card/50 hover:bg-card/80 transition-colors cursor-pointer">
             <CardContent className="flex flex-col items-center justify-center aspect-square p-6">
               <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center mb-4">
                 <Plus className="w-10 h-10 bg-primary-foreground rounded-full text-background" />
@@ -41,14 +41,14 @@ export default function CollectionChooser({ collections, onCollectionSelect }) {
       {collections.map((collection) => (
         <CarouselItem
           key={collection._id}
-          className={`pl-3 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 `} // Apply shadow effect on hover
+          className={`pl-3 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 flex flex-col`} // Apply shadow effect on hover
           onClick={() => handleCollectionClick(collection)}
         >
           <Card
-            className={`bg-background/50 transition-colors cursor-pointer rounded-2xl 
+            className={`bg-background/50 transition-colors cursor-pointer rounded-2xl overflow-hidden
               ${
                 selectedCollectionId === collection._id
-                  ? "border-destructive border-[6px] shadow-lg"
+                  ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 p-1"
                   : ""
               } 
               hover:bg-background/80 hover:shadow-lg`}
