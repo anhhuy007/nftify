@@ -56,14 +56,17 @@ function EditNft() {
 
   useEffect(() => {
     if (nftDetail?.data) {
+      console.log("Fetched NFT details:", nftDetail.data);
       setNft((prev) => ({
         ...prev,
         title: nftDetail.data.title || "",
         price: nftDetail.data.price?.price?.$numberDecimal || "",
         imgUrl: nftDetail.data.imgUrl || "",
+        tokenID: nftDetail.data.tokenID,
+        isListed: nftDetail.data.insight.isListed
       }));
 
-      setIsOnMarketplace(nftDetail.data.isListed);
+      setIsOnMarketplace(nftDetail.data.insight.isListed);
     }
   }, [nftDetail]);
   const [collection, setCollection] = useState([]);
@@ -111,7 +114,7 @@ function EditNft() {
       };
 
       // update NFT on blockchain
-      const receipt = await NFTService.updateTokenListing(nftDetail.data.tokenId, nftData.isListed);
+      const receipt = await NFTService.updateTokenListing(nft.tokenID, nftData.isListed);
       console.log("Receipt:", receipt);
 
       // update NFT on backend

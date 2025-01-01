@@ -116,11 +116,33 @@ class NFTService {
 
   async updateTokenListing(tokenId, currentlyListed) {
     try {
-      const tx = await this.contract.updateTokenListing(tokenId, currentlyListed);
-      return await tx.wait();
+      if (!this.contract) {
+        throw new Error("Contract not initialized");
+      }
+
+      // Validate params
+      if (tokenId === undefined || currentlyListed === undefined) {
+        throw new Error("Invalid parameters");
+      }
+
+      // Submit transaction
+      const transaction = await this.contract.updateTokenListing(tokenId, currentlyListed);
+      
+      // Wait for confirmation  
+      const receipt = await transaction.wait();
+
+      return {
+        success: true,
+        transaction: receipt
+      };
+
     } catch (error) {
-      console.error("Listing update failed:", error);
-      throw error;
+      console.error("Listing update failed:", {
+        tokenId,
+        currentlyListed,
+        error: error.message
+      });
+      throw new Error(`Failed to update listing: ${error.message}`);
     }
   }
 
