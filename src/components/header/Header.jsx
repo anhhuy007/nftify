@@ -16,13 +16,17 @@ import { User, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { WalletButton } from "../ui/wallet-button";
 import CreateAccountDialog from "../auth/CreateAccountDialog";
+import { useLocation } from "react-router-dom";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const queryParams = new URLSearchParams(useLocation().search);
   const navigate = useNavigate();
 
   const { isAuth, logoutAction } = useAuth();
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(
+    queryParams.get("search") || ""
+  );
 
   const handleSearch = (event) => {
     setSearchValue(event.target.value);

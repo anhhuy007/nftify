@@ -53,8 +53,12 @@ function EditNft() {
       id: user._id,
     },
   });
+  const [selectedCollection, setSelectedCollection] = useState(
+    nftDetail?.data?.collection?._id || ""
+  );
 
   useEffect(() => {
+    console.log("NFT Detail", nftDetail);
     if (nftDetail?.data) {
       setNft((prev) => ({
         ...prev,
@@ -63,13 +67,11 @@ function EditNft() {
         imgUrl: nftDetail.data.imgUrl || "",
       }));
 
-      setIsOnMarketplace(nftDetail.data.isListed);
+      setIsOnMarketplace(nftDetail.data.insight.isListed);
+      setSelectedCollection(nftDetail.data.collection?._id || "");
     }
   }, [nftDetail]);
   const [collection, setCollection] = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState(
-    nftDetail?.data?.collection?._id || ""
-  );
 
   const fetchCollections = async () => {
     try {
@@ -89,10 +91,6 @@ function EditNft() {
     if (/^\d*\.?\d*$/.test(value)) {
       setNft((prev) => ({ ...prev, price: value }));
     }
-  };
-
-  const handleNameChange = (e) => {
-    setNft((prev) => ({ ...prev, title: e.target.value }));
   };
 
   const handleEditNft = async () => {
@@ -149,7 +147,7 @@ function EditNft() {
   };
   return (
     <>
-      <div className="flex flex-col min-h-screen my-20 mx-20 xl:mx-72 ">
+      <div className="flex flex-col min-h-screen my-20 mx-10 xl:mx-56 ">
         <h1 className="text-primary-foreground text-6xl font-bold">
           Edit your NFT
         </h1>
@@ -200,6 +198,7 @@ function EditNft() {
               <CollectionChooser
                 collections={collection}
                 onCollectionSelect={setSelectedCollection}
+                initialCollection={nftDetail?.data?.collection}
               />
             </div>
           </div>

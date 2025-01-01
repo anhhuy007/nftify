@@ -138,7 +138,7 @@ function NftsMarketplace() {
     setCurrentPage(1);
     setItems([]);
     refetch();
-  }, [isGrid, refetch]);
+  }, [isGrid, refetch, queryParams.get("search")]);
 
   const updateQueryParams = (params) => {
     const searchParams = new URLSearchParams({
