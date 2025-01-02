@@ -31,4 +31,3 @@ function CreatorCarousel({ data }) {
 }
 
 export default CreatorCarousel;
-c;
