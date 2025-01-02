@@ -2,13 +2,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Eye, Heart, Upload, ShoppingCart } from "lucide-react";
+import { Eye, Heart, Upload, ShoppingCart, Trash2, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { handleAddToCart } from "@/components/NFT/NftCard";
 import { useCart } from "@/context/CartProvider";
 import { useWallet } from "@/context/WalletProvider";
 import CheckoutModal from "@/pages/checkout/CheckoutModal";
+import { DeleteNFTDialog } from "../../../components/NFT/NftCard";
 
 export default function NftGeneralInformation({ data: stamp }) {
   const { addItemToCart, removeItemFromCart } = useCart();
@@ -25,13 +26,25 @@ export default function NftGeneralInformation({ data: stamp }) {
     }
   };
 
-  let isBuyable = false;
-  if (
-    stamp.insight.isListed &&
-    stamp.ownerDetails?.wallet_address !== address
-  ) {
-    isBuyable = true;
-  }
+  console.log("Stamp data", stamp);
+
+  // Helper functions for NFT ownership and status checks
+  const checkStampOwnership = (stampOwnerAddress, userAddress) => {
+    if (!stampOwnerAddress || !userAddress) return false;
+    return stampOwnerAddress.toLowerCase() === userAddress.toLowerCase();
+  };
+
+  const checkStampBuyability = (stamp) => {
+    if (!stamp?.insight) return false;
+    return stamp.insight.isListed === true;
+  };
+
+  // Usage in component
+  const isStampOwner = checkStampOwnership(
+    stamp?.ownerDetails?.wallet_address,
+    address
+  );
+  const isBuyable = checkStampBuyability(stamp);
 
   const handleBuyNow = async () => {
     try {
@@ -51,7 +64,7 @@ export default function NftGeneralInformation({ data: stamp }) {
     } catch (error) {
       toast.error("Failed: " + error.message);
     }
-  }
+  };
 
   return (
     <>
@@ -131,39 +144,11 @@ export default function NftGeneralInformation({ data: stamp }) {
               <p className="">${stamp.price.usdPrice} USD</p>
             </div>
 
-            <div className="grid grid-cols-[80%_5%_15%]">
-              {isBuyable ? (
-                <CheckoutModal
-                  style="w-full font-semibold py-6 bg-white text-black hover:bg-gray-400"
-                  content={`Buy now for ${stamp.price.price.$numberDecimal} ETH`}
-                  preprocess={handleBuyNow}
-                  cancelCheckout={handleCancel}
-                />
-              ) : (
-                <Button
-                  className={
-                    "w-full font-semibold py-6 bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }
-                  disabled={!isBuyable}
-                >
-                  Not available for sale
-                </Button>
-              )}
-              <div></div>
-              <Button
-                className={`w-full font-semibold py-6 ${
-                  isBuyable
-                    ? "bg-white text-black hover:bg-gray-400"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-                onClick={
-                  isBuyable ? () => handleCartClick(stamp._id) : undefined
-                }
-                disabled={!isBuyable}
-              >
-                <ShoppingCart className="h-10 w-10" />
-              </Button>
-            </div>
+            {isStampOwner
+              ? ownerButtons()
+              : isBuyable
+              ? buyableButtons()
+              : notBuyableButtons()}
           </div>
 
           <Separator className="bg-secondary my-4 md:my-6" />
@@ -197,6 +182,64 @@ export default function NftGeneralInformation({ data: stamp }) {
       </Card>
     </>
   );
+
+  function buyableButtons() {
+    return (
+      <div className="grid grid-cols-[80%_5%_15%]">
+        <CheckoutModal
+          style="w-full font-semibold py-6 bg-white text-black hover:bg-gray-400"
+          content={`Buy now for ${stamp.price.price.$numberDecimal} ETH`}
+          preprocess={handleBuyNow}
+          cancelCheckout={handleCancel}
+        />
+        <div></div>
+        <Button
+          className="w-full font-semibold py-6 bg-white text-black hover:bg-gray-400"
+          onClick={() => handleCartClick(stamp._id)}
+        >
+          <ShoppingCart className="h-10 w-10" />
+        </Button>
+      </div>
+    );
+  }
+
+  function notBuyableButtons() {
+    return (
+      <div className="grid grid-cols-[80%_5%_15%]">
+        <Button
+          className="w-full font-semibold py-6 bg-gray-300 text-gray-500 cursor-not-allowed"
+          disabled
+        >
+          Not available for sale
+        </Button>
+        <div></div>
+        <Button
+          className="w-full font-semibold py-6 bg-gray-300 text-gray-500 cursor-not-allowed"
+          disabled
+        >
+          <ShoppingCart className="h-10 w-10" />
+        </Button>
+      </div>
+    );
+  }
+
+  function ownerButtons() {
+    return (
+      <div className="grid grid-cols-[80%_5%_15%]">
+        <Link to={`/edit/nft/${stamp._id}`}>
+          <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
+            Edit <Pencil className="h-10 w-10" />
+          </Button>
+        </Link>
+        <div></div>
+        <DeleteNFTDialog stampId={stamp._id}>
+          <Button className="hover:bg-gray-400 font-semibold bg-destructive text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
+            <Trash2 className="h-10 w-10" />
+          </Button>
+        </DeleteNFTDialog>
+      </div>
+    );
+  }
 }
 
 function formatDate(date) {

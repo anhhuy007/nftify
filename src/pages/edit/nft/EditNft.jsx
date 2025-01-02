@@ -21,12 +21,8 @@ function EditNft() {
   const [isLoading, setIsLoading] = useState(false);
   const { fetchWithAuth } = useAuthHandler();
 
-  const { isAuth, user } = useAuth();
+  const { user } = useAuth();
 
-  if (!isAuth) {
-    toast.error("Please login to edit NFTs");
-    navigate("/");
-  }
   const {
     data: nftDetail,
     error: nftDetailError,
@@ -115,12 +111,17 @@ function EditNft() {
         },
       };
 
-      // update NFT on blockchain
-      const receipt = await NFTService.updateTokenListing(
+      // update NFT listing status on blockchain
+      const isListedUpdate = await NFTService.updateTokenListing(
         nft.tokenID,
         nftData.isListed
       );
-      console.log("Receipt:", receipt);
+
+      // update NFT price on blockchain
+      const priceUpdate = await NFTService.updateTokenPrice(
+        nft.tokenID,
+        nftData.price
+      );
 
       // update NFT on backend
       const result = await fetchWithAuth(

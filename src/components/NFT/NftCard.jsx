@@ -152,7 +152,7 @@ export default function NftCard({ stamp }) {
             }`}
           >
             <Link to={`/nft/${stamp._id}`}>
-              <div className="grid grid-cols-[20%_2%_45%_3%_20%] items-center mt-1">
+              <div className="grid grid-cols-[20%_2%_45%_3%_28%] items-center mt-1">
                 <img
                   // get placeholder image if null
                   src={stamp?.ownerDetails?.avatarUrl || userPlaceHolder}
@@ -168,23 +168,26 @@ export default function NftCard({ stamp }) {
                     {stamp.title}
                   </p>
                 </div>
+
                 <div></div>
-                <div className="flex-1 text-right whitespace-nowrap">
-                  {stamp.price.$numberDecimal ?? "Not for sale"} ETH
-                </div>
+
+                <p className="text-sm font-semibold text-right whitespace-nowrap">
+                  {stamp.price.$numberDecimal} ETH
+                </p>
               </div>
             </Link>
             {isHovered && (
               <div className="grid grid-cols-[80%_5%_15%]">
                 <Link to={`/nft/${stamp._id}`}>
                   <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-                    Collect now!
+                    {isBuyable ? "Collect now!" : "Not for sale"}
                   </Button>
                 </Link>
                 <div></div>
                 <Button
                   className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
                   onClick={handleCartClick}
+                  disabled={!isBuyable}
                 >
                   <ShoppingCart className="h-10 w-10" />
                 </Button>
@@ -261,8 +264,8 @@ export function SmallNftCard({ stamp }) {
               <p className="text-lg font-semibold line-clamp-1">
                 {stamp.title}
               </p>
-              <p className="text-lg font-semibold text-right whitespace-nowrap ">
-                {stamp.price?.$numberDecimal} ETH
+              <p className="text-lg font-semibold text-right whitespace-nowrap">
+                {stamp.price.$numberDecimal} ETH
               </p>
             </div>
           </Link>
@@ -270,13 +273,14 @@ export function SmallNftCard({ stamp }) {
             <div className="grid grid-cols-[80%_5%_15%]">
               <Link to={`/nft/${stamp._id}`}>
                 <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-                  Collect now!
+                  {isBuyable ? "Collect now!" : "Not for sale"}
                 </Button>
               </Link>
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
                 onClick={handleCartClick}
+                disabled={!isBuyable}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -371,7 +375,7 @@ export function BigNftCard({ stamp }) {
               <div></div>
               <div className="flex-1 text-right whitespace-nowrap">
                 <p className="text-lg font-semibold">
-                  {stamp?.price?.$numberDecimal ?? "Not for sale"} ETH
+                  {stamp?.price?.$numberDecimal} ETH
                 </p>
               </div>
             </div>
@@ -380,13 +384,14 @@ export function BigNftCard({ stamp }) {
             <div className="grid grid-cols-[80%_5%_15%]">
               <Link to={`/nft/${stamp._id}`}>
                 <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-                  Collect now!
+                  {isBuyable ? "Collect now!" : "Not for sale"}
                 </Button>
               </Link>
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
                 onClick={handleCartClick}
+                disabled={!isBuyable}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>
@@ -491,12 +496,13 @@ export function PreviewNftCard({ stamp }) {
           {isHovered && (
             <div className="grid grid-cols-[80%_5%_15%]">
               <Button className="  hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200">
-                Collect now!
+                {stamp.price ? "Collect now!" : "Not for sale"}
               </Button>
               <div></div>
               <Button
                 className="hover:bg-gray-400 font-semibold text-primary-foreground px-4 py-2 mt-3 rounded-md w-full transition-colors duration-200"
                 onClick={handleCartClick}
+                disabled={stamp.price === null}
               >
                 <ShoppingCart className="h-10 w-10" />
               </Button>

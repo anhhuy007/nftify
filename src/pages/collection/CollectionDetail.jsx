@@ -19,7 +19,7 @@ function CollectionImageViewer({ imageUrl, name }) {
       <img
         src={imageUrl}
         alt={name}
-        className="w-full mx-auto md:mx-0 h-auto max-w-xs md:max-w-[600px] xl:w-[500px] aspect-square border-2 border-primary rounded-xl"
+        className="w-full h-full object-cover mx-auto md:mx-0 max-w-xs md:max-w-[600px] xl:w-[500px] aspect-square border-2 border-white/20 rounded-xl"
       />
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
@@ -32,8 +32,12 @@ function CollectionImageViewer({ imageUrl, name }) {
             <Maximize2 className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl p-2">
-          <img src={imageUrl} alt={name} className="w-full h-full" />
+        <DialogContent className="max-w-2xl p-2 max-h-[80vh]">
+          <img
+            src={imageUrl}
+            alt={name}
+            className="max-w-full max-h-full object-fit rounded-xl mx-auto"
+          />
         </DialogContent>
       </Dialog>
     </div>
@@ -82,7 +86,13 @@ function CollectionDetail() {
 
   return (
     <div className="w-full flex flex-col my-20 p-0 md:px-32 items-center justify-center gap-10">
-      <div className="w-full rounded-xl bg-[hsl(232,45%,77%)] text-primary-foreground px-44 py-16">
+      <div
+        className="w-full rounded-xl bg-cover bg-center text-primary-foreground px-44 py-16"
+        style={{
+          backgroundImage:
+            "url('https://img.freepik.com/free-vector/speed-light-spotlights-digital-background_23-2148821702.jpg')",
+        }}
+      >
         <div className="flex items-center gap-40">
           <CollectionImageViewer
             imageUrl={collection.thumbUrl}

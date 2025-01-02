@@ -12,6 +12,7 @@ import ErrorAnimation from "@/components/ui/error";
 import { Link } from "react-router-dom";
 import { useAuthHandler } from "@/handlers/AuthHandler";
 import { MARKETPLACE_ENDPOINTS } from "../../handlers/Endpoints";
+import NftCard from "../../components/NFT/NftCard";
 
 export default function NftDetail() {
   const { nftId } = useParams();
@@ -114,14 +115,14 @@ export default function NftDetail() {
         </div>
         <NftGeneralInformation data={nftDetail.data} />
       </div>
-      <div className="flex flex-col gap-10 items-center">
+      <div className="flex flex-col gap-10 items-center w-full max-w-7xl mx-auto">
         <h2 className="text-3xl text-primary-foreground font-bold">
           More from this creator
         </h2>
         {moreFromCreatorLoading ? (
           <div>Loading creator's NFTs...</div>
         ) : moreFromCreatorError ? (
-          <div className="text-red-500">
+          <div className="text-red-500 text-center">
             Unable to load creator's NFTs.
             <button
               onClick={() => refetchMoreFromCreator()}
@@ -131,12 +132,31 @@ export default function NftDetail() {
             </button>
           </div>
         ) : creatorNfts?.items?.length > 0 ? (
-          <NftCarousel data={creatorNfts} />
+          creatorNfts.items.length <= 2 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full place-items-center">
+              {creatorNfts.items.map((nft) => (
+                <NftCard
+                  key={nft._id}
+                  stamp={nft}
+                  className="w-full max-w-md"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="w-full">
+              <NftCarousel data={creatorNfts} />
+            </div>
+          )
         ) : (
-          <p className="text-gray-500">No additional NFTs from this creator</p>
+          <p className="text-gray-500 text-center">
+            No additional NFTs from this creator
+          </p>
         )}
         {nftDetail.data.creatorId && (
-          <Link to={`/user/${nftDetail.data.creatorId}`}>
+          <Link
+            to={`/user/${nftDetail.data.creatorId}`}
+            className="w-full max-w-md"
+          >
             <div className="p-4 border-2 rounded-xl text-primary-foreground flex justify-center cursor-pointer">
               <p>View creator NFTs</p>
             </div>
