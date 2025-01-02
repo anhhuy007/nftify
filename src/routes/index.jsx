@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"; // Import BrowserRouter, Routes và Route
+import { Routes, Route } from "react-router-dom"; // Import Routes và Route
 import RootLayout from "@/layouts/RootLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import MarketplaceLayout from "@/layouts/MarketplaceLayout";

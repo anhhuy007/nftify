@@ -43,7 +43,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <User />,
     element: <UserDetail />,
-    isPrivate: true,
+    isPrivate: false,
     children: [
       {
         name: "Owned",
@@ -84,7 +84,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <Heart />,
     element: <UserDetail />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     name: "Setting",
@@ -93,28 +93,27 @@ const menuItems = [
     layout: "RootLayout",
     icon: <Settings />,
     element: <Setting />,
-    isPrivate: true,
     children: [
       {
         name: "Profile",
         link: "profile",
         icon: <User size={32} />,
         element: <Profile />,
-        isPrivate: true,
+        isPrivate: false,
       },
       {
         name: "Account",
         link: "account",
         icon: <Shield size={32} />,
         element: <Account />,
-        isPrivate: true,
+        isPrivate: false,
       },
       {
         name: "Notification",
         link: "notification",
         icon: <Bell size={32} />,
         element: <Notification />,
-        isPrivate: true,
+        isPrivate: false,
       },
     ],
   },
@@ -161,7 +160,7 @@ const menuItems = [
     link: "/create/collection",
     icon: <User />,
     element: <CreateCollection />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     name: "Create",
@@ -170,7 +169,7 @@ const menuItems = [
     link: "/create/nft",
     icon: <User />,
     element: <CreateNft />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     name: "Marketplace",
@@ -188,7 +187,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <ShoppingCart />,
     element: <EtherscanPage />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     name: "Home",
@@ -213,7 +212,7 @@ const menuItems = [
     link: "/edit/nft/:nftId",
     layout: "RootLayout",
     element: <EditNft />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     name: "Edit Collection",
@@ -221,15 +220,7 @@ const menuItems = [
     link: "/edit/collection/:collectionId",
     layout: "RootLayout",
     element: <EditCollection />,
-    isPrivate: true,
-  },
-  {
-    name: "Edit Collection",
-    group: "edit",
-    link: "/edit/collection/:collectionId",
-    layout: "RootLayout",
-    element: <EditCollection />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     name: "NFTs",
@@ -308,7 +299,7 @@ const menuItems = [
     link: "/etherscan",
     layout: "RootLayout",
     element: <EtherscanPage />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     name: "Transaction Detail",
@@ -316,7 +307,7 @@ const menuItems = [
     link: "/etherscan/transaction/:hash",
     layout: "RootLayout",
     element: <TransactionDetailPage />,
-    isPrivate: true,
+    isPrivate: false,
   },
 ];
 

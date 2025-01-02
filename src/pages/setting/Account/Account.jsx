@@ -14,14 +14,6 @@ import { USER_ENDPOINTS } from "../../../handlers/Endpoints";
 function Account() {
   const { isAuth, user } = useAuth();
 
-  if (!isAuth) {
-    const navigate = useNavigate();
-
-    toast("Please login to see your account settings");
-    navigate("/");
-    return;
-  }
-
   const [editUser, setEditUser] = useState({
     currentPassword: "",
     newPassword: "",
@@ -34,10 +26,6 @@ function Account() {
   const { fetchWithAuth } = useAuthHandler();
 
   useEffect(() => {
-    if (!isAuth) {
-      toast("Please login to create NFTs");
-      return;
-    }
     fetchData();
   }, []);
 

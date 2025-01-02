@@ -5,18 +5,23 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const PrivateRoute = () => {
-  const navigate = useNavigate();
   const { isAuth } = useAuth();
+  const navigate = useNavigate();
 
+  // UseEffect is triggered whenever isAuth changes
   useEffect(() => {
     if (!isAuth) {
       toast.dismiss();
       toast.error("Please login to access this page");
-      navigate("/");
     }
-  }, [isAuth, navigate]);
-  if (!isAuth) return null;
+  }, [isAuth]);
 
+  // If the user is not authenticated, redirect to home
+  if (!isAuth) {
+    return <Navigate to="/" replace />;
+  }
+
+  // If authenticated, render the child routes
   return <Outlet />;
 };
 
