@@ -188,7 +188,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <ShoppingCart />,
     element: <EtherscanPage />,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     name: "Home",
@@ -308,7 +308,7 @@ const menuItems = [
     link: "/etherscan",
     layout: "RootLayout",
     element: <EtherscanPage />,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     name: "Transaction Detail",
@@ -316,7 +316,7 @@ const menuItems = [
     link: "/etherscan/transaction/:hash",
     layout: "RootLayout",
     element: <TransactionDetailPage />,
-    isPrivate: false,
+    isPrivate: true,
   },
 ];
 
