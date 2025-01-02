@@ -27,19 +27,14 @@ import { ethers } from "ethers";
 import { TRANSACTION_ENDPOINTS } from "../../handlers/Endpoints";
 
 function CreateNft() {
-  const navigate = useNavigate();
+  const { user, isAuth } = useAuth();
+
   const [isOnMarketplace, setIsOnMarketplace] = useState(false);
   const [isCreated, setIsCreated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { fetchWithAuth } = useAuthHandler();
   const [collection, setCollection] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState(null);
-
-  const { isAuth, user } = useAuth();
-  if (!isAuth) {
-    toast.error("Please login to create NFTs");
-    navigate("/");
-  }
 
   async function saveTransaction(transaction) {
     try {
@@ -154,7 +149,7 @@ function CreateNft() {
       color: "",
       releasedDate: "",
       function: "",
-      price: ""
+      price: "",
     });
   }
 

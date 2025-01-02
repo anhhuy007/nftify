@@ -17,8 +17,6 @@ function CreateCollection() {
   });
 
   const { user, isAuth } = useAuth();
-  console.log(user, isAuth);
-
   const { fetchWithAuth } = useAuthHandler();
   const [isLoading, setIsLoading] = useState(false);
   const wallet = useWallet();
