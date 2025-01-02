@@ -210,7 +210,13 @@ export default function EtherscanPage() {
                       <td className="p-4 text-white">{tx.transactionFee}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <img src={tx.stampDetails?.imgUrl} alt="Ethereum Icon" width="40" height="40" />
+                          {tx.stampDetails?.imgUrl ? (
+                            <img src={tx.stampDetails.imgUrl} alt={tx.stampDetails.title} width="40" height="40" />
+                          ) : (
+                            <div className="w-32 h-10 bg-[#252644] flex items-center justify-center text-base text-gray-400 rounded-sm">
+                              Deleted NFT
+                            </div>
+                          )}
                           <span className="text-white max-w-40 truncate">{tx.stampDetails?.title}</span>
                         </div>
                       </td>
