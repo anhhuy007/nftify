@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from 'lucide-react';
+import { Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -63,7 +63,9 @@ export default function UserCard({ user }) {
             }}
           >
             <Plus
-              className={`mr-2 h-4 w-4 lg:h-5 lg:w-5 ${isFollowing ? "rotate-45" : ""}`}
+              className={`mr-2 h-4 w-4 lg:h-5 lg:w-5 ${
+                isFollowing ? "rotate-45" : ""
+              }`}
             />
             {isFollowing ? "Following" : "Follow"}
           </Button>
@@ -72,4 +74,3 @@ export default function UserCard({ user }) {
     </Link>
   );
 }
-

@@ -100,18 +100,21 @@ const menuItems = [
         link: "profile",
         icon: <User size={32} />,
         element: <Profile />,
+        isPrivate: true,
       },
       {
         name: "Account",
         link: "account",
         icon: <Shield size={32} />,
         element: <Account />,
+        isPrivate: true,
       },
       {
         name: "Notification",
         link: "notification",
         icon: <Bell size={32} />,
         element: <Notification />,
+        isPrivate: true,
       },
     ],
   },
@@ -158,7 +161,7 @@ const menuItems = [
     link: "/create/collection",
     icon: <User />,
     element: <CreateCollection />,
-    // isPrivate: true,
+    isPrivate: true,
   },
   {
     name: "Create NFT",
@@ -167,7 +170,7 @@ const menuItems = [
     link: "/create/nft",
     icon: <User />,
     element: <CreateNft />,
-    // isPrivate: true,
+    isPrivate: true,
   },
   {
     name: "Marketplace",
@@ -185,7 +188,7 @@ const menuItems = [
     layout: "RootLayout",
     icon: <ShoppingCart />,
     element: <EtherscanPage />,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     name: "Home",
@@ -210,7 +213,7 @@ const menuItems = [
     link: "/edit/nft/:nftId",
     layout: "RootLayout",
     element: <EditNft />,
-    // isPrivate: true,
+    isPrivate: true,
   },
   {
     name: "Edit Collection",
@@ -218,7 +221,7 @@ const menuItems = [
     link: "/edit/collection/:collectionId",
     layout: "RootLayout",
     element: <EditCollection />,
-    // isPrivate: true,
+    isPrivate: true,
   },
   {
     name: "Edit Collection",
@@ -226,7 +229,7 @@ const menuItems = [
     link: "/edit/collection/:collectionId",
     layout: "RootLayout",
     element: <EditCollection />,
-    // isPrivate: true,
+    isPrivate: true,
   },
   {
     name: "NFTs",
@@ -305,7 +308,7 @@ const menuItems = [
     link: "/etherscan",
     layout: "RootLayout",
     element: <EtherscanPage />,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     name: "Transaction Detail",
@@ -313,7 +316,7 @@ const menuItems = [
     link: "/etherscan/transaction/:hash",
     layout: "RootLayout",
     element: <TransactionDetailPage />,
-    isPrivate: false,
+    isPrivate: true,
   },
 ];
 

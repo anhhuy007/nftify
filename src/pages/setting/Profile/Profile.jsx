@@ -24,15 +24,7 @@ import LoadingAnimation from "@/components/ui/loading";
 import { USER_ENDPOINTS } from "@/handlers/Endpoints";
 
 function Profile() {
-  const { isAuth } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-
-  if (!isAuth) {
-    const navigate = useNavigate();
-    toast.error("Please login to create NFTs");
-    navigate("/");
-    return;
-  }
   const { fetchWithAuth } = useAuthHandler();
 
   const [initialUser, setInitialUser] = useState({
@@ -49,11 +41,6 @@ function Profile() {
   });
 
   const fetchData = async () => {
-    if (!isAuth) {
-      toast("Please login to create NFTs");
-      return;
-    }
-
     try {
       const result = await fetchWithAuth(USER_ENDPOINTS.GET_USER);
       const userData = result.data;
@@ -75,10 +62,6 @@ function Profile() {
   };
 
   useEffect(() => {
-    if (!isAuth) {
-      toast.error("Please login to create NFTs");
-      return;
-    }
     fetchData();
   }, []);
 
@@ -101,10 +84,6 @@ function Profile() {
   };
 
   const saveChanges = async () => {
-    if (!isAuth) {
-      toast.error("Please login before changing details");
-      return;
-    }
     setIsLoading(true);
     try {
       const updates = {};

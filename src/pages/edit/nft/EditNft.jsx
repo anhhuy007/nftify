@@ -21,12 +21,8 @@ function EditNft() {
   const [isLoading, setIsLoading] = useState(false);
   const { fetchWithAuth } = useAuthHandler();
 
-  const { isAuth, user } = useAuth();
+  const { user } = useAuth();
 
-  if (!isAuth) {
-    toast.error("Please login to edit NFTs");
-    navigate("/");
-  }
   const {
     data: nftDetail,
     error: nftDetailError,

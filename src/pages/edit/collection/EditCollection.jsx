@@ -14,14 +14,7 @@ function EditCollection() {
   const { collectionId } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { user, isAuth } = useAuth();
   const { fetchWithAuth } = useAuthHandler();
-
-  if (!isAuth) {
-    toast.error("Please login to edit collections");
-    navigate("/");
-  }
-
   const {
     data: collectionData,
     error: collectionError,

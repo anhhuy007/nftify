@@ -25,7 +25,7 @@ const RootLayout = () => {
     <>
       <div className=" min-h-screen w-full bg-background flex flex-col">
         <Header />
-        <main className="flex-1 p-5 md:px-36 mt-32 flex flex-col">
+        <main className="flex-1 p-5 md:px-32 mt-32 flex flex-col">
           <div className="flex gap-4 md:gap-10 lg:gap-12 xl:gap-16 mb-12">
             {renderMarketplaceLinks(location.pathname)}
           </div>

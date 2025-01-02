@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -38,6 +38,17 @@ export default function Filter({
 
     return initialFilter;
   });
+
+  useEffect(() => {
+    setTempFilter((prev) => ({
+      ...prev,
+      lowestPrice: filter.lowestPrice || "",
+      highestPrice: filter.highestPrice || "",
+      status: filter.status || "all",
+      collection: filter.collection || "",
+      owner: filter.owner || "",
+    }));
+  }, [filter]);
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {

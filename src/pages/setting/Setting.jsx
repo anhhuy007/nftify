@@ -8,11 +8,6 @@ import { toast } from "react-hot-toast";
 function Setting() {
   const settingItem = menuItems.find((item) => item.name === "Setting");
   const navigate = useNavigate();
-  const { isAuth } = useAuth();
-  if (!isAuth) {
-    toast.error("Please login to create NFTs");
-    navigate("/");
-  }
   useEffect(() => {
     if (window.location.pathname === "/setting") {
       navigate("/setting/profile");
