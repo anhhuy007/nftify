@@ -32,8 +32,12 @@ function CollectionImageViewer({ imageUrl, name }) {
             <Maximize2 className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl p-2">
-          <img src={imageUrl} alt={name} className="w-full h-full" />
+        <DialogContent className="max-w-2xl p-2 max-h-[80vh]">
+          <img
+            src={imageUrl}
+            alt={name}
+            className="max-w-full max-h-full object-fit rounded-xl mx-auto"
+          />
         </DialogContent>
       </Dialog>
     </div>
