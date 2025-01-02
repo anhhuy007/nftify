@@ -163,7 +163,7 @@ const menuItems = [
     isPrivate: false,
   },
   {
-    name: "Create",
+    name: "Create NFT",
     group: "create",
     layout: "RootLayout",
     link: "/create/nft",
