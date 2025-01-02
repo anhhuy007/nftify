@@ -26,6 +26,8 @@ export default function NftGeneralInformation({ data: stamp }) {
     }
   };
 
+  console.log("Stamp data", stamp);
+
   // Helper functions for NFT ownership and status checks
   const checkStampOwnership = (stampOwnerAddress, userAddress) => {
     if (!stampOwnerAddress || !userAddress) return false;
@@ -43,9 +45,6 @@ export default function NftGeneralInformation({ data: stamp }) {
     address
   );
   const isBuyable = checkStampBuyability(stamp);
-
-  console.log("isStampOwner", isStampOwner);
-  console.log("isBuyable", isBuyable);
 
   const handleBuyNow = async () => {
     try {

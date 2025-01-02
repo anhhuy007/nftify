@@ -20,8 +20,6 @@ function Cart() {
   const [isOpen, setIsOpen] = useState(false);
   const [removingItems, setRemovingItems] = useState(new Set());
 
-  console.log(cart);
-
   const handleRemoveItem = async (itemId) => {
     try {
       setRemovingItems((prev) => new Set([...prev, itemId]));
