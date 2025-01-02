@@ -6,9 +6,9 @@ import CollectionCarousel from "@/pages/home/components/CollectionCarousel";
 import { useQuery } from "react-query";
 import CreatorCarousel from "./components/CreatorCarousel";
 import ErrorAnimation from "@/components/ui/error";
-import { SkeletonNftCarousel } from "@/components/skeleton/SkeletonNft";
-// import { SkeletonCollectionCarousel } from "@/components/skeleton/SkeletonCollection";
-// import { SkeletonCreatorCarousel } from "@/components/skeleton/SkeletonCreator";
+import { SkeletonNftCarousel } from "../../components/skeleton/SkeletonNft";
+import { SkeletonCollectionCarousel } from "../../components/skeleton/SkeletonCollectionCarousel";
+ import { SkeletonCreatorCarousel } from "../../components/skeleton/SkeletonCreatorCarousel";
 import { fetcher, HOME_ENDPOINTS } from "@/handlers/Endpoints";
 
 function Home() {
@@ -53,13 +53,13 @@ function Home() {
             <span className="text-5xl leading-normal font-bold text-gradient">
               Top Collections
             </span>
-            {/* <SkeletonCollectionCarousel /> Added skeleton */}
+            <SkeletonCollectionCarousel />
           </div>
           <div className="flex flex-col justify-center items-center gap-10">
             <span className="text-5xl leading-normal font-bold text-gradient">
               Top Creators
             </span>
-            {/* <SkeletonCreatorCarousel /> Added skeleton */}
+            <SkeletonCreatorCarousel /> 
           </div>
           <Banner />
         </div>
