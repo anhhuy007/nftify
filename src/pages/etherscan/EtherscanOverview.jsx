@@ -135,26 +135,26 @@ export default function EtherscanPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-700">
-                    <th className="text-left p-5 text-base font-semibold text-gray-300 w-32">
+                    <th className="text-left p-5 text-base font-semibold text-gray-300 min-w-16 max-w-36">
                       Transaction Hash
                     </th>
-                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-28">
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 max-w-28">
                       Block
                     </th>
-                    <th className="text-left p-3 text-base font-semibold text-gray-300 w-28">
+                    <th className="text-left p-3 text-base font-semibold text-gray-300 min-w-16">
                       Age
                     </th>
-                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-64">
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 max-w-[60px]">
                       From
                     </th>
                     <th className="text-left p-4 text-base font-semibold text-gray-300"></th>
-                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-60">
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 max-w-[60px]">
                       To
                     </th>
                     <th className="text-left p-4 text-base font-semibold text-gray-300 w-32">
                       Amount
                     </th>
-                    <th className="text-left p-4 text-base font-semibold text-gray-300 w-32">
+                    <th className="text-left p-4 text-base font-semibold text-gray-300 max-w-28">
                       Fee
                     </th>
                     <th className="text-left p-4 text-base font-semibold text-gray-300">
