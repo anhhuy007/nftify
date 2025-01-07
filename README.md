@@ -1,8 +1,8 @@
-# NFTify
+# About The Project
 
 NFTify is a web application for managing and interacting with NFTs (Non-Fungible Tokens) using MetaMask and the Ethereum blockchain.
 
----
+![NFTify Marketplace](https://firebasestorage.googleapis.com/v0/b/tiktok-clone-f0b70.appspot.com/o/image%2Fimage2.jpeg?alt=media&token=885178d4-91e8-45a1-ab06-a1a17ef8d8c2)
 
 ## Features
 
@@ -27,12 +27,11 @@ NFTify is a web application for managing and interacting with NFTs (Non-Fungible
 ---
 
 ## Technologies Used
-
-- **JavaScript**
-- **React**
-- **Vite**
-- **CSS**
-- **HTML**
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=html,tailwind,react,vite" />
+  </a>
+</p>
 
 ---
 
