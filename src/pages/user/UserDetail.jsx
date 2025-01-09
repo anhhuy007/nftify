@@ -24,6 +24,8 @@ function UserDetail() {
   const location = useLocation();
   const { userId: paramUserId } = useParams();
   const { isAuth, user } = useAuth();
+  console.log("user", user);
+  
   const [id, setId] = useState(
     paramUserId || (location.pathname.includes("/profile") ? user?._id : null)
   );
