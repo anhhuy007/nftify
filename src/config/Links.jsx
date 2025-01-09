@@ -28,7 +28,7 @@ import UserCollections from "@/pages/user/UserCollections";
 import UserNfts from "@/pages/user/UserNfts";
 import CreateCollection from "@/pages/create/CreateCollection";
 import Profile from "@/pages/setting/Profile/Profile";
-import Notification from "@/pages/setting/Notification/Notification";
+// import Notification from "@/pages/setting/Notification/Notification";
 import Account from "@/pages/setting/Account/Account";
 import EtherscanPage from "../pages/etherscan/EtherscanOverview";
 import TransactionDetailPage from "../pages/etherscan/TransactionDetail";
