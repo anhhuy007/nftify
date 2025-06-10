@@ -5,6 +5,8 @@ NFTify is a web application for managing and interacting with NFTs (Non-Fungible
 ![NFTify Marketplace](https://firebasestorage.googleapis.com/v0/b/tiktok-clone-f0b70.appspot.com/o/image%2Fimage2.jpeg?alt=media&token=885178d4-91e8-45a1-ab06-a1a17ef8d8c2)
 
 ## Features
+https://github.com/user-attachments/assets/25d8f8f2-5135-4399-947c-113cc44ba09c
+
 
 ### MetaMask Integration
 - **Connect to MetaMask wallet**: Seamlessly connect your MetaMask wallet to the application.
@@ -29,9 +31,11 @@ NFTify is a web application for managing and interacting with NFTs (Non-Fungible
 ## Technologies Used
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=html,tailwind,react,vite" />
+    <img src="https://skillicons.dev/icons?i=html,tailwind,react,vite,solidity,nodejs,mongodb" />  
+    <img src="https://cryptocurrencyjobs.co/startups/assets/logos/metamask.jpg" alt="metamask" height="50" />
   </a>
 </p>
+
 
 ---
 
